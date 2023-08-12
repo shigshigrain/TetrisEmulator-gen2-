@@ -1008,7 +1008,7 @@ namespace shig {
 			return;
 		}
 		else {
-			LL pnl = -10000000;
+			LL pnl = -100000000;
 			cd.scr.sum = shig::secure_add(cd.scr.sum, pnl);
 		}
 
@@ -1074,7 +1074,7 @@ namespace shig {
 		}
 
 		// contact V2
-		const LL pnl_A = 2000, pnl_B = -2000, pnl_C = -4000;
+		const LL pnl_A = 4000, pnl_B = 2000, pnl_C = -2000;
 
 		if (cd.pat.id == 1) {
 			if (cd.pat.rot == 0 || cd.pat.rot == 2) {
@@ -1090,26 +1090,70 @@ namespace shig {
 		else if (cd.pat.id == 2) {
 			if (cd.pat.rot == 0 || cd.pat.rot == 2) {
 				if (cnt_n == 3)contact += pnl_A;
+				else if (cnt_n == 2) {
+					if (chk_con.at(0) == true || chk_con.at(2) == true) {
+						contact += pnl_B;
+					}
+					else contact += pnl_C;
+				}
 				else contact += pnl_C;
 			}
-			else {
+			else if (cd.pat.rot == 1) {
 				if (cnt_n == 2)contact += pnl_A;
+				else if (cnt_n == 1) {
+					if (chk_con.at(1) == false && chk_con.at(2) == true) {
+						contact += pnl_B;
+					}
+					else contact += pnl_C;
+				}
+				else contact += pnl_C;
+			}
+			else if (cd.pat.rot == 3) {
+				if (cnt_n == 2)contact += pnl_A;
+				else if (cnt_n == 1) {
+					if (chk_con.at(1) == false && chk_con.at(0) == true) {
+						contact += pnl_B;
+					}
+					else contact += pnl_C;
+				}
 				else contact += pnl_C;
 			}
 		}
 		else if (cd.pat.id == 3) {
 			if (cd.pat.rot == 0 || cd.pat.rot == 2) {
 				if (cnt_n == 3)contact += pnl_A;
-				else if (cnt_n == 2 && chk_con.at(0) == true)contact += pnl_B;
+				else if (cnt_n == 2) {
+					if (chk_con.at(0) == true || chk_con.at(2) == true) {
+						contact += pnl_B;
+					}
+					else contact += pnl_C;
+				}
 				else contact += pnl_C;
 			}
-			else {
+			else if (cd.pat.rot == 1) {
 				if (cnt_n == 2)contact += pnl_A;
+				else if (cnt_n == 1) {
+					if (chk_con.at(1) == false && chk_con.at(2) == true) {
+						contact += pnl_B;
+					}
+					else contact += pnl_C;
+				}
+				else contact += pnl_C;
+			}
+			else if (cd.pat.rot == 3) {
+				if (cnt_n == 2)contact += pnl_A;
+				else if (cnt_n == 1) {
+					if (chk_con.at(1) == false && chk_con.at(0) == true) {
+						contact += pnl_B;
+					}
+					else contact += pnl_C;
+				}
 				else contact += pnl_C;
 			}
 		}
 		else if (cd.pat.id == 4) {
 			if (cnt_n == 2)contact += pnl_A;
+			else if (cnt_n == 1)contact += pnl_B;
 			else contact += pnl_C;
 		}
 		else if (cd.pat.id == 5) {
@@ -1157,32 +1201,38 @@ namespace shig {
 
 
 		//high
-
 		LL cdY = cd.pat.Y;
-
-		if (cdY > 14) {
-			high = (-10 * cdY * cdY * cdY);
-			high -= (cdY - gcs.height_mxm + 1) * 80000;
-		}
-		else if (cdY > 8) {
-			high = (-10 * cdY * cdY + 810);
+		high = 5000;
+		if (cdY > 15) {
+			high = (-20 * cdY * cdY + 2865);
 			high -= (cdY - gcs.height_mxm + 1) * 4000;
+		}
+		else if (cdY > 10) {
+			high = (-10 * cdY * cdY + 615);
+			high -= (cdY - gcs.height_mxm + 1) * 1000;
+
+		}
+		else if (cdY > 5)
+		{
+			high = (-5LL * cdY * cdY + 115);
+			high -= (cdY - gcs.height_mxm + 1) * 250;
 
 		}
 		else {
-			high = (-1LL * cdY + 200);
-			high -= (cdY - gcs.height_mxm + 1) * 200;
-
+			high = (-2LL * cdY - 0);
+			high -= (cdY - gcs.height_mxm + 1) * 0;
 		}
 
-		//flattening
-		//high -= (cdY - height_mxm + 1) * 400;
 
 		//closure & touch
 		int tls = (int)touch_list.at(idnt).at(rot).size();
 		LL thc = 0, thcls = 0;
 		for (int i = 0; i < tls; i++) {
-			auto [ty, tx] = touch_list.at(idnt).at(rot).at(i);
+
+			int ty = 0, tx = 0;
+			pairI2 tt = touch_list.at(idnt).at(rot).at(i);
+			ty = tt.first; tx = tt.second;
+
 			tx = cd.pat.X + tx;
 			if (tx < 0 || tx >= 10) {
 				thc++;
@@ -1199,14 +1249,14 @@ namespace shig {
 				thc++;
 
 				if (tx == 0 || tx == 9) {
-					//touch = shig::secure_add(touch, 100);
+					touch = shig::secure_add(touch, 10);
 				}
 
 				continue;
 			}
 			else {
 				if (tx == 0 || tx == 9) {
-					//touch = shig::secure_add(touch, -100);
+					touch = shig::secure_add(touch, -10);
 				}
 
 			}
@@ -1319,7 +1369,7 @@ namespace shig {
 
 
 		//cmb
-		LL cmb_rate = 100000;
+		LL cmb_rate = 100;
 		if (gcs.combo * L.size() > 0) {
 			LL c = (cmb_rate * 10LL * (gcs.combo + 1));
 			cd.scr.cmb = shig::secure_add(cd.scr.cmb, c);
@@ -1342,27 +1392,28 @@ namespace shig {
 		LL ve = 0;
 		if (L.size() == 0) {
 
-			if (gcs.height_sum > 120 && gcs.height_mxm > 15) {
+			if (gcs.height_sum > 120 || gcs.height_mxm > 15) {
 				ve += 50;
 
 			}
-			else if (gcs.height_sum > hs && gcs.height_mxm > hm) {
+			else if (gcs.height_sum > 80 || gcs.height_mxm > 10) {
 				ve += 500;
+				/*
 				if (cd.pat.id == 6)ve += 200;
 				else if (cd.pat.id == 1)ve += 300;
+				*/
 
 			}
+			else if (gcs.height_sum > 40 || gcs.height_mxm > 5) {
+				ve += 2000;
+				if (cd.pat.id == 6)ve += -800;
+				else if (cd.pat.id == 1)ve += -400;
+			}
 			else {
+				ve += 4000;
 
-				if ((cdY - gcs.height_sum / 10 + 1) > 0) {
-					ve += 200;
-				}
-				else {
-					ve += 500;
-				}
-
-				if (cd.pat.id == 6)ve -= 500;
-				else if (cd.pat.id == 1)ve -= 500;
+				if (cd.pat.id == 6)ve += -1000;
+				else if (cd.pat.id == 1)ve += -500;
 
 			}
 
@@ -1371,22 +1422,22 @@ namespace shig {
 			if (gcs.TS_kind == 1) {
 
 				if (gcs.height_sum > hs && gcs.height_mxm > hm) {
-					ve += 50000;
+					ve += 10000;
 				}
 				else {
-					ve += 80000;
+					ve += 200000;
 				}
 
-				if (gcs.btb > -1)btbc += 100;
+				if (gcs.btb > -1)btbc += 10000;
 
 			}
 			else if (gcs.TS_kind == 2) {
 
 				if (gcs.height_sum > hs && gcs.height_mxm > hm) {
-					ve += 50;
+					ve += 500;
 				}
 				else {
-					ve += -50;
+					ve += 1000;
 				}
 
 				if (gcs.btb > -1)btbc += 50;
@@ -1399,19 +1450,19 @@ namespace shig {
 						ve += 500;
 					}
 				}
-				else if (gcs.height_sum < 50 || gcs.height_mxm < 5) {
-					ve += -5000;
-					/*if (cd.pat.id == 6) {
-						ve += -10000;
+				else if (gcs.height_sum < 48 || gcs.height_mxm < 6) {
+					ve += -10000;
+					if (cd.pat.id == 6) {
+						ve += -1000;
 					}
 					else if (cd.pat.id == 1) {
-						ve += -2000;
-					}*/
+						ve += -1000;
+					}
 				}
 				else {
-					ve += -2000;
+					ve += -40000;
 					if (cd.pat.id == 6) {
-						ve += -10000;
+						ve += -1000;
 					}
 					else if (cd.pat.id == 1) {
 						ve += -2000;
@@ -1429,16 +1480,16 @@ namespace shig {
 					ve += 300000;
 				}
 				else {
-					ve += 100000000;
+					ve += 1000000000;
 				}
 
-				if (gcs.btb > -1)btbc += 100000;
+				if (gcs.btb > -1)btbc += 1000000;
 
 			}
 			else if (gcs.TS_kind == 2) {
-				ve += 1;
-				if (gcs.height_sum > p_A || gcs.height_mxm > 8) {
-					ve += 5;
+				ve += 200;
+				if (gcs.height_sum > 72 || gcs.height_mxm > 8) {
+					ve -= 500;
 				}
 
 				if (gcs.btb > -1)btbc += 100;
@@ -1447,46 +1498,50 @@ namespace shig {
 			else {
 
 				if (gcs.height_sum > hs || gcs.height_mxm > hm) {
-					ve += 5000;
+					ve += 2000;
 
 					if (cd.pat.id == 6) {
-						ve += 50;
+						ve += 500;
 					}
 					else if (cd.pat.id == 1) {
-						ve += 2000;
+						ve += 1000;
 					}
 
 				}
-				else {
-					ve += -1000;
-
+				else if (gcs.height_sum > 48 || gcs.height_mxm > 6) {
+					ve += -12000;
 					if (cd.pat.id == 6) {
-						ve += -60000;
+						ve += -8000;
 					}
 					else if (cd.pat.id == 1) {
 						ve += -4000;
 					}
+				}
+				else {
+					ve += -5000;
+					if (cd.pat.id == 6) {
+						ve += -5000;
+					}
+					else if (cd.pat.id == 1) {
+						ve += -2000;
+					}
 
 				}
 
-				if (cd.pat.id == 6) {
-					ve += -10000;
-				}
-
-				if (gcs.btb > -1)btbc += -20000;
+				if (gcs.btb > -1)btbc += -200;
 
 			}
 		}
 		else if (L.size() == 3) {
 			if (gcs.TS_kind == 1) {
 				if (gcs.height_sum > hs || gcs.height_mxm > hm) {
-					ve += 300000;
+					ve += 200000;
 				}
 				else {
-					ve += 500000;
+					ve += 700000;
 				}
 
-				if (gcs.btb > -1)btbc += 1000;
+				if (gcs.btb > -1)btbc += 10000;
 
 			}
 			else if (gcs.TS_kind == 2) {
@@ -1498,10 +1553,10 @@ namespace shig {
 			else {
 
 				if (gcs.height_sum > hs || gcs.height_mxm > hm) {
-					ve += 700000;
+					ve += 10000;
 
 					if (cd.pat.id == 1) {
-						ve += 500000;
+						ve += 2000;
 					}
 				}
 				else {
@@ -1516,9 +1571,9 @@ namespace shig {
 			}
 		}
 		else if (L.size() == 4) {
-			ve += 4000000;
+			ve += 40000000;
 			if (gcs.height_sum > hs || gcs.height_mxm > hm) {
-				ve += 2000000;
+				ve += 200000;
 			}
 
 			if (gcs.btb > -1)btbc += 1000;
@@ -1529,14 +1584,15 @@ namespace shig {
 
 		LL ve_rate = 500;
 		if (gcs.height_sum > hs || gcs.height_mxm > hm) {
-			ve_rate *= 100;
+			ve_rate *= 10;
 		}
+
 		ve *= ve_rate;
 		//cd.update(ve);
 		cd.scr.erase = ve;
 
 
-		touch *= 500;
+		touch *= 1500;
 		//cd.update(touch);
 		cd.scr.touch = touch;
 
@@ -1544,7 +1600,7 @@ namespace shig {
 		//cd.update(contact);
 		cd.scr.contact = contact;
 
-		high *= 2800;
+		high *= 3600;
 		//cd.update(high);
 		cd.scr.height = high;
 
@@ -1571,7 +1627,7 @@ namespace shig {
 			}
 		}
 
-		if (gcs.height_sum < 96 || gcs.height_mxm < 12) {
+		if (gcs.height_sum < 80 || gcs.height_mxm < 10) {
 			btbc *= 10;
 		}
 		//cd.update(btbc);
