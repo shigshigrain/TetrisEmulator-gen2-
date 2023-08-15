@@ -946,7 +946,7 @@ namespace shig {
 			isPC = false;
 		}
 
-		if (isPC)cd.scr.sum = shig::secure_add(1145141919810000LL, cd.scr.sum);
+		if (isPC)cd.scr.sum = shig::secure_add(114514191981000LL, cd.scr.sum);
 
 		LL ttrp_rate = 1000000000000000;
 
