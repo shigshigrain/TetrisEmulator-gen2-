@@ -18,8 +18,14 @@ namespace shig {
 	};
 
 	bool BoolSwitch::sw() {
-		if (BoolSwitch::TF)return BoolSwitch::TF = false;
-		else return BoolSwitch::TF = true;
+		if (BoolSwitch::TF) {
+			set(false);
+			return false;
+		}
+		else {
+			set(true);
+			return true;
+		}
 	};
 
 	bool BoolSwitch::set(bool s) {
@@ -47,15 +53,22 @@ namespace shig {
 
 		if (b == 0)return a;
 		else if (b > 0) {
-			if (a < mxm - b)return a + b;
-			else return mxm - 1;
+			if (a < mxm - b) {
+				return (a + b);
+			}
+			else {
+				return (mxm - 1);
+			}
 		}
 		else {
-			if (mum - b < a)return a + b;
-			else return mum + 1;
+			if (mum - b < a) {
+				return (a + b);
+			}
+			else {
+				return (mum + 1);
+			}
 		}
 
-		return long long(0);
 	}
 
 

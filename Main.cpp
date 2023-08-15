@@ -42,7 +42,7 @@ void Main()
 	auto PreSceneRect = Window::GetState().virtualSize;
 	int Resize_counter = -1; // 画面リサイズ処理の遅延用
 	constexpr int Resize_delay = 0;
-	auto DefWindowScale = Window::GetState().scaling;
+	//auto DefWindowScale = Window::GetState().scaling;
 
 	while (System::Update())
 	{

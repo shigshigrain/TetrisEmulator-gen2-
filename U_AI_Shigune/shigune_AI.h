@@ -899,8 +899,8 @@ struct TetriPlate {
 		return true;
 	}
 
-	bool set_list(vector<Tetri>& rd, VI& rs) {
-		list_mino = rd;
+	bool set_list(vector<Tetri>& rnd, VI& rs) {
+		list_mino = rnd;
 		list_mino_s = rs;
 		return true;
 	}

@@ -341,7 +341,7 @@ namespace shig {
 
 		explore_choices(now_gc);
 
-		bool all_TF = next_crr_check();
+		next_crr_check();
 
 
 		Tetri s_pat = s_branch.front().pat;
@@ -390,7 +390,7 @@ namespace shig {
 			mnL[next_AI[i]] = i + 1;
 		}
 
-		bool all_TF = next_crr_check();
+		next_crr_check();
 
 		AiShigune::ttrp_check(s_branch.front(), els, mnL);
 
@@ -488,8 +488,6 @@ namespace shig {
         }
 
         bool all_TF = next_crr_check();
-
-        bool decide = false;
         
         if (all_TF) {
             ttrp_able = true;
@@ -570,7 +568,7 @@ namespace shig {
         VI rsv(0); rsv.reserve(30);
         VVI search_tree(mxm, rsv);
         VI parent_tree(mxm, 0);
-        int to = 0, parent = 0;
+        int to = 0;
         gc.cp.clear(); gc.cv.clear();
 
         shig_rep(i, base_cmd.size()) {
@@ -582,10 +580,7 @@ namespace shig {
         int w = 0;
         Tetri test;
         while (!search_tree[w].empty() && (w < mxm - 1)) {
-            bool can = true;
-            int w_size = (int)search_tree[w].size();
-
-            
+            bool can = true;  
             if (parent_tree[w] == w) {
                 test.set_mino(gc.current_AI);
                 shig_rep(i, search_tree[w].size() - 1) {
@@ -680,7 +675,7 @@ namespace shig {
         VI rsv(0); rsv.reserve(30);
         VVI search_tree(mxm, rsv);
         VI parent_tree(mxm, 0);
-        int to = 0, parent = 0;
+        int to = 0;
         gc.cp.clear(); gc.cv.clear();
 
         shig_rep(i, base_cmd.size()) {
@@ -693,9 +688,6 @@ namespace shig {
         Tetri test;
         while (!search_tree[w].empty() && (w < mxm - 1)) {
             bool can = true;
-            int w_size = (int)search_tree[w].size();
-
-
             if (parent_tree[w] == w) {
                 test.set_mino(gc.current_AI);
                 shig_rep(i, search_tree[w].size() - 1) {
@@ -926,20 +918,17 @@ namespace shig {
 			q_field_AI = VVI(gcs.p_field_AI);
 		}
 
-		LL fusion = 0;
+
 		LL contact = 0;
 		LL touch = 0;
 		LL high = 0;
-		LL cmb = 0;
 		LL btbc = 0;
 
 		int rot = cd.pat.rot;
 		int idnt = cd.pat.id - 1;
-		int size = cd.pat.px_size;
 		int H = (int)cd.pat.mino[rot].size();
 		int W = (int)cd.pat.mino[rot][0].size();
 		int Ls = (int)L.size();
-		const int p_A = 80;
 
 		constexpr int hm = 12;
 		constexpr int hs = hm * 8;
@@ -1744,7 +1733,6 @@ namespace shig {
 
     bool AiShigune::SRS_check(int lr, Tetri& now, GameContainer& ggc) {
         Tetri test = now;
-        int size = test.px_size;
         int to_X = 0, to_Y = 0, rot = test.rot;
         ggc.SRS_kind = -1;
         bool can = true;
@@ -2249,7 +2237,7 @@ namespace shig {
             return 0;
         }
 
-        int ts_cnt = 0, size = ts.px_size, rot = ts.rot;
+        int ts_cnt = 0, rot = ts.rot;
         VI testX = { 0, 0, 2, 2 }, testY = { 0, 2, 0, 2 };
         pairI2 check = { 0, 0 };
 
@@ -2301,7 +2289,7 @@ namespace shig {
         gce.p_field_AI = gce.field_AI;
         AiShigune::apply_mino(gce.p_field_AI, s_now);
         int rot = s_now.rot;
-        int size = s_now.px_size;
+        
         int H = (int)s_now.mino[rot].size();
         int pW = 10;
 
@@ -2334,7 +2322,6 @@ namespace shig {
     }
 
     bool AiShigune::move_mino(Tetri& m_now, int s_action, GameContainer& ggc) {
-        int size = m_now.px_size;
         if (s_action == 1) {
             if (ggc.hold_AI == 0) {
                 m_now.set_mino(ggc.q_next_AI.front());
@@ -2649,7 +2636,7 @@ namespace shig {
 
     GameContainer AiShigune::update_gc(CmdPattern& ct, GameContainer gcp) {
         
-        int rot = ct.pat.rot, size = ct.pat.px_size, H = (int)ct.pat.mino[rot].size(), pW = 10;
+        int rot = ct.pat.rot;
 
         set<int> itr = AiShigune::erase_check_AI(ct.pat, gcp);
         int itr_s = (int)itr.size();
@@ -2731,8 +2718,6 @@ namespace shig {
 
     int AiShigune::ttrp_check_mino(Tetri& fd, GameContainer& gcf) {
 
-        bool chk_f = false;
-
         for (int i = 0; i < gcf.gc_ttrp.mino_num; i++) {
             if (gcf.gc_ttrp.list_mino.at(i) == fd)return i;
         }
@@ -2762,29 +2747,31 @@ namespace shig {
 bool GetTempNameList(VS& name_list) {
     int n = 0;
     FILE* fp = NULL;
-    auto em = fopen_s(&fp, "template\\tetriplate_list.txt", "r");
+    fopen_s(&fp, "template\\tetriplate_list.txt", "r");
     //hndl_tmplist = FileRead_open("template\\tetriplate_list.txt");
     //if (hndl_tmplist == 0)return false;
 
-    auto at = fscanf_s(fp, "%d", &n);
-    if (n < 0)n = 0;
+	if (fp != NULL) {
+		fscanf_s(fp, "%d", &n);
+		if (n < 0)n = 0;
 
-    VS list(n);
-    shig_rep(i, n) {
-        char tmpC[64];
-        if (feof(fp))break;
-        auto ao = fscanf_s(fp, "%s", tmpC, 64);
-        if (tmpC[0] == '\0' || tmpC[0] == '/') {
-            i--;
-            continue;
-        }
-        list[i] = tmpC;
-        list[i] = "template\\data\\" + list[i];
-    }
+		VS list(n);
+		shig_rep(i, n) {
+			char tmpC[64];
+			fscanf_s(fp, "%s", tmpC, 64);
+			if (tmpC[0] == '\0' || tmpC[0] == '/') {
+				i--;
+				continue;
+			}
+			list[i] = tmpC;
+			list[i] = "template\\data\\" + list[i];
+		}
 
-    name_list = list;
+		name_list = list;
 
-   fclose(fp);
+		fclose(fp);
+	}
+
     return true;
 
 }
@@ -2792,70 +2779,65 @@ bool GetTempNameList(VS& name_list) {
 bool ReadTempData(string& name, TetriPlate& ttrp) {
 
     const char* fname = name.c_str();
-    FILE* fp = nullptr;
-    auto em = fopen_s(&fp ,fname, "r");
-    if (feof(fp)) {
-        int z = 0;
-        string zs = "";
-        ttrp.set(z, z, z, z, zs, z);
-        vector<Tetri> zt = { Tetri(0, 0, 0, 0) };
-        VI zts(0,0);
-        ttrp.set_list(zt, zts);
-        VI zv(0, 0);
-        ttrp.set_id_list(zv);
-        vector<pairI2> zp(0, make_pair(0, 0));
-        ttrp.set_terms(zp);
-        return false;
+    FILE* fp = NULL;
+    fopen_s(&fp ,fname, "r");
+	if (fp == NULL) {
+		int z = 0;
+		string zs = "";
+		ttrp.set(z, z, z, z, zs, z);
+		vector<Tetri> zt = { Tetri(0, 0, 0, 0) };
+		VI zts(0, 0);
+		ttrp.set_list(zt, zts);
+		VI zv(0, 0);
+		ttrp.set_id_list(zv);
+		vector<pairI2> zp(0, make_pair(0, 0));
+		ttrp.set_terms(zp);
+		return false;
+	}
+	else{
+		int l, ls, id, tn, bf; //mino num : connect list num : ttrp id
+		char rtdC[64];
+		string rtdS = "";
+		fscanf_s(fp, "%d %d %d %d %d %s ", &l, &ls, &id, &tn, &bf, rtdC, 64);
+		for (int i = 0; i < 64; i++) {
+			if (rtdC[i] == '\0') {
+				rtdS = std::string(rtdC, i);
+				break;
+			}
+		}
+		ttrp.set(l, ls, id, tn, rtdS, bf);
+
+		//
+		vector<Tetri> tpl(l);
+		VI ts(l);
+		shig_rep(i, l) {
+			int r, x, y, d, s;
+			fscanf_s(fp, "%d %d %d %d %d", &r, &x, &y, &d, &s);
+			Tetri tp(r, x, y, d);
+			tpl[i] = tp;
+			ts[i] = s;
+		}
+		ttrp.set_list(tpl, ts);
+
+		//
+		VI vil(ls);
+		shig_rep(i, ls) {
+			int temp = 0;
+			fscanf_s(fp, "%d", &temp);
+			vil[i] = temp;
+		}
+		ttrp.set_id_list(vil);
+
+		//
+		vector<pairI2> vmp(tn);
+		shig_rep(i, tn) {
+			int ll = 0, rr = 0;
+			fscanf_s(fp, "%d %d", &ll, &rr);
+			vmp[i] = make_pair(ll, rr);
+		}
+		ttrp.set_terms(vmp);
+		fclose(fp);
     }
-    
-    int l, ls, id, tn, bf; //mino num : connect list num : ttrp id
-    char c[64];
-    string s = "";
-    auto at = fscanf_s(fp, "%d %d %d %d %d %s ", &l, &ls, &id, &tn, &bf, c, 64);
-    s = c;
-    ttrp.set(l, ls, id, tn, s, bf);
-
-    //
-    vector<Tetri> tpl(l);
-    VI ts(l);
-    shig_rep(i, l) {
-        int r, x, y, d, s;
-        auto ao = fscanf_s(fp, "%d %d %d %d %d", &r, &x, &y, &d, &s);
-        Tetri tp(r, x, y, d);
-        tpl[i] = tp;
-        ts[i] = s;
-    }
-    ttrp.set_list(tpl, ts);
-
-    //
-    VI vil(ls);
-    shig_rep(i, ls) {
-        int temp = 0;
-        if (feof(fp)) {
-            vil[i] = 0;
-        }
-        else {
-            auto lo = fscanf_s(fp, "%d", &temp);
-            vil[i] = temp;
-        }
-    }
-    ttrp.set_id_list(vil);
-
-    //
-    vector<pairI2> vmp(tn);
-    shig_rep(i, tn) {
-        int ll = 0, rr = 0;
-        if (feof(fp)) {
-            vmp[i] = make_pair(0, 0);
-        }
-        else {
-            auto at = fscanf_s(fp, "%d %d", &ll, &rr);
-            vmp[i] = make_pair(ll, rr);
-        }
-    }
-    ttrp.set_terms(vmp);
-
-    fclose(fp);
-
+   
     return true;
 }

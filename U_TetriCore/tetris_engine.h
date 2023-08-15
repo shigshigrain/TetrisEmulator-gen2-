@@ -5,7 +5,7 @@
 #include "KeyConf.h"
 
 const int fh = 45;
-static random_device rd;
+
 
 //struct Tetri {
 //    int rot = 0;

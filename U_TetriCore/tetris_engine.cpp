@@ -1,6 +1,7 @@
 ﻿
 #include "tetris_engine.h"
 
+static random_device rd;
 
 template <typename T>
 int binaryS(const vector<T> &v, const T key) {
@@ -20,12 +21,12 @@ bool vfind_sorted(const vector<int> &v, const int key) {
     else return false;
 }
 
-void TetriEngine::add_next_que(deque<int>&que, VI &sev) {
+void TetriEngine::add_next_que(deque<int>&que, VI &_sev) {
     //VI sev = { 1, 2, 3, 4, 5, 6, 7 };
     //random_device seed_gen;
     mt19937 engine(rd());
-    shuffle(sev.begin(), sev.end(), engine);
-	for (auto i : sev) {
+    shuffle(_sev.begin(), _sev.end(), engine);
+	for (auto i : _sev) {
 		que.push_back(i);
 	}
 	return;
@@ -133,7 +134,6 @@ void TetriEngine::tspin_check(int toX, int toY, Tetri& ts) {
         return;
     }
     int ts_cnt = 0;
-    int size = ts.px_size;
     int rot = ts.rot;
 
     VI testX = { 0, 0, 2, 2 };
@@ -222,7 +222,6 @@ bool TetriEngine::move_check(int toX, int toY, Tetri& check) {
 
 void TetriEngine::SRS_rot(int lr) {//l=-1 r=1
     Tetri test = now_mino;
-    int size = test.px_size;
     int to_X = 0, to_Y = 0, rot = test.rot;
     bool can = true;
     if (test.id == 1) {//I-mino SRS
@@ -742,7 +741,7 @@ void TetriEngine::print_ghost(int p) {
     Tetri ghost_mino = now_mino;
     int sft = -1;
     while (move_check(0, sft, ghost_mino))ghost_mino.addY(sft);
-	int id = ghost_mino.id;
+	int gID = ghost_mino.id;
 	auto [rot, size, H, W] = getTS(ghost_mino);
     shig_rep(i, H) {
         shig_rep(j, W) {
@@ -752,10 +751,10 @@ void TetriEngine::print_ghost(int p) {
                 if (sX < 0 || sX >= 10)continue;
                 if (sY - 1 < 0 || sY - 1 > 45)continue;
                 if (p == 1) {
-                    field[sY - 1LL][sX] = id + 8;
+                    field[sY - 1LL][sX] = gID + 8;
                 }
                 else {
-                    p_field[sY - 1LL][sX] = id + 8;
+                    p_field[sY - 1LL][sX] = gID + 8;
                 }
             }
         }
@@ -766,9 +765,8 @@ set<int> TetriEngine::erase_check() {
     set<int> erase_itr;
     print_mino(2);
     int rot = now_mino.rot;
-    int size = now_mino.px_size;
-    int H = now_mino.mino[rot].size();
-    int pW = field[0].size();
+    int H = (int)now_mino.mino[rot].size();
+    int pW = (int)field[0].size();
 
     shig_rep(i, H) {
         int sY = now_mino.Y - i;
@@ -821,7 +819,7 @@ int TetriEngine::line_erase() {
 
     field = proxy;
 
-    int s = itr.size();
+    int s = (int)itr.size();
 
     if (s > 0 && ts_kind > 0) {
         combo++;
@@ -865,15 +863,15 @@ bool TetriEngine::pc_check() {
     }
 }
 
-void TetriEngine::act_hold(int& hold, int& current, int& m_evn) {
-    if (hold == 0) {
+void TetriEngine::act_hold(int& hld, int& crt, int& evnM) {
+    if (hld == 0) {
         delay_flame = 2 + 5;
-        hold = current;
-        m_evn = -1;
+        hld = crt;
+        evnM = -1;
     }
     else {
-        swap(hold, current);
-        m_evn = -2;
+        swap(hld, crt);
+        evnM = -2;
         delay_flame = 2;
     }
 
