@@ -5,7 +5,7 @@ Solo::Solo(const InitData& init)
 {
 
 	m_soloTE = TetriEngine(1);
-	m_soloAI = shig::AiShigune(m_soloTE);
+	m_soloAI.loadTE(m_soloTE);
 	m_soloAI.load_ttrp();
 	m_soloAI.thinking();
 
@@ -13,7 +13,7 @@ Solo::Solo(const InitData& init)
 
 	m_KeyConfS = KeyConf();
 	
-	m_MinoTex = vector<Texture>(minotex_path_size);
+	m_MinoTex = std::vector<Texture>(minotex_path_size);
 	for (int i = 0; i < minotex_path_size; i++) {
 		m_MinoTex.at(i) = Texture{ minotex_path.at(i) };
 	}

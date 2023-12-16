@@ -5,8 +5,9 @@ Ai::Ai(const InitData& init)
 	: IScene{ init }
 {
 
-	m_soloTE = TetriEngine(1);
-	m_soloAI = shig::AiShigune(m_soloTE);
+	m_soloTE = TetriEngine(2);
+	m_soloAI.loadTE(m_soloTE);
+	m_soloAI.load_ttrp();
 	m_soloAI.thinking();
 
 	m_bg = Texture{ U"tex\\background\\tetris_emulator_background02.bmp" };

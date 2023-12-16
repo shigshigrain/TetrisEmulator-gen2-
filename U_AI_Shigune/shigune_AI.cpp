@@ -3,197 +3,20 @@
 static int i32_zero = 0;
 static int i32_one = 1;
 static int i32_minus_one = -1;
-const int branch_num = 30;//branch_num <= 30
-const vector<int> expl_width = { 30, 25, 25, 20, 20, 15, 15, 15, 10, 10, 10, 10, 10, 10, 10 };
+constexpr size_t branch_num = 40;//branch_num <= 30
+const vector<size_t> expl_width = { 40, 40, 40, 30, 30, 30, 30, 10, 10, 10, 10, 10, 10, 10, 10 };
 //const vector<int> expl_width = { 20, 20, 20, 20, 20, 20, 20, 20, 15, 15, 15, 10, 10, 10, 10 };
-const int cyc_num = 6;//up to 14
+constexpr int cyc_num = 6;//up to 14
 
 //const int fh = 45;
-const int thd_num = 5;
 
-static std::mutex mtx;
+// thread分割数 
+constexpr int thd_num = 5;
 
-static Tetri t(0, 3, 21, 0);
-//TetriPlate now_ttrp;
-static Tetri null_tetri(0, 0, 0, 0);
-static shig::CmdPattern null_cmd(null_tetri, { 3 }, -1);
 
 //using namespace shig;
 
 namespace shig {
-
-    // コマンド入力の内容と情報
-    CmdPattern::CmdPattern() {
-        score = 1000000000;
-        scr = CmdScore();
-        index = -1;
-        srs = 0, kind = 0;
-        ttrp_f = -1;
-        pre_gc = 0;
-        isSFT = false;
-        cmd_list = {};
-        pat = Tetri();
-    }
-
-    CmdPattern::CmdPattern(const Tetri& p, const VI& list, const int& d) : pat(p), cmd_list(list), index(d) {
-        score = 1000000000;
-        scr = CmdScore();
-        srs = 0, kind = 0;
-        ttrp_f = -1;
-        pre_gc = 0;
-        isSFT = false;
-    };
-
-    void CmdPattern::update() {
-        score += scr.get_sum();
-        return;
-    }
-
-    void CmdPattern::update(LL u) {
-        score += u;
-        return;
-    }
-
-    void CmdPattern::set_ttrpF(int& sf) {
-        ttrp_f = sf;
-    }
-
-    void CmdPattern::set_isSFT(const bool& sf) {
-        isSFT = sf;
-    }
-
-    void CmdPattern::set(LL& s, const Tetri& p, VI& list, int& d, int& r, int& k) {
-        score = s;
-        pat = p;
-        cmd_list = list;
-        index = d;
-        srs = r;
-        kind = k;
-        //d_line = l;
-    }
-
-    void CmdPattern::set_ts(int r, int k) {
-        srs = r;
-        kind = k;
-        return;
-    }
-
-    bool operator < (const CmdPattern& a, const CmdPattern& b) {
-        return (a.pat < b.pat);
-    }
-
-    bool operator == (const CmdPattern& a, const CmdPattern& b) {
-        return (a.pat == b.pat);
-    }
-
-
-    GameContainer::GameContainer() {
-
-        slot_id = 0;
-        pre_score = 0;
-        hold_AI = 0;
-        current_AI = 0;
-        next_AI = VI(0);
-        q_next_AI = deque<int>();
-        pc_cnt = 0;
-        SRS_kind = 0;
-        TS_kind = 0;
-        combo = 0;
-        btb = -1;
-        height_sum = 0;
-        height_mxm = 0;
-        ttrp_size = 0;
-        ttrp_ofsY = 0;
-        total_s = 0;
-        ttrp_able = false;
-        field_AI = VVI(45, (VI(10, 0)));
-        p_field_AI = VVI(45, (VI(10, 0)));
-        height = VI(10, 0);
-        strategy_map = VVI(45, (VI(10, 0)));
-        strategy_list = vector<strategy>(0);
-        cv = vector<CmdPattern>(0);
-        cv.reserve(600);
-        ec = vector<CmdPattern>(0);
-        ec.reserve(10);
-        int z = 0;
-        string zs = "nothing";
-        gc_ttrp.set(z, z, z, z, zs, z);
-        VI zv(0, 0);
-        gc_ttrp.set_id_list(zv);
-        vector<pairI2> zp(0, make_pair(0, 0));
-        gc_ttrp.set_terms(zp);
-    }
-
-    bool GameContainer::set_gc_int(const VI& si) {
-        if (si.size() != 12) return false;
-        hold_AI     = si[0];
-        current_AI  = si[1];
-        pc_cnt      = si[2];
-        SRS_kind    = si[3];
-        TS_kind     = si[4];
-        combo       = si[5];
-        btb         = si[6];
-        height_sum  = si[7];
-        height_mxm  = si[8];
-        ttrp_size   = si[9];
-        ttrp_ofsY   = si[10];
-        total_s     = si[11];
-        return true;
-
-    }
-
-    bool GameContainer::set_gc_VI(const vector<VI>& sv) {
-        if (sv.size() != 1) return false;
-        height = sv[0];
-        return true;
-    }
-
-    bool GameContainer::set_gc_bool(const vector<bool>& sb) {
-        if (sb.size() != 1) return false;
-        ttrp_able = sb[0];
-        return true;
-    }
-
-    bool GameContainer::set_gc_next(const VI& nx, const deque<int>& qnx) {
-        next_AI = nx;
-        q_next_AI = qnx;
-        return true;
-    }
-
-    bool GameContainer::set_gc_field(const vector<VVI>& sf) {
-        if (sf.size() != 3) return false;
-        field_AI = sf[0];
-        p_field_AI = sf[1];
-        strategy_map = sf[2];
-        return true;
-    }
-
-    bool GameContainer::set_gc_ttrp(const TetriPlate& st) {
-        gc_ttrp = st;
-        return true;
-    }
-
-    bool GameContainer::add_gc_cmdp(const CmdPattern& cg) {
-
-        ec.push_back(cg);
-
-        return true;
-    }
-
-    CmdPattern GameContainer::get_gc_cmdp(int itr) {
-        if (itr < 0 || itr >= ec.size()) {
-            return CmdPattern();
-        }
-        else {
-            return ec.at(itr);
-        }
-    }
-
-    GameContainer::~GameContainer() {
-
-    }
-
-
 
 	AiShigune::AiShigune() {
 		TE = TetriEngine(-1);
@@ -233,9 +56,6 @@ namespace shig {
 		AiShigune::select_ttrp.set_def();
 		gc_slot = vector<GameContainer>(branch_num);
 		now_gc = GameContainer();
-		null_tetri.set_mino(6);
-		null_cmd.pat.set_mino(6);
-
 		s_branch = vector<CmdPattern>(0);
 
 	}
@@ -278,9 +98,6 @@ namespace shig {
 		AiShigune::select_ttrp.set_def();
         gc_slot = vector<GameContainer>(branch_num);
         now_gc = GameContainer();
-        null_tetri.set_mino(6);
-        null_cmd.pat.set_mino(6);
-
 		s_branch = vector<CmdPattern>(0);
 
 	}
@@ -323,11 +140,48 @@ namespace shig {
 		AiShigune::select_ttrp.set_def();
 		gc_slot = vector<GameContainer>(branch_num);
 		now_gc = GameContainer();
-		null_tetri.set_mino(6);
-		null_cmd.pat.set_mino(6);
-
 		s_branch = vector<CmdPattern>(0);
 
+	}
+
+	AiShigune::AiShigune(const AiShigune& copyAi)
+	{
+		TE = copyAi.TE;
+		identifier = copyAi.identifier;
+		mind = copyAi.mind;
+		hold_AI = copyAi.hold_AI;
+		current_AI = copyAi.current_AI;
+		pc_cnt = copyAi.pc_cnt;
+		SRS_kind = copyAi.SRS_kind;
+		TS_kind = copyAi.TS_kind;
+		combo = copyAi.combo;
+		btb = copyAi.btb;
+		height_sum = copyAi.height_sum;
+		height_mxm = copyAi.height_mxm;
+		ttrp_size = copyAi.ttrp_size;
+		ttrp_ofsY = copyAi.ttrp_ofsY;
+		exp_cyc_lim = copyAi.exp_cyc_lim;
+		ttrp_able = copyAi.ttrp_able;
+		next_AI = copyAi.next_AI;
+		q_next_AI = copyAi.q_next_AI;
+		todo = copyAi.todo;
+		field_AI = copyAi.field_AI;
+		p_field_AI = copyAi.p_field_AI;
+		s_field_AI = copyAi.s_field_AI;
+		H_target = copyAi.H_target;
+		W_target = copyAi.W_target;
+		height = copyAi.height;
+		cmd_list = copyAi.cmd_list;
+		cp = copyAi.cp;
+		cv = copyAi.cv;
+		ttrp_name_list = copyAi.ttrp_name_list;
+		ttrp_id_list = copyAi.ttrp_id_list;
+		ttrp_list = copyAi.ttrp_list;
+		ttrp_bgnF = copyAi.ttrp_bgnF;
+		select_ttrp = copyAi.select_ttrp;
+		gc_slot = copyAi.gc_slot;
+		now_gc = copyAi.now_gc;
+		s_branch = copyAi.s_branch;
 	}
 
 	// let Ai think about the next move(return True or False)
@@ -345,24 +199,16 @@ namespace shig {
 
 
 		Tetri s_pat = s_branch.front().pat;
-		set<int> el = erase_check_AI(s_pat, now_gc);
+		std::set<int> el = erase_check_AI(s_pat, now_gc);
 		int els = (int)el.size();
 
-		VI mnL(8, 8);
-		mnL[current_AI] = 0;
-		mnL[hold_AI] = -1;
-		shig_rep(i, min({ 5, (int)next_AI.size() })) {
-			mnL[next_AI[i]] = i + 1;
-		}
-
+		VI mnL = make_order_list();
+		
 		AiShigune::ttrp_check(s_branch.front(), els, mnL);
 
 
 		return true;
 
-        //CmdPattern select = explore_choices(now_gc);
-
-        
 	}
 
 	// get Ai's suggestion of move cmd (by {int, int, ...})
@@ -445,8 +291,7 @@ namespace shig {
 	}
 
 	void AiShigune::get_state() {
-		t = TE.get_current();
-        current_AI = t.id;
+        current_AI = TE.get_current().id;
 		pair<int, deque<int>> temp = TE.get_mino_state();
 		hold_AI = temp.first;
 		q_next_AI = temp.second;
@@ -460,6 +305,40 @@ namespace shig {
 		combo = temp2.first; btb = temp2.second;
 
 		return;
+	}
+
+	vector<int> AiShigune::make_order_list()
+	{
+		vector<int> mnl(8, 0);
+		for (size_t i = 0; i < mnl.size(); i++)
+		{
+			mnl.at(i) = (int)i + 8;
+		}
+
+		mnl.at(current_AI) = 0;
+		mnl.at(hold_AI) = -1;
+		for (size_t i = 0; i < std::min((size_t)5, next_AI.size()); i++) {
+			mnl.at(next_AI.at(i)) = (int)i + 1;
+		}
+
+		return mnl;
+	}
+
+	vector<int> AiShigune::make_order_list(GameContainer& gc)
+	{
+		vector<int> mnl(8, 0);
+		for (size_t i = 0; i < mnl.size(); i++)
+		{
+			mnl.at(i) = (int)i + 8;
+		}
+
+		mnl.at(gc.current_AI) = 0;
+		mnl.at(gc.hold_AI) = -1;
+		for (size_t i = 0; i < std::min((size_t)5, gc.next_AI.size()); i++) {
+			mnl.at(gc.next_AI.at(i)) = (int)i + 1;
+		}
+
+		return mnl;
 	}
 
 	bool AiShigune::strategy_mark() {
@@ -478,15 +357,8 @@ namespace shig {
 
 	void AiShigune::bgn_strategy() {
 		// I J L O S T Z
-        //bool all_TF = false;
-        VI mnL(8, 8);
 
-        mnL[current_AI] = 0;
-        mnL[hold_AI] = -1;
-        shig_rep(i, min({ 5, (int)next_AI.size() }) ) {
-            mnL[next_AI[i]] = i + 1;
-        }
-
+        VI mnL = make_order_list();
         bool all_TF = next_crr_check();
         
         if (all_TF) {
@@ -539,21 +411,6 @@ namespace shig {
 
         */
         
-        /*
-        if (current_AI == 1 || hold_AI == 1 || next_AI[0] == 1|| next_AI[2] == 1) {
-			if (current_AI == 2 || hold_AI == 2 || next_AI[0] == 2 || next_AI[2] == 2) {
-                shig_rep(i, TSD_J.size()) {
-                    strategy_map[i] = TSD_J[i];
-                }
-			}else if (current_AI == 3 || hold_AI == 3 || next_AI[0] == 3 || next_AI[2] == 3) {
-                shig_rep(i, TSD_L.size()) {
-                    strategy_map[i] = TSD_L[i];
-                }
-			}
-			
-		}
-        */
-		
 		return;
 	}
 
@@ -663,107 +520,228 @@ namespace shig {
 
     void AiShigune::do_sw(vector<CmdPattern> &ctl, GameContainer gc, int loop) {
 
-        //vector<pair<cmd_pattern, int>> pcv(0);
-        //pcv.reserve(100);
-        //pcv.emplace_back(search_way(gc, loop));
-
-        constexpr int mxm = 200;
-        vector<CmdPattern> pcv(0);
+        vector<shig::CmdPattern> pcv(0);
 
         if (gc.current_AI == 0)return;
         gc.p_field_AI = gc.field_AI;
-        VI rsv(0); rsv.reserve(30);
-        VVI search_tree(mxm, rsv);
-        VI parent_tree(mxm, 0);
-        int to = 0;
-        gc.cp.clear(); gc.cv.clear();
+		Tetri test;
+		CmdPattern c;
+		gc.cp.clear(); gc.cv.clear();
 
-        shig_rep(i, base_cmd.size()) {
-            search_tree[i] = base_cmd[i];
-            parent_tree[i] = i;
-            to++;
-        }
+		std::set<Tetri> SearchList;
 
+		std::queue<std::vector<int>> SearchTree;
+		std::vector<int> add_tree;
+		std::vector<int> soft_tree;
+
+        // 通常探索 
         int w = 0;
-        Tetri test;
-        while (!search_tree[w].empty() && (w < mxm - 1)) {
-            bool can = true;
-            if (parent_tree[w] == w) {
-                test.set_mino(gc.current_AI);
-                shig_rep(i, search_tree[w].size() - 1) {
-                    if (!move_mino(test, search_tree[w][i], gc)) {
-                        can = false;
-                        break;
-                    }
-                }
-                if (!can) {
-                    w++;
-                    continue;
-                }
-                int sft = -1, hd_cnt = 0;
-                while (move_check(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
-                move_mino(test, 3, gc);
-                CmdPattern c(test, search_tree[w], parent_tree[w]);
-                decltype(gc.cp)::iterator it = gc.cp.find(c);
-                if (it != gc.cp.end()) {
-                    w++;
-                    continue;
-                }
-                get_score(c, gc, loop);
-                c.pre_gc = gc.slot_id;
-                pcv.push_back(c);
-                gc.cp.insert(c);
-                VI w_sft = search_tree[w];
-                w_sft.pop_back();
-                shig_rep(i, hd_cnt)w_sft.push_back(2);
-                search_tree[to] = w_sft; parent_tree[to] = parent_tree[w]; to++;
-                w++;
-            }
-            else {
-                if (search_tree[w].back() != 3) {
-                    const VI test_case = { 6, 7, 4, 5 };
-                    shig_rep(h, test_case.size()) {
-                        test.set_mino(gc.current_AI);
-                        can = true;
-                        VI add_tree = search_tree[w];
-                        add_tree.push_back(test_case[h]);
-                        shig_rep(i, add_tree.size()) {
-                            if (!move_mino(test, add_tree[i], gc)) {
-                                can = false;
-                                break;
-                            }
-                        }
-                        if (!can) continue;
+		for (auto&& bc : BaseCmdS) {
+			SearchTree.push(bc);
+		}
+		while (!SearchTree.empty()) {
+			bool can = true;
 
-                        int sft = -1; int hd_cnt = 0;
-                        while (move_check(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
-                        move_mino(test, 3, gc);
-                        add_tree.push_back(3);
-                        CmdPattern c(test, add_tree, w); c.set_isSFT(true);
-                        decltype(gc.cp)::iterator it = gc.cp.find(c);
-                        if (it != gc.cp.end()) continue;
-                        get_score(c, gc, loop);
-                        gc.cp.insert(c);
-                        add_tree.pop_back();
-                        c.pre_gc = gc.slot_id;
-                        pcv.push_back(c);
-                        shig_rep(i, hd_cnt)add_tree.push_back(2);
-                        if (to < mxm - 1) {
-                            search_tree[to] = add_tree;
-                            parent_tree[to] = parent_tree[w];
-                            to++;
-                        }
-                    }
-                    w++;
-                }
-                else {
-                    w++;
-                }
-            }
-        }
+			test.set_mino(gc.current_AI);
+			soft_tree = SearchTree.front();
 
+			for (size_t i = 0; i < SearchTree.front().size(); i++) {
+				if (!move_mino(test, SearchTree.front().at(i), gc)) {
+					can = false;
+					break;
+				}
+			}
+			if (!can) {
+				w++;
+				SearchTree.pop();
+				continue;
+			}
 
-        std::lock_guard<std::mutex> lock(mtx);
+			int sft = -1, hd_cnt = 0;
+			while (move_check(0, sft * (hd_cnt + 1), test, gc)) {
+				soft_tree.push_back(2);
+				hd_cnt++;
+			}
+			move_mino(test, 3, gc);
+			//SearchList.insert(test);
+			c = CmdPattern(test, SearchTree.front(), w);
+			c.cmd_list.push_back(3);
+			decltype(gc.cp)::iterator it = gc.cp.find(c);
+			if (it != gc.cp.end()) {
+				w++;
+				SearchTree.pop();
+				continue;
+			}
+			get_score(c, gc, loop);
+			c.pre_gc = gc.slot_id;
+			pcv.push_back(c);
+			gc.cp.insert(c);
+
+			//SearchTree.push(add_tree);
+
+			// ソフドロ回転入力
+			for (auto&& tm_soft : TestMove_soft) {
+				test.set_mino(gc.current_AI);
+				can = true;
+				add_tree = soft_tree;
+				add_tree.push_back(tm_soft);
+				for (size_t i = 0; i < add_tree.size(); i++) {
+					if (!move_mino(test, add_tree.at(i), gc)) {
+						can = false;
+						break;
+					}
+				}
+				if (!can) continue;
+				SearchTree.push(add_tree);
+			}
+
+			w++;
+			SearchTree.pop();
+
+			//if (parent_tree.at(w) == w) {
+			//    test.set_mino(gc.current_AI);
+			//    shig_rep(i, search_tree.at(w).size() - 1) {
+			//        if (!move_mino(test, search_tree.at(w).at(i), gc)) {
+			//            can = false;
+			//            break;
+			//        }
+			//    }
+			//    if (!can) {
+			//        w++;
+			//        continue;
+			//    }
+			//    int sft = -1, hd_cnt = 0;
+			//    while (move_check(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
+			//    move_mino(test, 3, gc);
+			//    CmdPattern c(test, search_tree.at(w), parent_tree.at(w));
+			//    decltype(gc.cp)::iterator it = gc.cp.find(c);
+			//    if (it != gc.cp.end()) {
+			//        w++;
+			//        continue;
+			//    }
+			//    get_score(c, gc, loop);
+			//    c.pre_gc = gc.slot_id;
+			//    pcv.push_back(c);
+			//    gc.cp.insert(c);
+			//    VI w_sft = search_tree.at(w);
+			//    w_sft.pop_back();
+			//    shig_rep(i, hd_cnt)w_sft.push_back(2);
+			//    search_tree[to] = w_sft; parent_tree[to] = parent_tree.at(w); to++;
+			//    w++;
+			//}
+			//else {
+			//    if (search_tree.at(w).back() != 3) {
+			//        const VI test_case = { 6, 7, 4, 5 };
+			//        shig_rep(h, test_case.size()) {
+			//            test.set_mino(gc.current_AI);
+			//            can = true;
+			//            VI add_tree = search_tree.at(w);
+			//            add_tree.push_back(test_case[h]);
+			//            shig_rep(i, add_tree.size()) {
+			//                if (!move_mino(test, add_tree.at(i), gc)) {
+			//                    can = false;
+			//                    break;
+			//                }
+			//            }
+			//            if (!can) continue;
+			//            int sft = -1; int hd_cnt = 0;
+			//            while (move_check(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
+			//            move_mino(test, 3, gc);
+			//            add_tree.push_back(3);
+			//            CmdPattern c(test, add_tree, w); c.set_isSFT(true);
+			//            decltype(gc.cp)::iterator it = gc.cp.find(c);
+			//            if (it != gc.cp.end()) continue;
+			//            get_score(c, gc, loop);
+			//            gc.cp.insert(c);
+			//            add_tree.pop_back();
+			//            c.pre_gc = gc.slot_id;
+			//            pcv.push_back(c);
+			//            shig_rep(i, hd_cnt)add_tree.push_back(2);
+			//            if (to < mxm - 1) {
+			//                search_tree[to] = add_tree;
+			//                parent_tree[to] = parent_tree.at(w);
+			//                to++;
+			//            }
+			//        }
+			//        w++;
+			//    }
+			//    else {
+			//        w++;
+			//    }
+			//}
+
+		}
+
+		// 横入れ探索 
+		w = 0;
+		if (gc.ttrp_able) {
+			for (auto&& bc : BaseCmdS) {
+				SearchTree.push(bc);
+			}
+		}
+		while (!SearchTree.empty()) {
+			bool can = true;
+
+			test.set_mino(gc.current_AI);
+			soft_tree = SearchTree.front();
+
+			for (size_t i = 0; i < SearchTree.front().size(); i++) {
+				if (!move_mino(test, SearchTree.front().at(i), gc)) {
+					can = false;
+					break;
+				}
+			}
+
+			if (!can) {
+				w++;
+				SearchTree.pop();
+				continue;
+			}
+
+			decltype(SearchList)::iterator isl = SearchList.find(test);
+			if (isl != SearchList.end()) {
+				w++;
+				SearchTree.pop();
+				continue;
+			}
+			SearchList.insert(test);
+
+			// 途中横入れ動作
+			for (auto&& tm_side : TestMove_side) {
+				test.set_mino(gc.current_AI);
+				can = true;
+				add_tree = SearchTree.front();
+				add_tree.push_back(tm_side);
+				for (size_t i = 0; i < add_tree.size(); i++) {
+					if (!move_mino(test, add_tree.at(i), gc)) {
+						can = false;
+						break;
+					}
+				}
+				if (!can) continue;
+				SearchTree.push(add_tree);
+			}
+
+			move_mino(test, 3, gc);
+			c = CmdPattern(test, SearchTree.front(), w);
+			c.cmd_list.push_back(3);
+			decltype(gc.cp)::iterator it = gc.cp.find(c);
+			if (it != gc.cp.end()) {
+				w++;
+				SearchTree.pop();
+				continue;
+			}
+			get_score(c, gc, loop);
+			c.pre_gc = gc.slot_id;
+			pcv.push_back(c);
+			gc.cp.insert(c);
+
+			w++;
+			SearchTree.pop();
+
+		}
+
+        std::lock_guard<std::mutex> lock(AiMtx);
         for (CmdPattern p : pcv) {
             ctl.push_back(p);
         }
@@ -776,13 +754,15 @@ namespace shig {
         gc_slot = vector<GameContainer>(branch_num);
         vector<vector<CmdPattern>> branch(branch_num, vector<CmdPattern>(0));
         vector<CmdPattern> catalog(0);
-        constexpr int cls = 100 * branch_num;
+        constexpr size_t cls = 60 * branch_num;
         catalog.reserve(cls);
 
         gc_org.cp.clear(); gc_org.cv.clear();
         //catalog.clear();
-        
-        //catalog.emplace_back(search_way(gc_org, -1));
+
+		// frt = 25 まで善手選択
+		static const size_t frt = 25;
+
         do_sw(ref(catalog), gc_org, -1);
 
         std::sort(catalog.begin(), catalog.end(), [&](const CmdPattern& l, const CmdPattern& r) { return r.scr < l.scr; });
@@ -790,93 +770,98 @@ namespace shig {
         if (catalog.size() == 0) {
             return false;
         }
-        else if ((int)catalog.size() < branch_num && (int)catalog.size() > 0) {
-            for (int i = 0; i < catalog.size(); i++) {
-                //auto [pct, ci] = catalog.at(i);
-
+        else if (catalog.size() < branch_num && catalog.size() > 0) {
+            for (size_t i = 0; i < catalog.size(); i++) {
                 branch.at(i).push_back(catalog.at(i));
                 gc_slot.at(i) = update_gc(catalog.at(i), gc_org);
-                gc_slot.at(i).slot_id = i;
+                gc_slot.at(i).slot_id = (int)i;
             }
-            for (int i = (int)catalog.size(); i < branch_num; i++) {
+            for (size_t i = catalog.size(); i < branch_num; i++) {
                 gc_slot.at(i) = GameContainer();
-                gc_slot.at(i).slot_id = i;
+                gc_slot.at(i).slot_id = (int)i;
             }
         }
         else {
-            static const int frt = 15;
-            shig_rep(i, frt) { // 一時的に具体値指定
-                //auto [pct, ci] = catalog.at(i);
+			for (size_t i = 0; i < frt; i++) { // 一時的に具体値指定
                 branch.at(i).push_back(catalog.at(i));
                 gc_slot.at(i) = update_gc(catalog.at(i), gc_org);
-                gc_slot.at(i).slot_id = i;
+                gc_slot.at(i).slot_id = (int)i;
             }
 
-            int mid = (int)catalog.size() / 2;
+			std::vector<int> RndChoise(catalog.size() - frt, 0);
+			std::iota(RndChoise.begin(), RndChoise.end(), 0);
+			std::shuffle(RndChoise.begin(), RndChoise.end(), Rengine);
+
+			for (size_t i = 0; i < std::min(branch_num - frt, RndChoise.size()); i++) { //
+				branch.at(i + frt).push_back(catalog.at(RndChoise.at(i)));
+				gc_slot.at(i + frt) = update_gc(catalog.at(RndChoise.at(i)), gc_org);
+				gc_slot.at(i + frt).slot_id = (int)(i + frt);
+			}
+
+            /*int mid = (int)catalog.size() / 2;
 
             for (int i = 0; i < branch_num - frt; i++) {
                 branch.at(frt + i).push_back(catalog.at(i + mid));
                 gc_slot.at(frt + i) = update_gc(catalog.at(i + mid), gc_org);
                 gc_slot.at(frt + i).slot_id = frt + i;
-            }
+            }*/
 
 
         }
 
-        shig_rep(n, exp_cyc_lim - 1) {
+		for (size_t n = 0; n < exp_cyc_lim - 1; n++) {
             catalog.clear(); catalog.reserve(cls);
 
-            int loop = n;
-
-            int epwtn = expl_width.at(n);
+            size_t epwtn = expl_width.at(n);
+			if (epwtn < 5)epwtn = 5;
+			while (epwtn % thd_num != 0)epwtn--;
             std::vector<std::thread> threads;
 
-            for (int i = 0; i < epwtn; i++) {
-                GameContainer gc = gc_slot.at(i);
-                threads.emplace_back(std::thread([this, &catalog, gc, loop]() {this->do_sw(ref(catalog), gc, loop); }));
-            }
+			for (size_t i = 0; i < epwtn; i += thd_num) {
+				//GameContainer gc = gc_slot.at(i);
+				threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i), n); }));
+				threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i+1), n); }));
+				threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i+2), n); }));
+				threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i+3), n); }));
+				threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i+4), n); }));
 
-            for (auto& thr : threads) {
-                thr.join();
-            }
+				for (auto& thr : threads) {
+					thr.join();
+				}
+
+				threads.clear();
+
+			}
 
 			std::sort(catalog.begin(), catalog.end(), [&](const CmdPattern &l, const CmdPattern &r) { return r.scr < l.scr; });
             vector<GameContainer> proxy_slot(branch_num);
             vector<vector<CmdPattern>> proxy_branch(branch_num, vector<CmdPattern>(0));
-            shig_rep(i, epwtn) {
+			for (size_t i = 0; i < epwtn; i++) {
                 if (catalog.size() <= i || catalog.size() == 0) {
-                    branch.at(i).push_back(null_cmd);
+                    /*branch.at(i).push_back(null_cmd);
                     proxy_slot.at(i) = update_gc(null_cmd, gc_slot.at(0));
-                    proxy_slot.at(i).slot_id = i;
+                    proxy_slot.at(i).slot_id = i;*/
+					break;
                 }
                 else {
-                    //auto [pct, ci] = catalog.at(i);
                     int ci = catalog.at(i).pre_gc;
                     proxy_branch.at(i) = branch.at(ci);
                     proxy_branch.at(i).push_back(catalog.at(i));
                     proxy_slot.at(i) = update_gc(catalog.at(i), gc_slot.at(ci));
-                    proxy_slot.at(i).slot_id = i;
+                    proxy_slot.at(i).slot_id = (int)i;
                 }
                 
             }
 
-            int mid = (int)catalog.size() / 2;
-            for (int i = 0; i < branch_num - epwtn; i++) {
-                if (catalog.size() <= i + mid || catalog.size() == 0) {
-                    branch.at(epwtn + i).push_back(null_cmd);
-                    proxy_slot.at(epwtn + i) = update_gc(null_cmd, gc_slot.at(0));
-                    proxy_slot.at(epwtn + i).slot_id = epwtn + i;
-                }
-                else {
-                    //auto [pct, ci] = catalog.at(i);
-                    int ci = catalog.at(i + mid).pre_gc;
-                    proxy_branch.at(epwtn + i) = branch.at(ci);
-                    proxy_branch.at(epwtn + i).push_back(catalog.at(i + mid));
-                    proxy_slot.at(epwtn + i) = update_gc(catalog.at(i + mid), gc_slot.at(ci));
-                    proxy_slot.at(epwtn + i).slot_id = epwtn + i;
-                }
-            }
+			std::vector<int> RndChoise(catalog.size() - frt, 0);
+			std::iota(RndChoise.begin(), RndChoise.end(), 0);
+			std::shuffle(RndChoise.begin(), RndChoise.end(), Rengine);
 
+			for (size_t i = 0; i < std::min(branch_num - frt, RndChoise.size()); i++) { //
+				branch.at(i + frt).push_back(catalog.at(RndChoise.at(i)));
+				gc_slot.at(i + frt) = update_gc(catalog.at(RndChoise.at(i)), gc_org);
+				gc_slot.at(i + frt).slot_id = (int)i + frt;
+			}
 
             gc_slot = proxy_slot;
             branch = proxy_branch;
@@ -890,23 +875,22 @@ namespace shig {
 		//s_branch = branch.at(0);
         return true;
 
-
     }
     
     // 評価値を求める
     void AiShigune::get_score(CmdPattern& cd, GameContainer& gcs, int loopc) {
 
-		cd.scr.init_s();//without sum
+		cd.scr.init_s();
 
 		//gcs.p_field_AI = gcs.field_AI;
 		//shigune_AI::apply_mino(gcs.p_field_AI, cd.pat); ↓やってくれていた
-		set<int> L = erase_check_AI(cd.pat, gcs);
+		std::set<int> L = erase_check_AI(cd.pat, gcs);
 
 		//shigune_AI::height_calc(gcs);
 
 		cd.set_ts(gcs.SRS_kind, gcs.TS_kind);
 
-		VVI q_field_AI(0); q_field_AI.reserve(45);
+		VVI q_field_AI(0); q_field_AI.reserve(fh);
 		if (L.size() > 0) {
 			shig_rep(i, fh) {
 				decltype(L)::iterator it = L.find(i);
@@ -935,7 +919,7 @@ namespace shig {
 
 		bool isPC = true;
 		if (Ls > 0) {
-			for (int i = 0; i < 10; i++) {
+			for (size_t i = 0; i < 10; i++) {
 				if (q_field_AI.at(0).at(i) != 0) {
 					isPC = false;
 					break;
@@ -946,15 +930,15 @@ namespace shig {
 			isPC = false;
 		}
 
-		if (isPC)cd.scr.sum = shig::secure_add(114514191981000LL, cd.scr.sum);
+		if (isPC)cd.scr.sum = shig::secure_add(11451419198100LL, cd.scr.sum);
 
-		LL ttrp_rate = 1000000000000000;
+		LL ttrp_rate = 100000000000000LL;
 
 		bool chk_f = false;
 		Tetri ofs_cdp = cd.pat;
 		ofs_cdp.addY(gcs.ttrp_ofsY);
 
-		if (gcs.ttrp_able) {
+		if (gcs.ttrp_able == true) {
 			for (int i = 0; i < (int)gcs.gc_ttrp.list_mino.size(); i++) {
 				if (gcs.gc_ttrp.list_mino.at(i) == ofs_cdp) {
 					if (cd.pat.id == 6) {
@@ -968,7 +952,7 @@ namespace shig {
 						}
 						else {
 							chk_f = false;
-							cd.set_ttrpF(i32_minus_one);
+							cd.set_ttrpF(-1);
 							//cd.update(ttrp_rate * -1LL);
 						}
 					}
@@ -982,7 +966,7 @@ namespace shig {
 				}
 				else {
 					chk_f = false;
-					cd.set_ttrpF(i32_minus_one);
+					cd.set_ttrpF(-1);
 				}
 			}
 
@@ -997,8 +981,7 @@ namespace shig {
 			return;
 		}
 		else {
-			LL pnl = -100000000;
-			cd.scr.sum = shig::secure_add(cd.scr.sum, pnl);
+			cd.scr.sum = shig::secure_add(cd.scr.sum, -100000000LL);
 		}
 
 		//fusion score
@@ -1029,11 +1012,10 @@ namespace shig {
 		*/
 
 
-
 		//contact.V1
 		int cnt_m = 0, cnt_n = 0;
 		vector<bool> chk_con(W, false);
-		shig_rep(j, W) {
+		for (size_t j = 0; j < W; j++) {
 			if (ch.at(idnt).at(rot).at(j) == 1) {
 				cnt_m++;
 				int xp = cd.pat.X + j;
@@ -1044,7 +1026,7 @@ namespace shig {
 					}
 					else {
 						if (h >= 1) {
-							if (cd.pat.mino.at(rot).at(h - 1).at(j) != 0) {
+							if (cd.pat.mino.at(rot).at((size_t)h - 1).at(j) != 0) {
 								chk_con.at(j) = true;
 								contact -= 200;
 							}
@@ -1219,8 +1201,8 @@ namespace shig {
 		for (int i = 0; i < tls; i++) {
 
 			int ty = 0, tx = 0;
-			pairI2 tt = touch_list.at(idnt).at(rot).at(i);
-			ty = tt.first; tx = tt.second;
+			ty = touch_list.at(idnt).at(rot).at(i).first;
+			tx = touch_list.at(idnt).at(rot).at(i).second;
 
 			tx = cd.pat.X + tx;
 			if (tx < 0 || tx >= 10) {
@@ -1276,11 +1258,11 @@ namespace shig {
 			}
 
 			if (closure >= 4) {
-				touch = shig::secure_add(touch, -8000);
+				touch = shig::secure_add(touch, -8000LL);
 				thcls++;
 			}
 			else {
-				touch = shig::secure_add(touch, -1000 * closure);
+				touch = shig::secure_add(touch, -1000LL * closure);
 			}
 
 		}
@@ -1288,7 +1270,7 @@ namespace shig {
 		touch = shig::secure_add(touch, thc * 1000);
 
 		if (thcls == 0) {
-			touch = shig::secure_add(touch, 10000);
+			touch = shig::secure_add(touch, 10000LL);
 		}
 
 		/*
@@ -1358,14 +1340,13 @@ namespace shig {
 
 
 		//cmb
-		LL cmb_rate = 100;
+		LL cmb_rate = 1000000;
 		if (gcs.combo * L.size() > 0) {
-			LL c = (cmb_rate * 10LL * (gcs.combo + 1));
+			LL c = (cmb_rate * 10LL * (gcs.combo + 1LL));
 			cd.scr.cmb = shig::secure_add(cd.scr.cmb, c);
-
 		}
 		else if (gcs.combo > 0 && L.size() == 0) {
-			LL c = (cmb_rate * -10LL * (gcs.combo + 1));
+			LL c = (cmb_rate * -20LL * (gcs.combo + 1LL));
 			cd.scr.cmb = shig::secure_add(cd.scr.cmb, c);
 		}
 		else if (gcs.combo == 0 && L.size() == 0) {
@@ -1377,15 +1358,14 @@ namespace shig {
 		}
 
 
-
 		LL ve = 0;
 		if (L.size() == 0) {
 
-			if (gcs.height_sum > 120 || gcs.height_mxm > 15) {
+			if (gcs.height_sum > 144 || gcs.height_mxm > 16) {
 				ve += 50;
 
 			}
-			else if (gcs.height_sum > 80 || gcs.height_mxm > 10) {
+			else if (gcs.height_sum >= 96 && gcs.height_mxm >= 12) {
 				ve += 500;
 				/*
 				if (cd.pat.id == 6)ve += 200;
@@ -1393,7 +1373,7 @@ namespace shig {
 				*/
 
 			}
-			else if (gcs.height_sum > 40 || gcs.height_mxm > 5) {
+			else if (gcs.height_sum >= 64 && gcs.height_mxm >= 8) {
 				ve += 2000;
 				if (cd.pat.id == 6)ve += -800;
 				else if (cd.pat.id == 1)ve += -400;
@@ -1410,19 +1390,22 @@ namespace shig {
 		else if (L.size() == 1) {
 			if (gcs.TS_kind == 1) {
 
-				if (gcs.height_sum > hs && gcs.height_mxm > hm) {
-					ve += 10000;
+				if (gcs.height_sum >= 96 && gcs.height_mxm >= 12) {
+					ve += 20000;
+				}
+				else if (gcs.height_sum >= 64 && gcs.height_mxm >= 8) {
+					ve += 100000;
 				}
 				else {
-					ve += 200000;
+					ve += 50000;
 				}
 
-				if (gcs.btb > -1)btbc += 10000;
+				if (gcs.btb > -1)btbc += 1000;
 
 			}
 			else if (gcs.TS_kind == 2) {
 
-				if (gcs.height_sum > hs && gcs.height_mxm > hm) {
+				if (gcs.height_sum >= 96 && gcs.height_mxm >= 12) {
 					ve += 500;
 				}
 				else {
@@ -1433,13 +1416,13 @@ namespace shig {
 			}
 			else {
 
-				if (gcs.height_sum > hs && gcs.height_mxm > hm) {
-					ve += 500;
+				if (gcs.height_sum >= 96 && gcs.height_mxm >= 12) {
+					ve += 1000;
 					if (cd.pat.id == 1) {
-						ve += 500;
+						ve += 1000;
 					}
 				}
-				else if (gcs.height_sum < 48 || gcs.height_mxm < 6) {
+				else if (gcs.height_sum >= 64 && gcs.height_mxm >= 8) {
 					ve += -10000;
 					if (cd.pat.id == 6) {
 						ve += -1000;
@@ -1449,35 +1432,38 @@ namespace shig {
 					}
 				}
 				else {
-					ve += -40000;
+					ve += -500000;
 					if (cd.pat.id == 6) {
-						ve += -1000;
+						ve += -200000;
 					}
 					else if (cd.pat.id == 1) {
-						ve += -2000;
+						ve += -100000;
 					}
 				}
 
-				if (gcs.btb > -1)btbc += -1000;
+				if (gcs.btb > -1)btbc += -3000;
 
 			}
 		}
 		else if (L.size() == 2) {
 			if (gcs.TS_kind == 1) {
 
-				if (gcs.height_sum > hs || gcs.height_mxm > hm) {
+				if (gcs.height_sum >= 96 && gcs.height_mxm >= 12) {
 					ve += 300000;
 				}
+				else if (gcs.height_sum >= 64 && gcs.height_mxm >= 8) {
+					ve += 400000000;
+				}
 				else {
-					ve += 1000000000;
+					ve += 2000000000;
 				}
 
-				if (gcs.btb > -1)btbc += 1000000;
+				if (gcs.btb > -1)btbc += 10000000;
 
 			}
 			else if (gcs.TS_kind == 2) {
 				ve += 200;
-				if (gcs.height_sum > 72 || gcs.height_mxm > 8) {
+				if (gcs.height_sum >= 64 && gcs.height_mxm >= 8) {
 					ve -= 500;
 				}
 
@@ -1486,7 +1472,7 @@ namespace shig {
 			}
 			else {
 
-				if (gcs.height_sum > hs || gcs.height_mxm > hm) {
+				if (gcs.height_sum >= 96 && gcs.height_mxm >= 12) {
 					ve += 2000;
 
 					if (cd.pat.id == 6) {
@@ -1497,7 +1483,7 @@ namespace shig {
 					}
 
 				}
-				else if (gcs.height_sum > 48 || gcs.height_mxm > 6) {
+				else if (gcs.height_sum >= 64 && gcs.height_mxm >= 8) {
 					ve += -12000;
 					if (cd.pat.id == 6) {
 						ve += -8000;
@@ -1507,74 +1493,89 @@ namespace shig {
 					}
 				}
 				else {
-					ve += -5000;
+					ve += -60000;
 					if (cd.pat.id == 6) {
-						ve += -5000;
+						ve += -30000;
 					}
 					else if (cd.pat.id == 1) {
-						ve += -2000;
+						ve += -10000;
 					}
 
 				}
 
-				if (gcs.btb > -1)btbc += -200;
+				if (gcs.btb > -1)btbc += -20000;
 
 			}
 		}
 		else if (L.size() == 3) {
 			if (gcs.TS_kind == 1) {
-				if (gcs.height_sum > hs || gcs.height_mxm > hm) {
+				if (gcs.height_sum >= 96 && gcs.height_mxm >= 12) {
 					ve += 200000;
 				}
 				else {
 					ve += 700000;
 				}
 
-				if (gcs.btb > -1)btbc += 10000;
+				if (gcs.btb > -1)btbc += 100000;
 
 			}
 			else if (gcs.TS_kind == 2) {
 				ve += 0;
-				if (gcs.height_sum > hs || gcs.height_mxm > hm) {
+				if (gcs.height_sum >= 96 && gcs.height_mxm >= 12) {
 					ve -= 0;
 				}
 			}
 			else {
 
-				if (gcs.height_sum > hs || gcs.height_mxm > hm) {
+				if (gcs.height_sum >= 96 && gcs.height_mxm >= 12) {
 					ve += 10000;
-
 					if (cd.pat.id == 1) {
-						ve += 2000;
+						ve += 4000;
 					}
+				}
+				else if (gcs.height_sum >= 64 && gcs.height_mxm >= 8) {
+					ve += -10000;
+					/*if (cd.pat.id == 6) {
+						ve += -1000;
+					}
+					else if (cd.pat.id == 1) {
+						ve += -1000;
+					}*/
 				}
 				else {
-					ve += -200;
+					ve += -20000;
 					if (cd.pat.id == 1) {
-						ve += -500;
+						ve += -5000;
 					}
 				}
 
-				if (gcs.btb > -1)btbc += -1000;
+				if (gcs.btb > -1)btbc += -10000;
 
 			}
 		}
 		else if (L.size() == 4) {
-			ve += 40000000;
-			if (gcs.height_sum > hs || gcs.height_mxm > hm) {
+			if (gcs.height_sum >= 96 && gcs.height_mxm >= 12) {
 				ve += 200000;
 			}
+			else if (gcs.height_sum >= 64 && gcs.height_mxm >= 8) {
+				ve += 400000;
+			}
+			else {
+				ve += 700000;
+			}
 
-			if (gcs.btb > -1)btbc += 1000;
+			if (gcs.btb > -1)btbc += 80000;
 
 		}
+
+
 
 		//fusion *= 100; cd.update(fusion);
 
 		LL ve_rate = 500;
-		if (gcs.height_sum > hs || gcs.height_mxm > hm) {
+		/*if (gcs.height_sum > hs || gcs.height_mxm > hm) {
 			ve_rate *= 10;
-		}
+		}*/
 
 		ve *= ve_rate;
 		//cd.update(ve);
@@ -1589,34 +1590,34 @@ namespace shig {
 		//cd.update(contact);
 		cd.scr.contact = contact;
 
-		high *= 3600;
+		high *= 5400;
 		//cd.update(high);
 		cd.scr.height = high;
 
 		//cd.update(shigune_AI::gs_BFS(cd, gcs));
 		//cd.scr.closed = shigune_AI::gs_BFS(cd, q_field_AI);
-		if (gcs.height_sum < hs || gcs.height_mxm < hm) {
-			cd.scr.closed = AiShigune::gs_BFS(cd, q_field_AI) * 1500;
+		if (gcs.height_sum <= 72 || gcs.height_mxm <= 8) {
+			cd.scr.closed = gs_BFS(cd, q_field_AI) * 1500;
 		}
 		else {
-			cd.scr.closed = AiShigune::gs_BFS(cd, q_field_AI) * 1000;
+			cd.scr.closed = gs_BFS(cd, q_field_AI) * 1000;
 		}
 
-		if (gcs.height_sum < hs && gcs.height_mxm < hm) {
+		if (gcs.height_sum < 90 && gcs.height_mxm < 10) {
 			if (cd.isSFT) {
 				//cd.update(-20);
-				cd.scr.sum += 0;
+				cd.scr.sum += -20;
 			}
 		}
 		else
 		{
 			if (cd.isSFT) {
 				//cd.update(0);
-				cd.scr.sum += -100;
+				cd.scr.sum += 0;
 			}
 		}
 
-		if (gcs.height_sum < 80 || gcs.height_mxm < 10) {
+		if (gcs.height_sum < 90 || gcs.height_mxm < 10) {
 			btbc *= 10;
 		}
 		//cd.update(btbc);
@@ -2636,8 +2637,6 @@ namespace shig {
 
     GameContainer AiShigune::update_gc(CmdPattern& ct, GameContainer gcp) {
         
-        int rot = ct.pat.rot;
-
         set<int> itr = AiShigune::erase_check_AI(ct.pat, gcp);
         int itr_s = (int)itr.size();
 
@@ -2743,101 +2742,104 @@ namespace shig {
 
 }
 
+namespace shig {
 
-bool GetTempNameList(VS& name_list) {
-    int n = 0;
-    FILE* fp = NULL;
-    fopen_s(&fp, "template\\tetriplate_list.txt", "r");
-    //hndl_tmplist = FileRead_open("template\\tetriplate_list.txt");
-    //if (hndl_tmplist == 0)return false;
+	bool GetTempNameList(std::vector<std::string>& name_list) {
+		int n = 0;
+		FILE* fp = NULL;
+		fopen_s(&fp, "template\\tetriplate_list.txt", "r");
+		//hndl_tmplist = FileRead_open("template\\tetriplate_list.txt");
+		//if (hndl_tmplist == 0)return false;
 
-	if (fp != NULL) {
-		fscanf_s(fp, "%d", &n);
-		if (n < 0)n = 0;
+		if (fp != NULL) {
+			fscanf_s(fp, "%d", &n);
+			if (n < 0)n = 0;
 
-		VS list(n);
-		shig_rep(i, n) {
-			char tmpC[64];
-			fscanf_s(fp, "%s", tmpC, 64);
-			if (tmpC[0] == '\0' || tmpC[0] == '/') {
-				i--;
-				continue;
+			VS list(n);
+			shig_rep(i, n) {
+				char tmpC[64];
+				fscanf_s(fp, "%s", tmpC, 128);
+				if (tmpC[0] == '\0' || tmpC[0] == '/') {
+					i--;
+					continue;
+				}
+				list[i] = tmpC;
+				list[i] = "template\\data\\" + list[i];
 			}
-			list[i] = tmpC;
-			list[i] = "template\\data\\" + list[i];
+
+			name_list = list;
+
+			fclose(fp);
 		}
 
-		name_list = list;
+		return true;
 
-		fclose(fp);
 	}
 
-    return true;
+	bool ReadTempData(std::string& name, shig::TetriPlate& ttrp) {
 
-}
-
-bool ReadTempData(string& name, TetriPlate& ttrp) {
-
-    const char* fname = name.c_str();
-    FILE* fp = NULL;
-    fopen_s(&fp ,fname, "r");
-	if (fp == NULL) {
-		int z = 0;
-		string zs = "";
-		ttrp.set(z, z, z, z, zs, z);
-		vector<Tetri> zt = { Tetri(0, 0, 0, 0) };
-		VI zts(0, 0);
-		ttrp.set_list(zt, zts);
-		VI zv(0, 0);
-		ttrp.set_id_list(zv);
-		vector<pairI2> zp(0, make_pair(0, 0));
-		ttrp.set_terms(zp);
-		return false;
-	}
-	else{
-		int l, ls, id, tn, bf; //mino num : connect list num : ttrp id
-		char rtdC[64];
-		string rtdS = "";
-		fscanf_s(fp, "%d %d %d %d %d %s ", &l, &ls, &id, &tn, &bf, rtdC, 64);
-		for (int i = 0; i < 64; i++) {
-			if (rtdC[i] == '\0') {
-				rtdS = std::string(rtdC, i);
-				break;
+		const char* fname = name.c_str();
+		FILE* fp = NULL;
+		fopen_s(&fp, fname, "r");
+		if (fp == NULL) {
+			int z = 0;
+			string zs = "";
+			ttrp.set(z, z, z, z, zs, z);
+			vector<Tetri> zt = { Tetri(0, 0, 0, 0) };
+			VI zts(0, 0);
+			ttrp.set_list(zt, zts);
+			VI zv(0, 0);
+			ttrp.set_id_list(zv);
+			vector<pairI2> zp(0, make_pair(0, 0));
+			ttrp.set_terms(zp);
+			return false;
+		}
+		else {
+			int l, ls, id, tn, bf; //mino num : connect list num : ttrp id
+			char rtdC[128];
+			string rtdS = "";
+			fscanf_s(fp, "%d %d %d %d %d %s ", &l, &ls, &id, &tn, &bf, rtdC, 64);
+			for (int i = 0; i < 128; i++) {
+				if (rtdC[i] == '\0') {
+					rtdS = std::string(rtdC, i);
+					break;
+				}
 			}
-		}
-		ttrp.set(l, ls, id, tn, rtdS, bf);
+			ttrp.set(l, ls, id, tn, rtdS, bf);
 
-		//
-		vector<Tetri> tpl(l);
-		VI ts(l);
-		shig_rep(i, l) {
-			int r, x, y, d, s;
-			fscanf_s(fp, "%d %d %d %d %d", &r, &x, &y, &d, &s);
-			Tetri tp(r, x, y, d);
-			tpl[i] = tp;
-			ts[i] = s;
-		}
-		ttrp.set_list(tpl, ts);
+			//
+			vector<Tetri> tpl(l);
+			VI ts(l);
+			shig_rep(i, l) {
+				int r, x, y, d, s;
+				fscanf_s(fp, "%d %d %d %d %d", &r, &x, &y, &d, &s);
+				Tetri tp(r, x, y, d);
+				tpl[i] = tp;
+				ts[i] = s;
+			}
+			ttrp.set_list(tpl, ts);
 
-		//
-		VI vil(ls);
-		shig_rep(i, ls) {
-			int temp = 0;
-			fscanf_s(fp, "%d", &temp);
-			vil[i] = temp;
-		}
-		ttrp.set_id_list(vil);
+			//
+			VI vil(ls);
+			shig_rep(i, ls) {
+				int temp = 0;
+				fscanf_s(fp, "%d", &temp);
+				vil[i] = temp;
+			}
+			ttrp.set_id_list(vil);
 
-		//
-		vector<pairI2> vmp(tn);
-		shig_rep(i, tn) {
-			int ll = 0, rr = 0;
-			fscanf_s(fp, "%d %d", &ll, &rr);
-			vmp[i] = make_pair(ll, rr);
+			//
+			vector<pairI2> vmp(tn);
+			shig_rep(i, tn) {
+				int ll = 0, rr = 0;
+				fscanf_s(fp, "%d %d", &ll, &rr);
+				vmp[i] = make_pair(ll, rr);
+			}
+			ttrp.set_terms(vmp);
+			fclose(fp);
 		}
-		ttrp.set_terms(vmp);
-		fclose(fp);
-    }
-   
-    return true;
+
+		return true;
+	}
 }
+

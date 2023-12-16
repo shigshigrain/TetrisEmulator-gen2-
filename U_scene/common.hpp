@@ -2,6 +2,7 @@
 # include <Siv3D.hpp>
 # include "shigune_AI.h"
 
+using namespace shig;
 
 // シーンの名前
 enum class State
