@@ -883,13 +883,16 @@ namespace shig {
 		bool pc_check();
 		void bgn_strategy();
 		vector<CmdPattern> search_way(GameContainer gc, int loop);
-		void do_sw(vector<CmdPattern> &ctl, GameContainer gc, int loop);
+		void do_sw(vector<CmdPattern> &ctl, GameContainer gc, size_t loop);
 		bool explore_choices(GameContainer gc_org);
-		void get_score(CmdPattern& cd, GameContainer& gcs, int loopc);
+		void CalcScore(CmdPattern& cd, GameContainer& gcs, size_t loopc);
 		LL gs_BFS(CmdPattern& cb, VVI& qf);
 		bool height_calc(GameContainer& gch);
 		bool move_check(int to_x, int to_y, Tetri& s_check, GameContainer& ggc);
+		int  NextRotate(int n_rot, Rotate rt);
 		bool SRS_check(int lr, Tetri& s_now, GameContainer& ggc);
+		bool CheckSRS_Clockwise(Tetri& s_now, GameContainer& ggc);
+		bool CheckSRS_CounterClock(Tetri& s_now, GameContainer& ggc);
 		int TS_check(int toX, int toY, Tetri& ts, GameContainer& ggc);
 		set<int> erase_check_AI(Tetri& s_now, GameContainer &gce);
 		void apply_mino(VVI& c_field, Tetri& s_now);
@@ -902,7 +905,7 @@ namespace shig {
 		bool load_ttrp();
 		bool ttrp_crr(Tetri& now_p, int& size_l);
 		bool ttrp_check(CmdPattern& slc, int& sle, VI& mnL);
-		bool ttrp_check(CmdPattern& slc, int& sle, VI& mnL, GameContainer& gct);
+		bool ttrp_check(CmdPattern& slc, int& sle, GameContainer& gct);
 		bool next_crr_check();
 		bool set_gc(GameContainer &gc);
 		GameContainer update_gc(CmdPattern& ct, GameContainer gcp);

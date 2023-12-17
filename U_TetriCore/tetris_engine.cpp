@@ -1,8 +1,6 @@
 ﻿
 #include "tetris_engine.h"
 
-
-
 // 
 template <typename T>
 int binaryS(const vector<T> &v, const T key) {
@@ -21,6 +19,7 @@ bool vfind_sorted(const vector<int> &v, const int key) {
     if (v.at(itr) == key)return true;
     else return false;
 }
+
 namespace shig {
 
 
@@ -96,7 +95,7 @@ namespace shig {
 		}
 		shig_rep(i, fh - line) {
 			if (i >= field.size())return false;
-			pre_field[i + line] = field[i];
+			pre_field[(size_t)i + line] = field[i];
 		}
 
 		field = pre_field;
@@ -112,7 +111,7 @@ namespace shig {
 				pre_field[i] = field[i];
 			}
 			shig_rep(i, field.size() - Y - 1) {
-				pre_field[i + Y + 1] = field[i + Y];
+				pre_field[(size_t)i + Y + 1] = field[(size_t)i + Y];
 			}
 		}
 		field[Y] = garbage;
@@ -211,6 +210,22 @@ namespace shig {
 		}
 		if (cnt == cntt) return true;
 		else return false;
+	}
+
+	int TetriEngine::NextRotate(int n_rot, Rotate rt)
+	{
+		switch (rt)
+		{
+		case shig::Clockwise:
+			return next_rotateClock.at(n_rot);
+			break;
+		case shig::CounterClockwise:
+			return next_rotateCounter.at(n_rot);
+			break;
+		default:
+			return 0;
+			break;
+		}
 	}
 
 	void TetriEngine::SRS_rot(int lr) {//l=-1 r=1
@@ -710,6 +725,101 @@ namespace shig {
 		return;
 	}
 
+	void TetriEngine::SRS_Clockwise()
+	{
+		Tetri test = now_mino;
+		int to_X = 0, to_Y = 0, rot = test.rot;
+		bool can = false;
+		test.set_rot(NextRotate(rot, Rotate::Clockwise));
+		if (test.id == 1) {
+			int cnt = 0;
+			for (auto&& tester : WallKick_clockI.at(rot)) {
+				if (move_check(tester.first, tester.second, test)) {
+					p_srs = cnt;
+					to_X = tester.first;
+					to_Y = tester.second;
+					can = true;
+					break;
+				}
+				else {
+					cnt++;
+				}
+			}
+		}
+		else {
+			int cnt = 0;
+			for (auto&& tester : WallKick_clockW.at(rot)) {
+				if (move_check(tester.first, tester.second, test)) {
+					p_srs = cnt;
+					to_X = tester.first;
+					to_Y = tester.second;
+					can = true;
+					break;
+				}
+				else {
+					cnt++;
+				}
+			}
+		}
+
+		if (can) {
+			tspin_check(to_X, to_Y, test);
+			now_mino.set_rot(test.rot);
+			now_mino.addX(to_X);
+			now_mino.addY(to_Y);
+		}
+
+		return;
+
+	}
+
+	void TetriEngine::SRS_CounterClockwise()
+	{
+		Tetri test = now_mino;
+		int to_X = 0, to_Y = 0, rot = test.rot;
+		bool can = false;
+		test.set_rot(NextRotate(rot, Rotate::CounterClockwise));
+		if (test.id == 1) {
+			int cnt = 0;
+			for (auto&& tester : WallKick_counterI.at(rot)) {
+				if (move_check(tester.first, tester.second, test)) {
+					p_srs = cnt;
+					to_X = tester.first;
+					to_Y = tester.second;
+					can = true;
+					break;
+				}
+				else {
+					cnt++;
+				}
+			}
+		}
+		else {
+			int cnt = 0;
+			for (auto&& tester : WallKick_counterW.at(rot)) {
+				if (move_check(tester.first, tester.second, test)) {
+					p_srs = cnt;
+					to_X = tester.first;
+					to_Y = tester.second;
+					can = true;
+					break;
+				}
+				else {
+					cnt++;
+				}
+			}
+		}
+
+		if (can) {
+			tspin_check(to_X, to_Y, test);
+			now_mino.set_rot(test.rot);
+			now_mino.addX(to_X);
+			now_mino.addY(to_Y);
+		}
+
+		return;
+	}
+
 	void TetriEngine::print_mino(int p) {
 		auto [rot, size, H, W] = getTS(now_mino);
 		shig_rep(i, H) {
@@ -930,13 +1040,13 @@ namespace shig {
 	}
 
 	void TetriEngine::act_rotL() {
-		SRS_rot(-1);
+		SRS_CounterClockwise();
 		delay_flame = 2;
 		return;
 	}
 
 	void TetriEngine::act_rotR() {
-		SRS_rot(1);
+		SRS_Clockwise();
 		delay_flame = 2;
 		return;
 	}

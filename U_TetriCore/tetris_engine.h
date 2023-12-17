@@ -10,6 +10,51 @@ const int fh = 45;
 static std::random_device rd;
 static std::mt19937 Rengine(rd());
 
+
+namespace shig {
+	enum Rotate {
+		Clockwise,
+		CounterClockwise,
+	};
+
+	const std::vector<int> next_rotateClock = {1, 2, 3, 0};
+	const std::vector<int> next_rotateCounter = {3, 0, 1, 2};
+
+	//SRS 時計回り 
+	const std::vector<std::vector<std::pair<int, int>>> WallKick_clockW = {
+		{ { 0, 0}, {-1, 0}, {-1,  1}, {0, -2}, {-1, -2} }, // 0>>1 
+		{ { 0, 0}, { 1, 0}, { 1, -1}, {0,  2}, { 1,  2} }, // 1>>2 
+		{ { 0, 0}, { 1, 0}, { 1,  1}, {0, -2}, { 1, -2} }, // 2>>3 
+		{ { 0, 0}, {-1, 0}, {-1, -1}, {0,  2}, {-1,  2} }, // 3>>0 
+	};
+
+	//SRS 反時計回り 
+	const std::vector<std::vector<std::pair<int, int>>> WallKick_counterW = {
+		{ { 0, 0}, { 1, 0}, { 1,  1}, {0, -2}, { 1, -2} }, // 0>>3 
+		{ { 0, 0}, { 1, 0}, { 1, -1}, {0,  2}, { 1,  2} }, // 1>>0 
+		{ { 0, 0}, {-1, 0}, {-1,  1}, {0, -2}, {-1, -2} }, // 2>>1 
+		{ { 0, 0}, {-1, 0}, {-1, -1}, {0,  2}, {-1,  2} }, // 3>>2 
+	};
+
+	//SRS 時計回りI  
+	const std::vector<std::vector<std::pair<int, int>>> WallKick_clockI = {
+		{ { 0, 0}, {-2, 0}, { 1,  0}, {-2, -1}, { 1,  2} }, // 0>>1 
+		{ { 0, 0}, {-1, 0}, { 2,  0}, {-1,  2}, { 2, -1} }, // 1>>2 
+		{ { 0, 0}, { 2, 0}, {-1,  0}, { 2,  1}, {-1, -2} }, // 2>>3 
+		{ { 0, 0}, { 1, 0}, {-2,  0}, { 1, -2}, {-2,  1} }, // 3>>0 
+	};
+
+	//SRS 反時計回りI 
+	const std::vector<std::vector<std::pair<int, int>>> WallKick_counterI = {
+		{ { 0, 0}, {-1, 0}, { 2,  0}, {-1,  2}, { 2, -1} }, // 0>>3 
+		{ { 0, 0}, { 2, 0}, {-1,  0}, { 2,  1}, {-1, -2} }, // 1>>0 
+		{ { 0, 0}, { 1, 0}, {-2,  0}, { 1, -2}, {-2,  1} }, // 2>>1 
+		{ { 0, 0}, {-2, 0}, { 1,  0}, {-2, -1}, { 1,  2} }, // 3>>2 
+	};
+}
+
+
+
 //
 namespace shig {
 	class TetriEngine {
@@ -53,7 +98,10 @@ namespace shig {
 		void tspin_check(int toX, int toY, Tetri& ts);
 		bool move_check(int toX, int toY);
 		bool move_check(int toX, int toY, Tetri& check);
+		int  NextRotate(int n_rot, Rotate rt);
 		void SRS_rot(int lr);
+		void SRS_Clockwise();
+		void SRS_CounterClockwise();
 		void print_mino(int p);
 		void print_ghost(int p);
 		set<int> erase_check();
