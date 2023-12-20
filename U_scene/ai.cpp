@@ -129,7 +129,6 @@ void Ai::GameManage2p()
 		}
 	}
 
-
 }
 
 void Ai::TetrisManage1p() {
@@ -246,29 +245,22 @@ void Ai::TetrisManage2p()
 
 	//	// 非同期処理側で推奨手計算が終了している場合
 	//	if (!thinkAi) {
-
 	//		FieldS = m_2pAI.get_AI_suggestion();
-
 	//		if (!CmdList2pAi.empty()) {
 	//			g_check = m_2pTE.Game(CmdList2pAi.front(), 0);
-
 	//			CmdList2pAi.pop_front();
-
 	//			// 操作をし終わったタイミングで先に思考開始
 	//			if (CmdList2pAi.empty()) {
 	//				m_2pAI.loadTE(m_2pTE);
 	//				thinkAi = true;
 	//			}
-
 	//		}
 	//		else {
-	//			
 	//		}
 	//	}
 	//	else if (thinkAi) {
 	//		// することがない 
 	//	}
-
 	//}
 
 	switch (g_check)
