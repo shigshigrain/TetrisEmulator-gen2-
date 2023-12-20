@@ -5,8 +5,8 @@ Ai::Ai(const InitData& init)
 {
 	m_1pTE.Init(1);
 	m_2pTE.Init(2);
-	m_2pAI.loadTE(m_2pTE);
-	m_2pAI.load_ttrp();
+	//m_2pAI.loadTE(m_2pTE);
+	//m_2pAI.load_ttrp();
 	
 	m_bg = Texture{ U"tex\\background\\tetris_emulator_background02.bmp" };
 
@@ -33,7 +33,7 @@ Ai::Ai(const InitData& init)
 	//CmdList2pAi = std::deque<int>(0);
 
 	// AI起動 
-	asyncAi = s3d::Async(shig::ExeThinking, ref(m_2pAI), ref(abortAi), ref(thinkAi), ref(CmdList2pAi));
+	//asyncAi = s3d::Async(shig::ExeThinking, ref(m_2pAI), ref(abortAi), ref(thinkAi), ref(CmdList2pAi));
 
 }
 
@@ -83,7 +83,7 @@ void Ai::update()
 		thinkAi = false;
 		abortAi = true;
 		// 非同期処理の終了を待機 
-		if (asyncAi.isValid())asyncAi.wait();
+		//if (asyncAi.isValid())asyncAi.wait();
 		changeScene(State::Title);
 	}
 
@@ -242,34 +242,34 @@ void Ai::TetrisManage2p()
 {
 	int g_check = 0;
 
-	if (suggest_flag.get()) {
+	//if (suggest_flag.get()) {
 
-		// 非同期処理側で推奨手計算が終了している場合
-		if (!thinkAi) {
+	//	// 非同期処理側で推奨手計算が終了している場合
+	//	if (!thinkAi) {
 
-			FieldS = m_2pAI.get_AI_suggestion();
+	//		FieldS = m_2pAI.get_AI_suggestion();
 
-			if (!CmdList2pAi.empty()) {
-				g_check = m_2pTE.Game(CmdList2pAi.front(), 0);
+	//		if (!CmdList2pAi.empty()) {
+	//			g_check = m_2pTE.Game(CmdList2pAi.front(), 0);
 
-				CmdList2pAi.pop_front();
+	//			CmdList2pAi.pop_front();
 
-				// 操作をし終わったタイミングで先に思考開始
-				if (CmdList2pAi.empty()) {
-					m_2pAI.loadTE(m_2pTE);
-					thinkAi = true;
-				}
+	//			// 操作をし終わったタイミングで先に思考開始
+	//			if (CmdList2pAi.empty()) {
+	//				m_2pAI.loadTE(m_2pTE);
+	//				thinkAi = true;
+	//			}
 
-			}
-			else {
-				
-			}
-		}
-		else if (thinkAi) {
-			// することがない 
-		}
+	//		}
+	//		else {
+	//			
+	//		}
+	//	}
+	//	else if (thinkAi) {
+	//		// することがない 
+	//	}
 
-	}
+	//}
 
 	switch (g_check)
 	{
@@ -329,7 +329,7 @@ void Ai::ResetManage() {
 	act_flame = {0 ,0 ,0 ,0, 0 ,0 ,0 ,0 };
 	thinkAi = false;
 	CmdList2pAi.clear();
-	m_2pAI.loadTE(m_2pTE);
+	//m_2pAI.loadTE(m_2pTE);
 	//thinkAi = true;
 
 	return;

@@ -14,7 +14,7 @@ public:
 private:// メンバ変数
 	shig::TetriEngine m_1pTE;
 	shig::TetriEngine m_2pTE;
-	shig::AiShigune m_2pAI;
+	//shig::AiShigune m_2pAI;
 	Texture m_bg;
 	Array<Texture> m_MinoTex;
 	KeyConf m_KeyConf1p;
@@ -31,7 +31,7 @@ private:// メンバ変数
 	std::atomic<bool> abortAi;
 	std::atomic<bool> thinkAi;
 	std::deque<int> CmdList2pAi;
-	AsyncTask<int32> asyncAi;
+	//AsyncTask<int32> asyncAi;
 
 private:// update関数
 	void GameManage1p();
