@@ -4,24 +4,24 @@
 
 // shigune : main part of AI and do decide act;
 
-const VI cx = { -1, 0, 1 };
-const VI cy = { -1, 0, 1 };
+const std::vector<int> cx = { -1, 0, 1 };
+const std::vector<int> cy = { -1, 0, 1 };
 
 
-const vector<pair<int, int>> cc = {
+const std::vector<std::pair<int, int>> cc = {
 	{1, 0},
 	{-1, 0},
 	{0, 1},
 	{0, -1}
 };
 
-const vector<int> scr_rate = { 100, 95, 95, 95, 90, 90, 90, 90 ,80, 80, 80, 70, 70, 70 ,60, 60, 60, 50, 50, 50 };
+const std::vector<int> scr_rate = { 100, 95, 95, 95, 90, 90, 90, 90 ,80, 80, 80, 70, 70, 70 ,60, 60, 60, 50, 50, 50 };
 
-const VI NS_a = { 6, 1, 5, 7, 2, 3, 4 };
+const std::vector<int> NS_a = { 6, 1, 5, 7, 2, 3, 4 };
 
-const VI ev_empty = { 0, 0, 0, 0 ,0 ,0 ,0 ,0 ,0 ,0 };
+const std::vector<int> ev_empty = { 0, 0, 0, 0 ,0 ,0 ,0 ,0 ,0 ,0 };
 
-const VVVI ch = {
+const vector<vector<vector<int>>> ch = {
 
 	{
 		{1, 1, 1, 1},
@@ -74,7 +74,7 @@ const VVVI ch = {
 
 };
 
-const VVI base_cmd = {
+const std::vector<std::vector<int>> base_cmd = {
 
 	{6, 6, 6, 6, 6, 3},
 	{6, 6, 6, 6, 3},
@@ -165,7 +165,7 @@ const VVI base_cmd = {
 
 };
 
-const VVI BaseCmdS = {
+const std::vector<std::vector<int>> BaseCmdS = {
 
 	{6, 6, 6, 6, 6},
 	{6, 6, 6, 6},
@@ -256,7 +256,7 @@ const VVI BaseCmdS = {
 
 };
 
-const VVI BaseCmdD = {
+const std::vector<std::vector<int>> BaseCmdD = {
 
 	{6, 6, 6, 6, 6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 	{6, 6, 6, 6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
@@ -823,6 +823,7 @@ const vector<vector<vector<pair<int, int>>>> touch_list = {
 
 
 namespace shig {
+	// hold : 1, soft : 2, hard : 3, L_rot : 4, R_rot : 5, l_move : 6, r_move : 7;
 
 	class AiShigune
 	{
@@ -843,23 +844,17 @@ namespace shig {
 		int ttrp_ofsY;
 		size_t exp_cyc_lim;
 		bool ttrp_able;
-		VI next_AI;
+		std::vector<int> next_AI;
 		deque<int> q_next_AI;
-		VI todo;
-		VVI field_AI;
-		VVI p_field_AI;
-		vector<vector<int>> s_field_AI;
-		VI H_target;
-		VI W_target;
-		VI height;
-		VI cmd_list;
-		set<CmdPattern> cp;
-		vector<CmdPattern> cv;
-		decltype(cp)::iterator cp_itr;
-		VS ttrp_name_list;
-		VI ttrp_id_list;
+		std::vector<std::vector<int>> field_AI;
+		std::vector<std::vector<int>> p_field_AI;
+		std::vector<std::vector<int>> s_field_AI;
+		std::vector<int> height;
+		std::vector<int> cmd_list;
+		std::vector<std::string> ttrp_name_list;
+		std::vector<int> ttrp_id_list;
 		vector<TetriPlate> ttrp_list;
-		VI ttrp_bgnF;
+		std::vector<int> ttrp_bgnF;
 		TetriPlate select_ttrp;
 		vector<GameContainer> gc_slot;
 		GameContainer now_gc;
@@ -870,11 +865,13 @@ namespace shig {
 		AiShigune();
 		AiShigune(int ii);
 		AiShigune(const TetriEngine& ti);
-		AiShigune(const AiShigune& copyAi);
+		//AiShigune(const AiShigune& copyAi);
 		bool thinking();
 		vector<int> get_recent_cmd();
 		bool make_AI_suggestion();
+		bool make_AI_suggestion(std::mutex& up);
 		vector<vector<int>> get_AI_suggestion() const;
+		vector<vector<int>> get_AI_suggestion(std::mutex& up);
 		void get_field();
 		void get_state();
 		vector<int> make_order_list();
@@ -886,7 +883,7 @@ namespace shig {
 		void do_sw(vector<CmdPattern> &ctl, GameContainer gc, size_t loop);
 		bool explore_choices(GameContainer gc_org);
 		void CalcScore(CmdPattern& cd, GameContainer& gcs, size_t loopc);
-		LL gs_BFS(CmdPattern& cb, VVI& qf);
+		LL gs_BFS(CmdPattern& cb, std::vector<std::vector<int>>& qf);
 		bool height_calc(GameContainer& gch);
 		bool move_check(int to_x, int to_y, Tetri& s_check, GameContainer& ggc);
 		int  NextRotate(int n_rot, Rotate rt);
@@ -895,32 +892,33 @@ namespace shig {
 		bool CheckSRS_CounterClock(Tetri& s_now, GameContainer& ggc);
 		int TS_check(int toX, int toY, Tetri& ts, GameContainer& ggc);
 		set<int> erase_check_AI(Tetri& s_now, GameContainer &gce);
-		void apply_mino(VVI& c_field, Tetri& s_now);
+		void ApplyMino(std::vector<std::vector<int>>& c_field, const Tetri& s_now);
 		bool move_mino(Tetri& m_now, int s_action, GameContainer& ggc);
-		void print_gh(Tetri& s_now);
-		void move_itr(int lr);
-		VVI get_AI_field(int p, int m);
-		VI get_AI_cmd();
-		pair<int, string> get_sttrp_name();
+		void PrintGhost(const Tetri& s_now);
+		std::pair<int, std::string> get_sttrp_name();
 		bool load_ttrp();
 		bool ttrp_crr(Tetri& now_p, int& size_l);
-		bool ttrp_check(CmdPattern& slc, int& sle, VI& mnL);
+		bool ttrp_check(CmdPattern& slc, int& sle, std::vector<int>& mnL);
 		bool ttrp_check(CmdPattern& slc, int& sle, GameContainer& gct);
 		bool next_crr_check();
 		bool set_gc(GameContainer &gc);
 		GameContainer update_gc(CmdPattern& ct, GameContainer gcp);
 		int ttrp_check_mino(Tetri& fd, GameContainer& gcf);
 		TetriEngine getTE();
-		void loadTE(TetriEngine& te);
+		void loadTE(const TetriEngine& te);
+		CmdPattern getCmd(); // 呼び出し側で制御
+
+
 
 		~AiShigune();
 	};
 
-	// hold : 1, soft : 2, hard : 3, L_rot : 4, R_rot : 5, l_move : 6, r_move : 7;
+	// 非同期処理用
+	int32 ExeThinking(AiShigune& As, const std::atomic<bool>& abort, std::atomic<bool>& think, std::deque<int>& CmdListS);
 
 }
 
 namespace shig {
 	bool GetTempNameList(std::vector<std::string>& name_list);
-	bool ReadTempData(std::string& name, shig::TetriPlate& ttrp);
+	bool ReadTempData(const std::string& name, shig::TetriPlate& ttrp);
 }

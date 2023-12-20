@@ -1,6 +1,7 @@
 ﻿# pragma once
 # include <Siv3D.hpp>
 # include "shigune_AI.h"
+# include "KeyConf.hpp"
 
 using namespace shig;
 
@@ -29,7 +30,7 @@ constexpr uint64 refrashRate30 = 1000 / 30;
 constexpr uint64 refrashRate60 = 1000 / 60;
 constexpr uint64 refrashRate120 = 1000 / 120;
 
-const vector<Color> minoC{
+static const std::vector<Color> minoC{
 	Color(255, 255, 255), // px=0
 	Color(0, 191, 255), // px=1
 	Color(66, 66, 255), // px=2
@@ -48,8 +49,6 @@ const vector<Color> minoC{
 	Color(255, 139, 119), // px=-7
 	Color(0, 128, 128) // px=-8
 };
-
-
 
 constexpr int minotex_path_size = 16;
 

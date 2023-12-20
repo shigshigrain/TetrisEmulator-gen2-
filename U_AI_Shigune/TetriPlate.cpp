@@ -20,24 +20,24 @@ namespace shig {
 
 	bool TetriPlate::set_def() {
 		mino_num = 0;
-		mino_check = vector<bool>(mino_num, false);
+		mino_check = std::vector<bool>(mino_num, false);
 		list_size = 0;
 		tp_id = 0;
 		terms_num = 0;
 		temp_name = "nothing";
 		bgn_f = 0;
-		terms = vector<pairI2>(0);
-		list_id = vector<int>(0);
-		mino_check = vector<bool>(0);
-		list_mino = vector<Tetri>(0);
-		list_mino_s = vector<int>(0);
+		terms.clear();
+		list_id.clear();
+		mino_check.clear();
+		list_mino.clear();
+		list_mino_s.clear();
 
 		return true;
 	}
 
-	bool TetriPlate::set(int& a, int& b, int& c, int& d, string& e, int& f) {
+	bool TetriPlate::Setup(const int& a, const int& b, const int& c, const int& d, const string& e, const int& f) {
 		mino_num = a;
-		mino_check = vector<bool>(mino_num, false);
+		mino_check = std::vector<bool>(mino_num, false);
 		list_size = b;
 		tp_id = c;
 		terms_num = d;
@@ -47,19 +47,19 @@ namespace shig {
 		return true;
 	}
 
-	bool TetriPlate::set_id_list(VI& l) {
+	bool TetriPlate::set_id_list(const std::vector<int>& l) {
 		list_id = l;
 		return true;
 	}
 
-	bool TetriPlate::set_list(vector<Tetri>& rnd, VI& rs) {
+	bool TetriPlate::set_list(const std::vector<Tetri>& rnd, const std::vector<int>& rs) {
 		list_mino = rnd;
 		list_mino_s = rs;
 		return true;
 	}
 
 
-	bool TetriPlate::set_terms(vector<pairI2>& tr) {
+	bool TetriPlate::set_terms(const std::vector<std::pair<int, int>>& tr) {
 		terms = tr;
 		return true;
 	}

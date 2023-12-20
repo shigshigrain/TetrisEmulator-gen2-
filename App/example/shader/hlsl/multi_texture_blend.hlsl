@@ -20,7 +20,7 @@ SamplerState	g_sampler1 : register(s1);
 namespace s3d
 {
 	//
-	//	VS Output / PS Input
+	//	std::vector<std::string> Output / PS Input
 	//
 	struct PSInput
 	{

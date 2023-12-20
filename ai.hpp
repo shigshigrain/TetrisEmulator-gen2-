@@ -17,7 +17,7 @@ private:// メンバ変数
 	shig::AiShigune m_soloAI;
 	Texture m_bg;
 	vector<Texture> m_MinoTex;
-	KeyConf m_KeyConfS;
+	KeyConf m_KeyConf1p;
 	uint64 sec_time;
 	int delay_cnt;
 	int DAS_flame;
@@ -34,8 +34,8 @@ private:// update関数
 	void actF_manage();
 
 private:// draw関数 const
-	void draw_field() const;
-	void draw_s_field() const;
+	void DrawField() const;
+	void DrawGhost() const;
 	void draw_tex()const;
 	
 };

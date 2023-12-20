@@ -12,11 +12,11 @@
 namespace s3d
 {
 	//
-	//	VS Input (nothing)
+	//	std::vector<std::string> Input (nothing)
 	//
 
 	//
-	//	VS Output
+	//	std::vector<std::string> Output
 	//
 	struct PSInput
 	{
@@ -56,7 +56,7 @@ float2 Circular(float r, float theta)
 	return float2(sin(theta), -cos(theta)) * r;
 }
 
-s3d::PSInput VS(uint id: SV_VERTEXID)
+s3d::PSInput std::vector<std::string>(uint id: SV_VERTEXID)
 {
 	s3d::PSInput result;
 	result.color = float4(0.2, 0.7, 0.4, 1);

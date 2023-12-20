@@ -6,6 +6,7 @@
 //# include "common.hpp"
 # include "title.hpp"
 # include "solo.hpp"
+# include "ai.hpp"
 
 
 void Main()
@@ -32,6 +33,7 @@ void Main()
 	App manager;
 	manager.add<Title>(State::Title);
 	manager.add<Solo>(State::Solo);
+	manager.add<Ai>(State::Ai);
 	//manager.add<Ranking>(State::Ranking);
 
 	// 通常のフォントを作成 | Create a new font
@@ -46,10 +48,6 @@ void Main()
 
 	while (System::Update())
 	{
-		
-		// マウスカーソルに追随する半透明な円を描く | Draw a red transparent circle that follows the mouse cursor
-		Circle{ Cursor::PosF(), 5 }.draw(ColorF{1, 1, 1, 0.8 });
-
 		auto SceneRect = Window::GetState().virtualSize;
 		auto ScenePos = Window::GetPos();
 
@@ -81,6 +79,10 @@ void Main()
 		{
 			break;
 		}
+
+		// マウスカーソルに追随する半透明な円を描く | Draw a red transparent circle that follows the mouse cursor
+		//Circle{ Cursor::PosF(), 5 }.draw(ColorF{ 1, 1, 1, 0.8 });
+
 
 	}
 }

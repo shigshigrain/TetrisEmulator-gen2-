@@ -3,22 +3,24 @@
 
 namespace shig {
 
-
 	Tetri::Tetri() {
-		rot = 0;
-		X = 0, Y = 0;
-		id = 0;
-		px_size = 30;
-		mino = minoT;
+		Tetri::rot = 0;
+		Tetri::X = 0;
+		Tetri::Y = 0;
+		Tetri::id = 0;
+		Tetri::px_size = 30;
+		Tetri::mino = minoT;
+		SetMino(6);
 	};
 
 	Tetri::Tetri(int id) {
-		rot = 0;
-		X = 0, Y = 0;
+		Tetri::rot = 0;
+		Tetri::X = 0;
+		Tetri::Y = 0;
 		Tetri::id = id;
-		px_size = 30;
-		mino = minoT;
-		set_mino(id);
+		Tetri::px_size = 30;
+		Tetri::mino = minoT;
+		Tetri::SetMino(id);
 	};
 
 	Tetri::Tetri(int rot, int X, int Y, int id) {
@@ -26,9 +28,8 @@ namespace shig {
 		Tetri::X = X;
 		Tetri::Y = Y;
 		Tetri::id = id;
-		Tetri::px_size = 30;
-		//Tetri::set_mino(id);
-
+		Tetri::mino = minoT;
+		Tetri::SetMino(id);
 	};
 
 	void Tetri::set(int a, int b, int c, int d) {
@@ -62,39 +63,131 @@ namespace shig {
 		return gms;
 	}
 
-	void Tetri::set_mino(int i) {
-		if (i < 1 || i > 7)id = 6;
-		else id = i;
-		Tetri::rot = 0; Tetri::X = 3; Tetri::Y = 21;
+	void Tetri::SetMino(int i) {
+		if (1 <= i && i <= 7)Tetri::id = i;
+		else Tetri::id = 6;
+		Tetri::rot = 0;
+		Tetri::X = 3;
+		Tetri::Y = 21;
 
 		switch (Tetri::id)
 		{
 		case 1:
-			Tetri::mino = minoI;
+			Tetri::mino = {
+				{
+					{ 0, 0, 0, 0 },{ 1, 1, 1, 1 },{ 0, 0, 0, 0 },{ 0, 0, 0, 0 },
+				},
+				{
+					{ 0, 0, 1, 0 },{ 0, 0, 1, 0 },{ 0, 0, 1, 0 },{ 0, 0, 1, 0 },
+				},
+				{
+					{ 0, 0, 0, 0 },{ 0, 0, 0, 0 },{ 1, 1, 1, 1 },{ 0, 0, 0, 0 },
+				},
+				{
+					{ 0, 1, 0, 0 },{ 0, 1, 0, 0 },{ 0, 1, 0, 0 },{ 0, 1, 0, 0 },
+				},
+			};
 			break;
 		case 2:
-			Tetri::mino = minoJ;
+			Tetri::mino = {
+				{
+					{ 2, 0, 0 },{ 2, 2, 2 },{ 0, 0, 0 },
+				},
+				{
+					{ 0, 2, 2 },{ 0, 2, 0 },{ 0, 2, 0 },
+				},
+				{
+					{ 0, 0, 0 },{ 2, 2, 2 },{ 0, 0, 2 },
+				},
+				{
+					{ 0, 2, 0 },{ 0, 2, 0 },{ 2, 2, 0 },
+				},
+			};
 			break;
 		case 3:
-			Tetri::mino = minoL;
+			Tetri::mino = {
+				{
+					{ 0, 0, 3 },{ 3, 3, 3 },{ 0, 0, 0 },
+				},
+				{
+					{ 0, 3, 0 },{ 0, 3, 0 },{ 0, 3, 3 },
+				},
+				{
+					{ 0, 0, 0 },{ 3, 3, 3 },{ 3, 0, 0 },
+				},
+				{
+					{ 3, 3, 0 },{ 0, 3, 0 },{ 0, 3, 0 },
+				},
+			};
 			break;
 		case 4:
-			Tetri::mino = minoO;
+			Tetri::mino = {
+				{
+					{ 0, 4, 4, 0 },{ 0, 4, 4, 0 },{ 0, 0, 0, 0 },
+				},
+				{
+					{ 0, 4, 4, 0 },{ 0, 4, 4, 0 },{ 0, 0, 0, 0 },
+				},
+				{
+					{ 0, 4, 4, 0 },{ 0, 4, 4, 0 },{ 0, 0, 0, 0 },
+				},
+				{
+					{ 0, 4, 4, 0 },{ 0, 4, 4, 0 },{ 0, 0, 0, 0 },
+				},
+			};
 			break;
 		case 5:
-			Tetri::mino = minoS;
+			Tetri::mino = {
+				{
+					{ 0, 5, 5 },{ 5, 5, 0 },{ 0, 0, 0 },
+				},
+				{
+					{ 0, 5, 0 },{ 0, 5, 5 },{ 0, 0, 5 },
+				},
+				{
+					{ 0, 0, 0 },{ 0, 5, 5 },{ 5, 5, 0 },
+				},
+				{
+					{ 5, 0, 0 },{ 5, 5, 0 },{ 0, 5, 0 },
+				},
+			};
 			break;
 		case 6:
-			Tetri::mino = minoT;
+			Tetri::mino = {
+				{
+					{ 0, 6, 0 },{ 6, 6, 6 },{ 0, 0, 0 },
+				},
+				{
+					{ 0, 6, 0 },{ 0, 6, 6 },{ 0, 6, 0 },
+				},
+				{
+					{ 0, 0, 0 },{ 6, 6, 6 },{ 0, 6, 0 },
+				},
+				{
+					{ 0, 6, 0 },{ 6, 6, 0 },{ 0, 6, 0 },
+				},
+			};
 			break;
 		case 7:
-			Tetri::mino = minoZ;
+			Tetri::mino = {
+				{
+					{ 7, 7, 0 },{ 0, 7, 7 },{ 0, 0, 0 },
+				},
+				{
+					{ 0, 0, 7 },{ 0, 7, 7 },{ 0, 7, 0 },
+				},
+				{
+					{ 0, 0, 0 },{ 7, 7, 0 },{ 0, 7, 7 },
+				},
+				{
+					{ 0, 7, 0 },{ 7, 7, 0 },{ 7, 0, 0 },
+				},
+			};
 			break;
 		default:
 			Tetri::mino = minoT;
 			break;
 		}
-
 
 		return;
 
@@ -121,6 +214,10 @@ namespace shig {
 	bool Tetri::operator == (const Tetri& ath) const {
 		if (id == 4 && ath.id == 4)return (X == ath.X && Y == ath.Y);
 		return (id == ath.id && X == ath.X && Y == ath.Y && rot == ath.rot);
+	}
+
+	Tetri::~Tetri()
+	{
 	}
 
 	// rot px_size H W (get 4 stats)

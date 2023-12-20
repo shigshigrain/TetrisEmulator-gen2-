@@ -2,9 +2,9 @@
 
 #include "shig_utility.h"
 #include "tetri.h"
-#include "KeyConf.h"
+//#include "KeyConf.hpp"
 
-const int fh = 45;
+constexpr int fh = 45;
 
 // 乱数生成用 
 static std::random_device rd;
@@ -17,11 +17,13 @@ namespace shig {
 		CounterClockwise,
 	};
 
-	const std::vector<int> next_rotateClock = {1, 2, 3, 0};
-	const std::vector<int> next_rotateCounter = {3, 0, 1, 2};
+	static const std::vector<int> next_rotateClock = { 1, 2, 3, 0 };
+	static const std::vector<int> next_rotateCounter = { 3, 0, 1, 2 };
+
+	static const std::vector<int> sev_seed = { 1, 2, 3, 4, 5, 6, 7 };
 
 	//SRS 時計回り 
-	const std::vector<std::vector<std::pair<int, int>>> WallKick_clockW = {
+	static const std::vector<std::vector<std::pair<int, int>>> WallKick_clockW = {
 		{ { 0, 0}, {-1, 0}, {-1,  1}, {0, -2}, {-1, -2} }, // 0>>1 
 		{ { 0, 0}, { 1, 0}, { 1, -1}, {0,  2}, { 1,  2} }, // 1>>2 
 		{ { 0, 0}, { 1, 0}, { 1,  1}, {0, -2}, { 1, -2} }, // 2>>3 
@@ -29,7 +31,7 @@ namespace shig {
 	};
 
 	//SRS 反時計回り 
-	const std::vector<std::vector<std::pair<int, int>>> WallKick_counterW = {
+	static const std::vector<std::vector<std::pair<int, int>>> WallKick_counterW = {
 		{ { 0, 0}, { 1, 0}, { 1,  1}, {0, -2}, { 1, -2} }, // 0>>3 
 		{ { 0, 0}, { 1, 0}, { 1, -1}, {0,  2}, { 1,  2} }, // 1>>0 
 		{ { 0, 0}, {-1, 0}, {-1,  1}, {0, -2}, {-1, -2} }, // 2>>1 
@@ -37,7 +39,7 @@ namespace shig {
 	};
 
 	//SRS 時計回りI  
-	const std::vector<std::vector<std::pair<int, int>>> WallKick_clockI = {
+	static const std::vector<std::vector<std::pair<int, int>>> WallKick_clockI = {
 		{ { 0, 0}, {-2, 0}, { 1,  0}, {-2, -1}, { 1,  2} }, // 0>>1 
 		{ { 0, 0}, {-1, 0}, { 2,  0}, {-1,  2}, { 2, -1} }, // 1>>2 
 		{ { 0, 0}, { 2, 0}, {-1,  0}, { 2,  1}, {-1, -2} }, // 2>>3 
@@ -45,12 +47,63 @@ namespace shig {
 	};
 
 	//SRS 反時計回りI 
-	const std::vector<std::vector<std::pair<int, int>>> WallKick_counterI = {
+	static const std::vector<std::vector<std::pair<int, int>>> WallKick_counterI = {
 		{ { 0, 0}, {-1, 0}, { 2,  0}, {-1,  2}, { 2, -1} }, // 0>>3 
 		{ { 0, 0}, { 2, 0}, {-1,  0}, { 2,  1}, {-1, -2} }, // 1>>0 
 		{ { 0, 0}, { 1, 0}, {-2,  0}, { 1, -2}, {-2,  1} }, // 2>>1 
 		{ { 0, 0}, {-2, 0}, { 1,  0}, {-2, -1}, { 1,  2} }, // 3>>2 
 	};
+
+	static const std::vector<std::vector<int>> baseField = {
+
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},
+
+	};
+
 }
 
 
@@ -60,8 +113,9 @@ namespace shig {
 	class TetriEngine {
 	private:
 		Tetri now_mino;
-		VVI field, p_field;
-		VI sev;
+		std::vector<std::vector<int>> field;
+		std::vector<std::vector<int>> p_field;
+		std::vector<int> sev;
 		deque<int> q_next;
 		int hold;
 		int current;
@@ -80,15 +134,16 @@ namespace shig {
 		bool l_erasef;
 		bool dead_f;
 
-		VS ts_state;
+		std::vector<std::string> ts_state;
 		deque<string> mino_his;
 
 	public:
 		int id;
 
 		TetriEngine();
-		TetriEngine(int id);
-		void add_next_que(deque<int>& que, VI& sev);
+		TetriEngine(int _id);
+		bool Init(int _id);
+		void AddNextQue(deque<int>& que, std::vector<int>& sev);
 		int get_rnd(int l, int r);
 		bool get_TF(double p);
 		int shig_floorI(int i, int target);
@@ -102,8 +157,8 @@ namespace shig {
 		void SRS_rot(int lr);
 		void SRS_Clockwise();
 		void SRS_CounterClockwise();
-		void print_mino(int p);
-		void print_ghost(int p);
+		void PrintMino(int p);
+		void PrintGhost(int p);
 		set<int> erase_check();
 		int line_erase();
 		bool pc_check();
@@ -116,12 +171,12 @@ namespace shig {
 		void act_rotL();
 		void act_rotR();
 		void run();
-		void set_field();
-		void copy_pfield();
-		void reset_pfield();
-		int game(int action, int evn);
-		bool do_advance();
-		void set_KeyInput();
+		void SetField();
+		void CopyFiledP();
+		void ResetFieldP();
+		int Game(int action, int evn);
+		bool Advance();
+		//void set_KeyInput();
 
 		// 読み取り関数
 		int get_field_state(int i, int j, int m) const;
@@ -129,8 +184,8 @@ namespace shig {
 		Tetri get_current() const;
 		int get_delayF() const;
 		void edit_garbage_cmd(int i);
-		VI get_game_state() const;
-		VS get_ts_state() const;
+		std::vector<int> get_game_state() const;
+		std::vector<std::string> get_ts_state() const;
 		pair<int, int> get_combo() const;
 		deque<string> get_mino_his() const;
 

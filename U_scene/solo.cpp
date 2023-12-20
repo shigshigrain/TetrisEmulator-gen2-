@@ -3,19 +3,24 @@
 Solo::Solo(const InitData& init)
 	: IScene{ init }
 {
-
-	m_soloTE = TetriEngine(1);
+	m_soloTE.Init(1);
 	m_soloAI.loadTE(m_soloTE);
 	m_soloAI.load_ttrp();
-	m_soloAI.thinking();
+	//m_soloAI.thinking();
 
 	m_bg = Texture{ U"tex\\background\\tetris_emulator_background02.bmp" };
 
-	m_KeyConfS = KeyConf();
-	
-	m_MinoTex = std::vector<Texture>(minotex_path_size);
+	//m_KeyConfS = KeyConf();
+	m_KeyConfS.SetDefault();
+
+	/*m_MinoTex = std::vector<Texture>(minotex_path_size);
 	for (int i = 0; i < minotex_path_size; i++) {
 		m_MinoTex.at(i) = Texture{ minotex_path.at(i) };
+	}*/
+
+	m_MinoTex = std::vector<Texture>(0);
+	for (auto&& mp : minotex_path) {
+		m_MinoTex.emplace_back(Texture{ mp });
 	}
 
 	sec_time = Time::GetMillisec();
@@ -40,23 +45,9 @@ void Solo::update()
 			Wait_flame += -1;
 		}
 		else {
-
-			/*if (delay_cnt > 0) {
-				delay_cnt += -1;
-
-			}
-			else {
-				
-
-			}*/
-
-			m_soloTE.reset_pfield();
-
-			if (reset_flag) {
-				reset_manage();
-			}
-
-			m_KeyConfS.set_defalut();
+			m_soloTE.ResetFieldP();
+			if (reset_flag) reset_manage();
+			m_KeyConfS.SetDefault();
 
 			// テトリス側操作入力
 			tetris_manage();
@@ -64,21 +55,18 @@ void Solo::update()
 			actF_manage();
 			// ゲーム側操作入力
 			game_manage();
-
 		}
-
-		
 
 	}
 
-	//m_KeyConfS.set_defalut(); // キー入力情報のセット
+	//m_KeyConf1p.SetDefault(); // キー入力情報のセット
 
 	if (KeyQ.pressed())
 	{
 		changeScene(State::Title);
 	}
 
-	//m_soloTE.copy_pfield();// 描写用セットアップ
+	//m_2pTE.CopyFiledP();// 描写用セットアップ
 
 }
 
@@ -95,14 +83,14 @@ void Solo::draw() const
 void Solo::game_manage(){
 
 	if (IsKeyVP(m_KeyConfS, KeyVal::R)) {
-		m_soloTE.copy_pfield();
+		m_soloTE.CopyFiledP();
 		m_soloAI.loadTE(m_soloTE);
 		Wait_flame = 30;
 		reset_flag = true;
 	}
 
 	if (IsKeyVP(m_KeyConfS, KeyVal::G)) {
-		m_soloTE.copy_pfield();
+		m_soloTE.CopyFiledP();
 		m_soloTE.edit_garbage_cmd(1);
 	}
 
@@ -110,7 +98,7 @@ void Solo::game_manage(){
 		/*if (suggest_flag)suggest_flag = false;
 		else suggest_flag = true;*/
 		if (suggest_flag.sw()) {
-			m_soloTE.copy_pfield();
+			m_soloTE.CopyFiledP();
 			m_soloAI.loadTE(m_soloTE);
 			m_soloAI.thinking();
 			m_soloAI.make_AI_suggestion();
@@ -124,38 +112,38 @@ void Solo::game_manage(){
 void Solo::tetris_manage(){
 	int g_check = 0;
 
-	if (m_KeyConfS.get_key(KeyVal::Left).pressed() && not m_KeyConfS.get_key(KeyVal::Right).pressed()) {
+	if (m_KeyConfS.GetKey(KeyVal::Left).pressed() && not m_KeyConfS.GetKey(KeyVal::Right).pressed()) {
 		if (act_flame[6] == 0) {
 			act_flame[6] = -1 * DAS_flame;
-			g_check = m_soloTE.game(6, 0);
+			g_check = m_soloTE.Game(6, 0);
 		}
 		else if (act_flame[6] == -1) {
 			act_flame[6] = 1;
 		}
 		else if (act_flame[6] > 0) {
-			g_check = m_soloTE.game(6, 0);
+			g_check = m_soloTE.Game(6, 0);
 		}
 		delay_cnt = 2;
 	}
 
-	if (not m_KeyConfS.get_key(KeyVal::Left).pressed() && m_KeyConfS.get_key(KeyVal::Right).pressed()) {
+	if (not m_KeyConfS.GetKey(KeyVal::Left).pressed() && m_KeyConfS.GetKey(KeyVal::Right).pressed()) {
 		if (act_flame[7] == 0) {
 			act_flame[7] = -DAS_flame;
-			g_check = m_soloTE.game(7, 0);
+			g_check = m_soloTE.Game(7, 0);
 		}
 		else if (act_flame[7] == -1) {
 			act_flame[7] = 1;
 		}
 		else if (act_flame[7] > 0) {
-			g_check = m_soloTE.game(7, 0);
+			g_check = m_soloTE.Game(7, 0);
 		}
 		delay_cnt = 2;
 	}
 
-	if (m_KeyConfS.get_key(KeyVal::Up).pressed() && not m_KeyConfS.get_key(KeyVal::Z).pressed()) {
+	if (m_KeyConfS.GetKey(KeyVal::Up).pressed() && not m_KeyConfS.GetKey(KeyVal::Z).pressed()) {
 		if (act_flame[5] >= 0) {
 			act_flame[5] = -DAS_flame;
-			g_check = m_soloTE.game(5, 0);
+			g_check = m_soloTE.Game(5, 0);
 		}
 		else{
 			act_flame[5] -= 1;
@@ -163,10 +151,10 @@ void Solo::tetris_manage(){
 		delay_cnt = 2;
 	}
 
-	if (not m_KeyConfS.get_key(KeyVal::Up).pressed() && m_KeyConfS.get_key(KeyVal::Z).pressed()) {
+	if (not m_KeyConfS.GetKey(KeyVal::Up).pressed() && m_KeyConfS.GetKey(KeyVal::Z).pressed()) {
 		if (act_flame[4] >= 0) {
 			act_flame[4] = -DAS_flame;
-			g_check = m_soloTE.game(4, 0);
+			g_check = m_soloTE.Game(4, 0);
 		}
 		else {
 			act_flame[4] -= 1;
@@ -174,10 +162,10 @@ void Solo::tetris_manage(){
 		delay_cnt = 2;
 	}
 
-	if (m_KeyConfS.get_key(KeyVal::C).pressed()) {
+	if (m_KeyConfS.GetKey(KeyVal::C).pressed()) {
 		if (act_flame[1] >= 0) {
 			act_flame[1] = -2;
-			g_check = m_soloTE.game(1, 0);
+			g_check = m_soloTE.Game(1, 0);
 		}
 		else {
 			act_flame[1] += -1;
@@ -186,10 +174,10 @@ void Solo::tetris_manage(){
 
 	}
 
-	if (m_KeyConfS.get_key(KeyVal::Down).pressed()) {
+	if (m_KeyConfS.GetKey(KeyVal::Down).pressed()) {
 		if (act_flame[2] >= 0) {
 			act_flame[2] = -1;
-			g_check = m_soloTE.game(2, 0);
+			g_check = m_soloTE.Game(2, 0);
  		}
 		else {
 			act_flame[2] = 0;
@@ -197,10 +185,10 @@ void Solo::tetris_manage(){
 		delay_cnt = 2;
 	}
 
-	if (m_KeyConfS.get_key(KeyVal::Space).pressed()) {
+	if (m_KeyConfS.GetKey(KeyVal::Space).pressed()) {
 		if (act_flame[3] >= 0) {
 			act_flame[3] = -2;
-			g_check = m_soloTE.game(3, 0);
+			g_check = m_soloTE.Game(3, 0);
 			delay_cnt = m_soloTE.get_delayF();
 		}
 		else {
@@ -222,12 +210,12 @@ void Solo::tetris_manage(){
 		delay_cnt = 0;
 	}
 	else if(g_check == 1) {
-		m_soloTE.copy_pfield();
+		m_soloTE.CopyFiledP();
 		reset_flag = true;
 		Wait_flame = 72;
 	}
 	else if (g_check == 0) {
-		m_soloTE.copy_pfield();
+		m_soloTE.CopyFiledP();
 	}
 
 
@@ -238,17 +226,19 @@ void Solo::tetris_manage(){
 
 void Solo::reset_manage(){
 
-	m_soloTE.set_field();
-	m_soloTE.copy_pfield();
+	m_soloTE.SetField();
+	m_soloTE.CopyFiledP();
 	delay_cnt = 0;
 	DAS_flame = 7;
 	Wait_flame = 0;
 	reset_flag = false;
 	act_flame = vector<int>(8, 0);
 	m_soloAI.loadTE(m_soloTE);
-	m_soloAI.thinking();
-	if(suggest_flag.get())m_soloAI.make_AI_suggestion();
-	//suggest_flag.set(false);
+	if (suggest_flag.get()) {
+		m_soloAI.thinking();
+		m_soloAI.make_AI_suggestion();
+	}
+	//suggest_flag.Setup(false);
 
 	return;
 }
@@ -283,9 +273,9 @@ void Solo::draw_s_field() const{
 
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
-			if (SF.at(20 - i).at(j) == 0)continue;
+			if (SF.at((size_t)20 - i).at(j) == 0)continue;
 			Rect{ 201 + (j * 30), 51 + (i * 30), 29, 29 }
-			.drawFrame(2, 0, minoC.at(SF.at(20 - i).at(j)));
+			.drawFrame(2, 0, minoC.at(SF.at((size_t)20 - i).at(j)));
 		}
 
 	}
@@ -295,7 +285,7 @@ void Solo::draw_s_field() const{
 
 void Solo::actF_manage(){
 
-	for (auto& i : act_flame) {
+	for (auto&& i : act_flame) {
 		i++;
 		if (i > 0x10000000)i = 1;
 	}

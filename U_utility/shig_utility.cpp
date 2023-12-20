@@ -32,7 +32,7 @@ namespace shig {
 		return BoolSwitch::TF = s;
 	};
 
-	bool BoolSwitch::get() {
+	bool BoolSwitch::get() const {
 		return BoolSwitch::TF;
 	};
 

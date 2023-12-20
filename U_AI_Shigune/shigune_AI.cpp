@@ -8,8 +8,6 @@ const vector<size_t> expl_width = { 40, 40, 40, 30, 30, 30, 30, 10, 10, 10, 10, 
 //const vector<int> expl_width = { 20, 20, 20, 20, 20, 20, 20, 20, 15, 15, 15, 10, 10, 10, 10 };
 constexpr int cyc_num = 6;//up to 14
 
-//const int fh = 45;
-
 // thread分割数 
 constexpr int thd_num = 5;
 
@@ -19,11 +17,12 @@ constexpr int thd_num = 5;
 namespace shig {
 
 	AiShigune::AiShigune() {
-		TE = TetriEngine(-1);
+		//TE = TetriEngine(-1);
+		TE.Init(-1);
 		identifier = 0;
 		hold_AI = 0;
 		current_AI = 0;
-		next_AI = VI(0);
+		next_AI = std::vector<int>(0);
 		q_next_AI = deque<int>();
 		mind = -1;
 		pc_cnt = 0;
@@ -37,26 +36,20 @@ namespace shig {
 		ttrp_ofsY = 0;
 		exp_cyc_lim = cyc_num;
 		ttrp_able = false;
-		todo = VI(0);
-		field_AI = VVI(45, (VI(10, 0)));
-		p_field_AI = VVI(45, (VI(10, 0)));
-		s_field_AI = VVI(45, (VI(10, 0)));
-		H_target = VI(10, -1);
-		W_target = VI(10, -1);
-		height = VI(10, 0);
-		cmd_list = VI(0);
+		field_AI = std::vector<std::vector<int>>(fh, W_seed);
+		p_field_AI = std::vector<std::vector<int>>(fh, W_seed);
+		s_field_AI = std::vector<std::vector<int>>(fh, W_seed);
+		height = std::vector<int>(10, 0);
+		cmd_list = std::vector<int>(0);
 		cmd_list.reserve(40);
-		cv = vector<CmdPattern>(0);
-		cv.reserve(100);
-		cp_itr = cp.begin();
-		ttrp_name_list = VS(0);
-		ttrp_id_list = VI(0, 0);
-		ttrp_list = vector<TetriPlate>(0);
-		ttrp_bgnF = VI(0, 0);
-		AiShigune::select_ttrp.set_def();
-		gc_slot = vector<GameContainer>(branch_num);
+		ttrp_name_list = std::vector<std::string>(0, "");
+		ttrp_id_list = std::vector<int>(0, 0);
+		ttrp_list = std::vector<TetriPlate>(0, TetriPlate());
+		ttrp_bgnF = std::vector<int>(0, 0);
+		select_ttrp.set_def();
+		gc_slot = std::vector<GameContainer>(branch_num, GameContainer());
 		now_gc = GameContainer();
-		s_branch = vector<CmdPattern>(0);
+		s_branch = std::vector<CmdPattern>(0, CmdPattern());
 
 	}
 
@@ -65,7 +58,7 @@ namespace shig {
         identifier = ii;
 		hold_AI = 0;
 		current_AI = 0;
-        next_AI = VI(0);
+        next_AI = std::vector<int>(0);
 		q_next_AI = deque<int>();
 		mind = -1;
 		pc_cnt = 0;
@@ -79,26 +72,20 @@ namespace shig {
         ttrp_ofsY = 0;
         exp_cyc_lim = cyc_num;
         ttrp_able = false;
-		todo = VI(0);
-		field_AI = VVI(45, (VI(10, 0)));
-		p_field_AI = VVI(45, (VI(10, 0)));
-		s_field_AI = VVI(45, (VI(10, 0)));
-		H_target = VI(10, -1);
-		W_target = VI(10, -1);
-        height = VI(10, 0);
-		cmd_list = VI(0);
+		field_AI = std::vector<std::vector<int>>(45, W_seed);
+		p_field_AI = std::vector<std::vector<int>>(45, W_seed);
+		s_field_AI = std::vector<std::vector<int>>(45, W_seed);
+        height = std::vector<int>(10, 0);
+		cmd_list = std::vector<int>(0);
         cmd_list.reserve(40);
-        cv = vector<CmdPattern>(0);
-        cv.reserve(100);
-        cp_itr = cp.begin();
-        ttrp_name_list = VS(0);
-        ttrp_id_list = VI(0, 0);
-        ttrp_list = vector<TetriPlate>(0);
-        ttrp_bgnF = VI(0, 0);
-		AiShigune::select_ttrp.set_def();
-        gc_slot = vector<GameContainer>(branch_num);
-        now_gc = GameContainer();
-		s_branch = vector<CmdPattern>(0);
+		ttrp_name_list = std::vector<std::string>(0);
+		ttrp_id_list = std::vector<int>(0, 0);
+		ttrp_list = std::vector<TetriPlate>(0, TetriPlate());
+		ttrp_bgnF = std::vector<int>(0, 0);
+		select_ttrp.set_def();
+		gc_slot = std::vector<GameContainer>(branch_num, GameContainer());
+		now_gc = GameContainer();
+		s_branch = std::vector<CmdPattern>(0, CmdPattern());
 
 	}
 
@@ -107,7 +94,7 @@ namespace shig {
 		identifier = te.id;
 		hold_AI = 0;
 		current_AI = 0;
-		next_AI = VI(0);
+		next_AI = std::vector<int>(0);
 		q_next_AI = deque<int>();
 		mind = -1;
 		pc_cnt = 0;
@@ -121,30 +108,24 @@ namespace shig {
 		ttrp_ofsY = 0;
 		exp_cyc_lim = cyc_num;
 		ttrp_able = false;
-		todo = VI(0);
-		field_AI = VVI(45, (VI(10, 0)));
-		p_field_AI = VVI(45, (VI(10, 0)));
-		s_field_AI = VVI(45, (VI(10, 0)));
-		H_target = VI(10, -1);
-		W_target = VI(10, -1);
-		height = VI(10, 0);
-		cmd_list = VI(0);
+		field_AI = std::vector<std::vector<int>>(45, W_seed);
+		p_field_AI = std::vector<std::vector<int>>(45, W_seed);
+		s_field_AI = std::vector<std::vector<int>>(45, W_seed);
+		height = std::vector<int>(10, 0);
+		cmd_list = std::vector<int>(0);
 		cmd_list.reserve(40);
-		cv = vector<CmdPattern>(0);
-		cv.reserve(100);
-		cp_itr = cp.begin();
-		ttrp_name_list = VS(0);
-		ttrp_id_list = VI(0, 0);
-		ttrp_list = vector<TetriPlate>(0);
-		ttrp_bgnF = VI(0, 0);
-		AiShigune::select_ttrp.set_def();
-		gc_slot = vector<GameContainer>(branch_num);
+		ttrp_name_list = std::vector<std::string>(0);
+		ttrp_id_list = std::vector<int>(0, 0);
+		ttrp_list = std::vector<TetriPlate>(0, TetriPlate());
+		ttrp_bgnF = std::vector<int>(0, 0);
+		select_ttrp.set_def();
+		gc_slot = std::vector<GameContainer>(branch_num, GameContainer());
 		now_gc = GameContainer();
-		s_branch = vector<CmdPattern>(0);
+		s_branch = std::vector<CmdPattern>(0, CmdPattern());
 
 	}
 
-	AiShigune::AiShigune(const AiShigune& copyAi)
+	/*AiShigune::AiShigune(const AiShigune& copyAi)
 	{
 		TE = copyAi.TE;
 		identifier = copyAi.identifier;
@@ -164,7 +145,6 @@ namespace shig {
 		ttrp_able = copyAi.ttrp_able;
 		next_AI = copyAi.next_AI;
 		q_next_AI = copyAi.q_next_AI;
-		todo = copyAi.todo;
 		field_AI = copyAi.field_AI;
 		p_field_AI = copyAi.p_field_AI;
 		s_field_AI = copyAi.s_field_AI;
@@ -173,7 +153,6 @@ namespace shig {
 		height = copyAi.height;
 		cmd_list = copyAi.cmd_list;
 		cp = copyAi.cp;
-		cv = copyAi.cv;
 		ttrp_name_list = copyAi.ttrp_name_list;
 		ttrp_id_list = copyAi.ttrp_id_list;
 		ttrp_list = copyAi.ttrp_list;
@@ -182,7 +161,7 @@ namespace shig {
 		gc_slot = copyAi.gc_slot;
 		now_gc = copyAi.now_gc;
 		s_branch = copyAi.s_branch;
-	}
+	}*/
 
 	// let Ai think about the next move(return True or False)
 	bool AiShigune::thinking() {
@@ -202,7 +181,7 @@ namespace shig {
 		std::set<int> el = erase_check_AI(s_pat, now_gc);
 		int els = (int)el.size();
 
-		VI mnL = make_order_list();
+		std::vector<int> mnL = make_order_list();
 		
 		AiShigune::ttrp_check(s_branch.front(), els, mnL);
 
@@ -212,24 +191,24 @@ namespace shig {
 	}
 
 	// get Ai's suggestion of move cmd (by {int, int, ...})
-	VI AiShigune::get_recent_cmd() {
+	std::vector<int> AiShigune::get_recent_cmd() {
 		// hold : 1, soft : 2, hard : 3, L_rot : 4, R_rot : 5, l_move : 6, r_move : 7;
-        VI cmd = {3};
+        std::vector<int> cmd = {3};
 
 		Tetri s_pat = s_branch.front().pat;
 
 		set<int> el = erase_check_AI(s_pat, now_gc);
 		int els = (int)el.size();
 
-		/*VVI proxy(0); proxy.reserve(45);
+		/*std::vector<std::vector<int>> proxy(0); proxy.reserve(45);
 		shig_rep(i, 45) {
 			decltype(el)::iterator it = el.find(i);
-			if (it == el.end()) proxy.push_back(strategy_map[i]);
+			if (it == el.end()) proxy.push_back(strategy_map.at(i));
 		}
 		while (proxy.size() < 45) proxy.push_back(ev_empty);
 		strategy_map = proxy;*/
 
-		VI mnL = make_order_list();
+		std::vector<int> mnL = make_order_list();
 
 		next_crr_check();
 
@@ -241,27 +220,55 @@ namespace shig {
 
 	bool AiShigune::make_AI_suggestion(){
 
-		s_field_AI = VVI(45, (VI(10, 0)));
+		std::lock_guard<std::mutex> _lock{ AiMtx };
+
+		for (auto&& fH : s_field_AI)for (auto&& fW : fH)fW = 0;
+		//s_field_AI = std::vector<std::vector<int>>(45, W_seed);
 		size_t ss = s_branch.size();
 		//std::reverse(s_branch.begin(), s_branch.end());
 
 		for (size_t i = 0; i < ss; i++) {
-			apply_mino(s_field_AI, s_branch.at(ss - i - 1).pat);
+			ApplyMino(s_field_AI, s_branch.at(ss - i - 1).pat);
 		}
-
 
 		return true;
 	}
 
+	bool AiShigune::make_AI_suggestion(std::mutex& up)
+	{
+
+		std::lock_guard<std::mutex> _lock{ up };
+
+		//s_field_AI = std::vector<std::vector<int>>(45, W_seed);
+		size_t ss = s_branch.size();
+		//std::reverse(s_branch.begin(), s_branch.end());
+
+		for (size_t i = 0; i < ss; i++) {
+			ApplyMino(s_field_AI, s_branch.at(ss - i - 1).pat);
+		}
+
+		return true;
+
+	}
+
 	vector<vector<int>> AiShigune::get_AI_suggestion() const{
+
+		//std::lock_guard<std::mutex> _lock{ AiMtx };
+		//呼び出し側で制御
+		return AiShigune::s_field_AI;
+	}
+
+	vector<vector<int>> AiShigune::get_AI_suggestion(std::mutex& up)
+	{
+		std::lock_guard<std::mutex> _lock{ up };
 		return AiShigune::s_field_AI;
 	}
 
 	void AiShigune::get_field() {
 		shig_rep(i, 45) {
 			shig_rep(j, 10) {
-				field_AI[i][j] = TE.get_field_state(i, j, 1);
-                p_field_AI[i][j] = TE.get_field_state(i, j, 0);
+				field_AI.at(i).at(j) = TE.get_field_state(i, j, 1);
+                p_field_AI.at(i).at(j) = TE.get_field_state(i, j, 0);
 			}
 		}
         height_sum = 0;
@@ -269,8 +276,8 @@ namespace shig {
         shig_rep(j, 10) {
             int h = 44;
             while (h >= 0) {
-                if (field_AI[h][j] == 0) {
-                    height[j] = h;
+                if (field_AI[h].at(j) == 0) {
+                    height.at(j) = h;
                     h--;
                 }
                 else {
@@ -345,7 +352,7 @@ namespace shig {
 
 	bool AiShigune::pc_check() {
 		shig_rep(i, 10) {
-			if (field_AI[0][i] != 0)return false;
+			if (field_AI[0].at(i) != 0)return false;
 		}
 		return true;
 	}
@@ -353,7 +360,7 @@ namespace shig {
 	void AiShigune::bgn_strategy() {
 		// I J L O S T Z
 
-        VI mnL = make_order_list();
+        std::vector<int> mnL = make_order_list();
         bool all_TF = next_crr_check();
         
         if (all_TF) {
@@ -367,16 +374,16 @@ namespace shig {
 
             shig_rep(i, ttrp_size) {
 
-                if (ttrp_list[i].bgn_f != 0)continue;
+                if (ttrp_list.at(i).bgn_f != 0)continue;
                 int tm_cnt = 0;
-                shig_rep(j, ttrp_list[i].terms_num) {
-                    int tL = ttrp_list[i].terms[j].first;
-                    int tR = ttrp_list[i].terms[j].second;
+                shig_rep(j, ttrp_list.at(i).terms_num) {
+                    int tL = ttrp_list.at(i).terms.at(j).first;
+                    int tR = ttrp_list.at(i).terms.at(j).second;
                     if (mnL[tL] < mnL[tR])tm_cnt++;
                 }
 
-                if (tm_cnt >= ttrp_list[i].terms_num) {
-                    select_ttrp = ttrp_list[i];
+                if (tm_cnt >= ttrp_list.at(i).terms_num) {
+                    select_ttrp = ttrp_list.at(i);
                     break;
                 }
 
@@ -395,15 +402,15 @@ namespace shig {
         
         if (gc.current_AI == 0)return pcv;
         gc.p_field_AI = gc.field_AI;
-        VI rsv(0); rsv.reserve(30);
-        VVI search_tree(mxm, rsv);
-        VI parent_tree(mxm, 0);
+        std::vector<int> rsv(0); rsv.reserve(30);
+        std::vector<std::vector<int>> search_tree(mxm, rsv);
+        std::vector<int> parent_tree(mxm, 0);
         int to = 0;
-        gc.cp.clear(); gc.cv.clear();
+        gc.cp.clear();
 
         shig_rep(i, base_cmd.size()) {
-            search_tree[i] = base_cmd[i];
-            parent_tree[i] = i;
+            search_tree.at(i) = base_cmd.at(i);
+            parent_tree.at(i) = i;
             to++;
         }
 
@@ -412,9 +419,9 @@ namespace shig {
         while (!search_tree[w].empty() && (w < mxm - 1)) {
             bool can = true;  
             if (parent_tree[w] == w) {
-                test.set_mino(gc.current_AI);
+                test.SetMino(gc.current_AI);
                 shig_rep(i, search_tree[w].size() - 1) {
-                    if (!move_mino(test, search_tree[w][i], gc)) {
+                    if (!move_mino(test, search_tree[w].at(i), gc)) {
                         can = false;
                         break;
                     }
@@ -436,7 +443,7 @@ namespace shig {
                 c.pre_gc = gc.slot_id;
                 pcv.push_back(c);
                 gc.cp.insert(c);
-                VI w_sft = search_tree[w];
+                std::vector<int> w_sft = search_tree[w];
                 w_sft.pop_back();
                 shig_rep(i, hd_cnt)w_sft.push_back(2);
                 search_tree[to] = w_sft; parent_tree[to] = parent_tree[w]; to++;
@@ -444,14 +451,14 @@ namespace shig {
             }
             else {
                 if (search_tree[w].back() != 3) {
-                    const VI test_case = { 6, 7, 4, 5 };
+                    const std::vector<int> test_case = { 6, 7, 4, 5 };
                     shig_rep(h, test_case.size()) {
-                        test.set_mino(gc.current_AI);
+                        test.SetMino(gc.current_AI);
                         can = true;
-                        VI add_tree = search_tree[w];
+                        std::vector<int> add_tree = search_tree[w];
                         add_tree.push_back(test_case[h]);
                         shig_rep(i, add_tree.size()) {
-                            if (!move_mino(test, add_tree[i], gc)) {
+                            if (!move_mino(test, add_tree.at(i), gc)) {
                                 can = false;
                                 break;
                             }
@@ -499,7 +506,7 @@ namespace shig {
         gc.p_field_AI = gc.field_AI;
 		Tetri test;
 		CmdPattern c;
-		gc.cp.clear(); gc.cv.clear();
+		gc.cp.clear();
 
 		std::set<Tetri> SearchList;
 
@@ -515,7 +522,7 @@ namespace shig {
 		while (!SearchTree.empty()) {
 			bool can = true;
 
-			test.set_mino(gc.current_AI);
+			test.SetMino(gc.current_AI);
 			soft_tree = SearchTree.front();
 
 			for (size_t i = 0; i < SearchTree.front().size(); i++) {
@@ -554,7 +561,7 @@ namespace shig {
 
 			// ソフドロ回転入力
 			for (auto&& tm_soft : TestMove_soft) {
-				test.set_mino(gc.current_AI);
+				test.SetMino(gc.current_AI);
 				can = true;
 				add_tree = soft_tree;
 				add_tree.push_back(tm_soft);
@@ -572,7 +579,7 @@ namespace shig {
 			SearchTree.pop();
 
 			//if (parent_tree.at(w) == w) {
-			//    test.set_mino(gc.current_AI);
+			//    test.SetMino(gc.current_AI);
 			//    shig_rep(i, search_tree.at(w).size() - 1) {
 			//        if (!move_mino(test, search_tree.at(w).at(i), gc)) {
 			//            can = false;
@@ -596,7 +603,7 @@ namespace shig {
 			//    c.pre_gc = gc.slot_id;
 			//    pcv.push_back(c);
 			//    gc.cp.insert(c);
-			//    VI w_sft = search_tree.at(w);
+			//    std::vector<int> w_sft = search_tree.at(w);
 			//    w_sft.pop_back();
 			//    shig_rep(i, hd_cnt)w_sft.push_back(2);
 			//    search_tree[to] = w_sft; parent_tree[to] = parent_tree.at(w); to++;
@@ -604,11 +611,11 @@ namespace shig {
 			//}
 			//else {
 			//    if (search_tree.at(w).back() != 3) {
-			//        const VI test_case = { 6, 7, 4, 5 };
+			//        const std::vector<int> test_case = { 6, 7, 4, 5 };
 			//        shig_rep(h, test_case.size()) {
-			//            test.set_mino(gc.current_AI);
+			//            test.SetMino(gc.current_AI);
 			//            can = true;
-			//            VI add_tree = search_tree.at(w);
+			//            std::vector<int> add_tree = search_tree.at(w);
 			//            add_tree.push_back(test_case[h]);
 			//            shig_rep(i, add_tree.size()) {
 			//                if (!move_mino(test, add_tree.at(i), gc)) {
@@ -654,7 +661,7 @@ namespace shig {
 		}
 		while (!SearchTree.empty()) {
 			bool can = true;
-			test.set_mino(gc.current_AI);
+			test.SetMino(gc.current_AI);
 			soft_tree = SearchTree.front();
 			for (size_t i = 0; i < SearchTree.front().size(); i++) {
 				if (!move_mino(test, SearchTree.front().at(i), gc)) {
@@ -676,7 +683,7 @@ namespace shig {
 			SearchList.insert(test);
 			// 途中横入れ動作
 			for (auto&& tm_side : TestMove_side) {
-				test.set_mino(gc.current_AI);
+				test.SetMino(gc.current_AI);
 				can = true;
 				add_tree = SearchTree.front();
 				add_tree.push_back(tm_side);
@@ -716,13 +723,13 @@ namespace shig {
 
     bool AiShigune::explore_choices(GameContainer gc_org) {
 
-        gc_slot = vector<GameContainer>(branch_num);
+        gc_slot = std::vector<GameContainer>(branch_num);
         vector<vector<CmdPattern>> branch(branch_num, vector<CmdPattern>(0));
         vector<CmdPattern> catalog(0);
         constexpr size_t cls = 60 * branch_num;
         catalog.reserve(cls);
 
-        gc_org.cp.clear(); gc_org.cv.clear();
+        gc_org.cp.clear();
         //catalog.clear();
 
 		// frt = 25 まで善手選択
@@ -780,28 +787,24 @@ namespace shig {
             size_t epwtn = expl_width.at(n);
 			if (epwtn < 5)epwtn = 5;
 			while (epwtn % thd_num != 0)epwtn--;
-            std::vector<std::thread> threads;
+            std::vector<std::thread> threads(0);
 
-			for (size_t i = 0; i < epwtn; i += thd_num) {
-				//GameContainer gc = gc_slot.at(i);
-				threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i), n); }));
-				threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i+1), n); }));
-				threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i+2), n); }));
-				threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i+3), n); }));
-				threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i+4), n); }));
+			//for (size_t i = 0; i < epwtn; i += thd_num) {
+			//	//GameContainer gc = gc_slot.at(i);
+			//	threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i), n); }));
+			//	threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i+1), n); }));
+			//	threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i+2), n); }));
+			//	threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i+3), n); }));
+			//	threads.emplace_back(std::thread([this, i, &catalog, n]() {this->do_sw(ref(catalog), this->gc_slot.at(i+4), n); }));
+			//}
 
-				/*for (auto& thr : threads) {
-					thr.join();
-				}
-				threads.clear();*/
-
+			for (auto&& _gcs : gc_slot) {
+				threads.emplace_back(std::thread([this, &_gcs, &catalog, n]() {this->do_sw(ref(catalog), _gcs, n); }));
 			}
-
 			for (auto& thr : threads) {
 				thr.join();
 			}
 			
-
 			std::sort(catalog.begin(), catalog.end(), [&](const CmdPattern &l, const CmdPattern &r) { return r.scr < l.scr; });
             vector<GameContainer> proxy_slot(branch_num);
             vector<vector<CmdPattern>> proxy_branch(branch_num, vector<CmdPattern>(0));
@@ -850,18 +853,18 @@ namespace shig {
 		cd.scr.init_s();
 
 		//gcs.p_field_AI = gcs.field_AI;
-		//shigune_AI::apply_mino(gcs.p_field_AI, cd.pat); ↓やってくれていた
+		//shigune_AI::ApplyMino(gcs.p_field_AI, cd.pat); ↓やってくれていた
 		std::set<int> L = erase_check_AI(cd.pat, gcs);
 
 		//shigune_AI::height_calc(gcs);
 
 		cd.set_ts(gcs.SRS_kind, gcs.TS_kind);
 
-		VVI q_field_AI(0); q_field_AI.reserve(fh);
+		std::vector<std::vector<int>> q_field_AI(0); q_field_AI.reserve(fh);
 		if (L.size() > 0) {
 			shig_rep(i, fh) {
 				decltype(L)::iterator it = L.find(i);
-				if (it == L.end()) q_field_AI.push_back(gcs.p_field_AI[i]);
+				if (it == L.end()) q_field_AI.push_back(gcs.p_field_AI.at(i));
 			}
 			while (q_field_AI.size() < fh) q_field_AI.push_back(ev_empty);
 		}
@@ -909,11 +912,11 @@ namespace shig {
 			for (int i = 0; i < (int)gcs.gc_ttrp.list_mino.size(); i++) {
 				if (gcs.gc_ttrp.list_mino.at(i) == ofs_cdp) {
 					if (cd.pat.id == 6) {
-						if (gcs.gc_ttrp.list_mino_s[i] == 0 && gcs.TS_kind == 0) {
+						if (gcs.gc_ttrp.list_mino_s.at(i) == 0 && gcs.TS_kind == 0) {
 							chk_f = true;
 							cd.set_ttrpF(i);
 						}
-						else if ((gcs.gc_ttrp.list_mino_s[i]) == L.size() && gcs.TS_kind == 1) {
+						else if ((gcs.gc_ttrp.list_mino_s.at(i)) == L.size() && gcs.TS_kind == 1) {
 							chk_f = true;
 							cd.set_ttrpF(i);
 						}
@@ -959,17 +962,17 @@ namespace shig {
 				if (sX < 0 || sX >= 10)continue;
 				int sY = cd.pat.Y - i - 1;
 				if (sY < 0 || sY >= (field_AI.size() - 1))continue;
-				if (strategy_map[sY][sX] == cd.pat.mino[rot][i][j] && strategy_map[sY][sX] != 0) {
+				if (strategy_map[sY][sX] == cd.pat.mino[rot].at(i).at(j) && strategy_map[sY][sX] != 0) {
 					fusion += 100;
 				}
 				else {
-					if (strategy_map[sY][sX] == -1 && cd.pat.mino[rot][i][j] != 0) {
+					if (strategy_map[sY][sX] == -1 && cd.pat.mino[rot].at(i).at(j) != 0) {
 						fusion -= 100;
 					}
-					else if (strategy_map[sY][sX] > 0 && cd.pat.mino[rot][i][j] != 0) {
+					else if (strategy_map[sY][sX] > 0 && cd.pat.mino[rot].at(i).at(j) != 0) {
 						fusion -= 50;
 					}
-					else if (strategy_map[sY][sX] > 0 && cd.pat.mino[rot][i][j] == 0) {
+					else if (strategy_map[sY][sX] > 0 && cd.pat.mino[rot].at(i).at(j) == 0) {
 						//fusion += 500;
 					}
 				}
@@ -1245,7 +1248,7 @@ namespace shig {
 
 		shig_rep(i, H) {
 			shig_rep(j, W) {
-				if (cd.pat.mino[rot][i][j] == 0)continue;
+				if (cd.pat.mino[rot].at(i).at(j) == 0)continue;
 				int sX = cd.pat.X + j;
 				if (sX < 0 || sX >= 10)continue;
 				int sY = cd.pat.Y - i - 1;
@@ -1606,7 +1609,7 @@ namespace shig {
 		return;
     }
 
-    LL AiShigune::gs_BFS(CmdPattern& cb, VVI& qf) {
+    LL AiShigune::gs_BFS(CmdPattern& cb, std::vector<std::vector<int>>& qf) {
 
         LL open_blc = 0;
         LL clos_blc = 0;
@@ -1615,7 +1618,7 @@ namespace shig {
 
         const int h_limit = 40;
 
-        VVI b_field_AI(h_limit+1, (VI(10, -1)));
+        std::vector<std::vector<int>> b_field_AI(h_limit+1, (std::vector<int>(10, -1)));
 
         queue<pair<int, int>> xy;
         xy.push({ h_limit, 0 });
@@ -1667,8 +1670,8 @@ namespace shig {
         shig_rep(j, 10) {
             int h = 44;
             while (h >= 0) {
-                if (gch.field_AI[h][j] == 0) {
-                    gch.height[j] = h;
+                if (gch.field_AI[h].at(j) == 0) {
+                    gch.height.at(j) = h;
                     h--;
                 }
                 else {
@@ -1685,10 +1688,10 @@ namespace shig {
 
     bool AiShigune::move_check(int to_x, int to_y, Tetri& s_check, GameContainer& ggc) {
         int cnt = 0, cntt = 4;
-		auto [rot, size, H, W] = getTS(s_check);
+		auto&& [rot, size, H, W] = getTS(s_check);
         shig_rep(i, H) {
             shig_rep(j, W) {
-                if (s_check.mino[rot][i][j] != 0) {
+                if (s_check.mino[rot].at(i).at(j) != 0) {
                     int sX = s_check.X + j + to_x;
                     if (sX < 0 || sX >= 10)break;
                     int sY = s_check.Y - i + to_y;
@@ -2319,22 +2322,22 @@ namespace shig {
         }
 
         int ts_cnt = 0, rot = ts.rot;
-        VI testX = { 0, 0, 2, 2 }, testY = { 0, 2, 0, 2 };
+        std::vector<int> testX = { 0, 0, 2, 2 }, testY = { 0, 2, 0, 2 };
         pairI2 check = { 0, 0 };
 
         shig_rep(i, 4) {
-            int sX = ts.X + testX[i] + toX;
+            int sX = ts.X + testX.at(i) + toX;
             if (sX < 0 || sX >= 10) {
                 ts_cnt++;
                 continue;
             }
-            int sY = ts.Y - testY[i] + toY - 1;
+            int sY = ts.Y - testY.at(i) + toY - 1;
             if (sY < 0 || sY >= (ggc.field_AI.size() - 1)) {
                 ts_cnt++;
                 continue;
             }
             if (ggc.field_AI[sY][sX] != 0)ts_cnt++;
-            else check = { testX[i], testY[i] };
+            else check = { testX.at(i), testY.at(i) };
         }
 
         if (ts_cnt == 3 && SRS_kind != 4) {
@@ -2368,7 +2371,7 @@ namespace shig {
     set<int> AiShigune::erase_check_AI(Tetri& s_now, GameContainer &gce) {
         set<int> erase_itr;
         gce.p_field_AI = gce.field_AI;
-        AiShigune::apply_mino(gce.p_field_AI, s_now);
+        AiShigune::ApplyMino(gce.p_field_AI, s_now);
         int rot = s_now.rot;
         
         int H = (int)s_now.mino[rot].size();
@@ -2379,7 +2382,7 @@ namespace shig {
             int cnt = 0;
             if (sY < 0 || sY >= fh - 1)continue;
             shig_rep(j, pW) {
-                if (gce.p_field_AI[sY][j] != 0) cnt++;
+                if (gce.p_field_AI[sY].at(j) != 0) cnt++;
                 else break;
             }
             if (cnt == pW) erase_itr.insert(sY);
@@ -2387,16 +2390,16 @@ namespace shig {
         return erase_itr;
     }
 
-    void AiShigune::apply_mino(VVI& c_field, Tetri& s_now) {
-		auto [rot, size, H, W] = getTS(s_now);
-        shig_rep(i, H) {
-            shig_rep(j, W) {
-                if (s_now.mino[rot][i][j] != 0) {
+    void AiShigune::ApplyMino(std::vector<std::vector<int>>& c_field, const Tetri& s_now) {
+		//auto [rot, size, H, W] = getTS(s_now);
+		for (int i = 0; i < s_now.mino.at(s_now.rot).size(); ++i) {
+			for (int j = 0; j < s_now.mino.at(s_now.rot).at(i).size(); ++j) {
+                if (s_now.mino[s_now.rot].at(i).at(j) != 0) {
                     int sX = s_now.X + j;
                     int sY = s_now.Y - i;
                     if (sX < 0 || sX >= 10)continue;
                     if (sY - 1 < 0 || sY - 1 > 45)continue;
-                    c_field[sY - 1LL][sX] = s_now.id;
+                    c_field.at((size_t)sY - 1).at(sX) = s_now.id;
                 }
             }
         }
@@ -2405,10 +2408,10 @@ namespace shig {
     bool AiShigune::move_mino(Tetri& m_now, int s_action, GameContainer& ggc) {
         if (s_action == 1) {
             if (ggc.hold_AI == 0) {
-                m_now.set_mino(ggc.q_next_AI.front());
+                m_now.SetMino(ggc.q_next_AI.front());
             }
             else {
-                m_now.set_mino(ggc.hold_AI);
+                m_now.SetMino(ggc.hold_AI);
             }
             return true;
         }
@@ -2454,51 +2457,20 @@ namespace shig {
         return true;
     }
 
-    void AiShigune::print_gh(Tetri& s_now) {
-		int id = s_now.id;
-		auto [rot, size, H, W] = getTS(s_now);
-        shig_rep(i, H) {
-            shig_rep(j, W) {
-                if (s_now.mino[rot][i][j] != 0) {
-                    int sX = s_now.X + j;
-                    int sY = s_now.Y - i;
-                    if (sX < 0 || sX >= 10)continue;
-                    if (sY - 1 < 0 || sY - 1 > 45)continue;
-                    p_field_AI[sY - 1LL][sX] = -1 * id;
-                }
-            }
-        }
+    void AiShigune::PrintGhost(const Tetri& s_now) {
+		for (int i = 0; i < s_now.mino.at(s_now.rot).size(); ++i) {
+			for (int j = 0; j < s_now.mino.at(s_now.rot).at(i).size(); ++j) {
+				if (s_now.mino[s_now.rot].at(i).at(j) != 0) {
+					int sX = s_now.X + j;
+					int sY = s_now.Y - i;
+					if (sX < 0 || sX >= 10)continue;
+					if (sY - 1 < 0 || sY - 1 > 45)continue;
+					p_field_AI.at((size_t)sY - 1).at(sX) = -1 * s_now.id;
+				}
+			}
+		}
 
         return;
-    }
-
-    void AiShigune::move_itr(int lr) {
-
-        if (lr == -1) {
-            if (cp_itr != cp.begin()) --cp_itr;
-        }
-        else if (lr == 1) {
-            if (++cp_itr != cp.end()) ++cp_itr;
-        }
-
-        return;
-    }
-
-    VVI AiShigune::get_AI_field(int p, int m) {
-        if (p == 1) {
-            p_field_AI = field_AI;
-        }
-        if (m == 1) {
-            if (cp_itr == cp.end())--cp_itr;
-            CmdPattern cm = *cp_itr;
-            print_gh(cm.pat);
-        }
-        return p_field_AI;
-    }
-
-    VI AiShigune::get_AI_cmd() {
-        CmdPattern cl = *cp_itr;
-        return cl.cmd_list;
     }
 
     bool AiShigune::load_ttrp() {
@@ -2506,9 +2478,9 @@ namespace shig {
         ttrp_size = (int)ttrp_name_list.size();
         //template_list.reserve(ttrp_size+1);
         vector<TetriPlate> vt(ttrp_size);
-        shig_rep(i, ttrp_size) {
-            ReadTempData(ttrp_name_list[i], vt[i]);
-            ttrp_id_list.push_back(vt[i].tp_id);
+		for (size_t i = 0; i < ttrp_name_list.size(); ++i) {
+            ReadTempData(ttrp_name_list.at(i), vt.at(i));
+            ttrp_id_list.push_back(vt.at(i).tp_id);
         }
 
         ttrp_list = vt;
@@ -2519,13 +2491,13 @@ namespace shig {
     bool AiShigune::ttrp_crr(Tetri& now_p, int& size_l) {
         bool chk_f = false;
         if (ttrp_able) {
-            shig_rep(i, min(select_ttrp.mino_num , (int)select_ttrp.list_mino.size())) {
-                if (select_ttrp.list_mino[i] == now_p) {
+			for (size_t i = 0; i < std::min((size_t)select_ttrp.mino_num, select_ttrp.list_mino.size()); ++i) {
+                if (select_ttrp.list_mino.at(i) == now_p) {
                     if (now_p.id == 6) {
-                        if ((select_ttrp.list_mino_s[i]) == size_l && TS_kind == 1) {
+                        if ((select_ttrp.list_mino_s.at(i)) == size_l && TS_kind == 1) {
                             chk_f = true;
                         }
-                        else if (select_ttrp.list_mino_s[i] == 0 && TS_kind == 0){
+                        else if (select_ttrp.list_mino_s.at(i) == 0 && TS_kind == 0){
                             chk_f = true;
                         }
                         else {
@@ -2549,7 +2521,7 @@ namespace shig {
         return chk_f;
     }
 
-    bool AiShigune::ttrp_check(CmdPattern& slc, int& sle, VI& mnL) {
+    bool AiShigune::ttrp_check(CmdPattern& slc, int& sle, std::vector<int>& mnL) {
 
         if (!ttrp_able)return true;
 
@@ -2571,17 +2543,17 @@ namespace shig {
                         bool lpf = false;
                         shig_rep(j, ttrp_list.size()) {
 
-                            if (ttrp_list[j].tp_id != select_ttrp.list_id[i])continue;
+                            if (ttrp_list.at(j).tp_id != select_ttrp.list_id.at(i))continue;
 
                             int tm_cnt = 0;
-                            shig_rep(k, ttrp_list[j].terms_num) {
-                                int tL = ttrp_list[j].terms[k].first;
-                                int tR = ttrp_list[j].terms[k].second;
+                            shig_rep(k, ttrp_list.at(j).terms_num) {
+                                int tL = ttrp_list.at(j).terms[k].first;
+                                int tR = ttrp_list.at(j).terms[k].second;
                                 if (mnL[tL] < mnL[tR])tm_cnt++;
                             }
 
-                            if (tm_cnt >= ttrp_list[j].terms_num) {
-								select_ttrp = ttrp_list[j];
+                            if (tm_cnt >= ttrp_list.at(j).terms_num) {
+								select_ttrp = ttrp_list.at(j);
                                 ttrp_able = true;
                                 lpf = true;
                                 break;
@@ -2613,7 +2585,7 @@ namespace shig {
 
     bool AiShigune::ttrp_check(CmdPattern& slc, int& sle, GameContainer& gct) {
 
-		//VI mnL = make_order_list(gct);
+		//std::vector<int> mnL = make_order_list(gct);
 
         if (gct.ttrp_able == false)return true;
 
@@ -2621,7 +2593,7 @@ namespace shig {
             gct.gc_ttrp.mino_check.at((size_t)slc.ttrp_f) = true;
             int mchk_cnt = 0;
             shig_rep(i, gct.gc_ttrp.mino_num) {
-                if (gct.gc_ttrp.mino_check[i] == true) {
+                if (gct.gc_ttrp.mino_check.at(i) == true) {
                     mchk_cnt++;
                 }
             }
@@ -2645,9 +2617,9 @@ namespace shig {
 
     bool AiShigune::next_crr_check() {
 
-        set<int> all_chk;
-        int lim_s = min(5, (int)next_AI.size());
-        shig_rep(i, lim_s)all_chk.insert(next_AI[i]);
+        std::set<int> all_chk;
+        int lim_s = std::min(5, (int)next_AI.size());
+		for (int i = 0; i < lim_s; ++i)all_chk.insert(next_AI.at(i));
         all_chk.insert(current_AI);
         all_chk.insert(hold_AI);
         if (all_chk.size() == 7)return true;
@@ -2659,14 +2631,14 @@ namespace shig {
     }
 
     pair<int, string> AiShigune::get_sttrp_name() {
-        str = "noting selected";
+        std::string s("noting selected");
         if (ttrp_able)return make_pair(select_ttrp.tp_id, select_ttrp.temp_name);
-        else return make_pair(i32_minus_one, s);
+        else return make_pair(-1, s);
     }
 
     bool AiShigune::set_gc(GameContainer &gc) {
 
-        VI gi(12, 0);
+        std::vector<int> gi(12, 0);
         gi[0] = hold_AI;
         gi[1] = current_AI;
         gi[2] = pc_cnt;
@@ -2687,7 +2659,7 @@ namespace shig {
         //if (!gc.set_gc_bool(gb))return false;
         gc.set_gc_bool(gb);
 
-        VVI gv(1, VI(0, 0));
+        std::vector<std::vector<int>> gv(1, std::vector<int>(0, 0));
         gv[0] = this->height;
         //if (!gc.set_gc_VI(gv))return false;
         
@@ -2696,7 +2668,7 @@ namespace shig {
         //if(!gc.set_gc_next(next_AI, q_next_AI))return false;
         gc.set_gc_next(next_AI, q_next_AI);
 
-        vector<VVI> gf(3, VVI(0, VI(0, 0)));
+        vector<std::vector<std::vector<int>>> gf(3, std::vector<std::vector<int>>(0, std::vector<int>(0, 0)));
         gf[0] = field_AI;
         gf[1] = p_field_AI;
         //gf[2] = strategy_map;
@@ -2708,7 +2680,7 @@ namespace shig {
         gc.set_gc_ttrp(select_ttrp);
 
         //gc.p_field_AI = p_field_AI;
-        //strategy_map = VVI(45, (VI(10, 0)));
+        //strategy_map = std::vector<std::vector<int>>(45, W_seed);
         //strategy_list = vector<strategy>(0);
         //cv = vector<cmd_pattern>(0);
         //cv.reserve(600);
@@ -2724,11 +2696,11 @@ namespace shig {
         set<int> itr = AiShigune::erase_check_AI(ct.pat, gcp);
         int itr_s = (int)itr.size();
 
-        VVI proxy(0); proxy.reserve(45);
+        std::vector<std::vector<int>> proxy(0); proxy.reserve(45);
 
         shig_rep(i, fh) {
             decltype(itr)::iterator it = itr.find(i);
-            if (it == itr.end()) proxy.push_back(gcp.p_field_AI[i]);
+            if (it == itr.end()) proxy.push_back(gcp.p_field_AI.at(i));
         }
         while (proxy.size() < fh) proxy.push_back(ev_empty);
 
@@ -2802,14 +2774,37 @@ namespace shig {
         return shig::AiShigune::TE;
     }
 
-	void shig::AiShigune::loadTE(TetriEngine& te){
+	void shig::AiShigune::loadTE(const TetriEngine& te){
 		AiShigune::TE = te;
-
 		return;
+	}
+
+	CmdPattern AiShigune::getCmd()
+	{
+		std::lock_guard<std::mutex> _lock{ AiMtx };
+		return s_branch.at(0);
 	}
 
 	AiShigune::~AiShigune() {
 
+	}
+
+	// 非同期処理用
+	int32 ExeThinking(AiShigune& As, const std::atomic<bool>& abort, std::atomic<bool>& think, std::deque<int>& CmdListS)
+	{
+		// 中断命令が出るまで
+		while (!abort) {
+
+			if (think) {
+				As.thinking();
+				As.make_AI_suggestion();
+				for (auto&& cmd : As.getCmd().cmd_list) {
+					CmdListS.push_back(cmd);
+				}
+				think = false;
+			}
+		}
+		return 334;
 	}
 
 }
@@ -2818,105 +2813,161 @@ namespace shig {
 
 	bool GetTempNameList(std::vector<std::string>& name_list) {
 		int n = 0;
-		FILE* fp = NULL;
-		fopen_s(&fp, "template\\tetriplate_list.txt", "r");
-		//hndl_tmplist = FileRead_open("template\\tetriplate_list.txt");
-		//if (hndl_tmplist == 0)return false;
+		//FILE* fp = NULL;
+		//fopen_s(&fp, "template\\tetriplate_list.txt", "r");
+		//
+		//if (fp != NULL) {
+		//	fscanf_s(fp, "%d", &n);
+		//	if (n < 0)n = 0;
+		//	std::vector<std::string> list(n);
+		//	shig_rep(i, n) {
+		//		char tmpC[128];
+		//		fscanf_s(fp, "%s", tmpC, 128);
+		//		if (tmpC[0] == '\0' || tmpC[0] == '/') {
+		//			i--;
+		//			continue;
+		//		}
+		//		for (int j = 0; j < 128; j++) {
+		//			if (tmpC.at(j) == '\0') {
+		//				list.at(i) = std::string(tmpC, j);
+		//				break;
+		//			}
+		//		}
+		//		//list.at(i) = tmpC;
+		//		name_list.push_back("template\\data\\" + list.at(i));
+		//	}
+		//	//name_list = list;
+		//	fclose(fp);
+		//}
 
-		if (fp != NULL) {
-			fscanf_s(fp, "%d", &n);
-			if (n < 0)n = 0;
+		std::ifstream ifs("template\\tetriplate_list.txt");
+		if (ifs.fail()) {
+			std::cerr << "failed to open \"template\\tetriplate_list.txt\" ";
+			exit(-4);
+		}
 
-			VS list(n);
-			shig_rep(i, n) {
-				char tmpC[128];
-				fscanf_s(fp, "%s", tmpC, 128);
-				if (tmpC[0] == '\0' || tmpC[0] == '/') {
-					i--;
-					continue;
-				}
+		std::string readS;
+		std::getline(ifs, readS);
+		stringstream ss(readS);
+		ss >> n;
 
-				for (int j = 0; j < 128; j++) {
-					if (tmpC[j] == '\0') {
-						list[i] = std::string(tmpC, j);
-						break;
-					}
-				}
-				//list[i] = tmpC;
-				name_list.push_back("template\\data\\" + list.at(i));
+		while (std::getline(ifs, readS)) {
+			stringstream sl(readS);
+			std::string tempS;
+			sl >> tempS;
+			if (tempS[0] == '\0' || tempS[0] == '/') {
+
 			}
-
-			//name_list = list;
-
-			fclose(fp);
+			else {
+				name_list.push_back("template\\data\\" + tempS);
+			}
 		}
 
 		return true;
 
 	}
 
-	bool ReadTempData(std::string& name, shig::TetriPlate& ttrp) {
+	bool ReadTempData(const std::string& name, shig::TetriPlate& ttrp) {
 
-		const char* fname = name.c_str();
-		FILE* fp = NULL;
-		fopen_s(&fp, fname, "r");
-		if (fp == NULL) {
-			int z = 0;
-			string zs = "";
-			ttrp.set(z, z, z, z, zs, z);
-			vector<Tetri> zt = { Tetri(0, 0, 0, 0) };
-			VI zts(0, 0);
-			ttrp.set_list(zt, zts);
-			VI zv(0, 0);
-			ttrp.set_id_list(zv);
-			vector<pairI2> zp(0, make_pair(0, 0));
-			ttrp.set_terms(zp);
-			return false;
+		std::ifstream ifs(name);
+		if (ifs.fail()) {
+			std::cerr << "failed to open -> " << name << "\n";
+			exit(-5);
 		}
-		else {
-			int l, ls, id, tn, bf; //mino num : connect list num : ttrp id
-			char rtdC[128];
-			string rtdS = "";
-			fscanf_s(fp, "%d %d %d %d %d %s ", &l, &ls, &id, &tn, &bf, rtdC, 64);
-			for (int i = 0; i < 128; i++) {
-				if (rtdC[i] == '\0') {
-					rtdS = std::string(rtdC, i);
-					break;
-				}
-			}
-			ttrp.set(l, ls, id, tn, rtdS, bf);
 
-			//
-			vector<Tetri> tpl(l);
-			VI ts(l);
-			shig_rep(i, l) {
-				int r, x, y, d, s;
-				fscanf_s(fp, "%d %d %d %d %d", &r, &x, &y, &d, &s);
+		int l = 0, ls = 0, id = 0, tn = 0, bf = 0; //mino num : connect list num : ttrp id
+		string rtdS = "";
+
+		std::string readS;
+		std::getline(ifs, readS);
+		stringstream ss(readS);
+		ss >> l >> ls >> id >> tn >> bf >> rtdS;
+		ttrp.Setup(l, ls, id, tn, rtdS, bf);
+
+		// mino座標読み込み
+		if (l > 0) {
+			vector<Tetri> tpl(0);
+			std::vector<int> ts(0);
+			for (int i = 0; i < l; i++) {
+				int r = 0, x = 0, y = 0, d = 0, s = 0;
+				std::getline(ifs, readS);
+				stringstream mns(readS);
+				ss >> r >> x >> y >> d >> s;
 				Tetri tp(r, x, y, d);
-				tpl[i] = tp;
-				ts[i] = s;
+				tpl.push_back(tp);
+				ts.push_back(s);
 			}
 			ttrp.set_list(tpl, ts);
+		}
 
-			//
-			VI vil(ls);
-			shig_rep(i, ls) {
-				int temp = 0;
-				fscanf_s(fp, "%d", &temp);
-				vil[i] = temp;
+		// 次に遷移できるテンプレid 
+		if (ls > 0) {
+			std::vector<int> vil(0);
+			for (int i = 0; i < ls; i++) {
+				int tid = 0;
+				std::getline(ifs, readS);
+				stringstream tpid(readS);
+				ss >> tid;
+				vil.push_back(tid);
 			}
 			ttrp.set_id_list(vil);
+		}
 
-			//
-			vector<pairI2> vmp(tn);
-			shig_rep(i, tn) {
+		// 選択条件
+		if (tn > 0) {
+			std::vector<pair<int, int>> vmp(0);
+			for (int i = 0; i < tn; i++) {
 				int ll = 0, rr = 0;
-				fscanf_s(fp, "%d %d", &ll, &rr);
-				vmp[i] = make_pair(ll, rr);
+				std::getline(ifs, readS);
+				stringstream terms(readS);
+				ss >> ll >> rr;
+				vmp.push_back(std::make_pair(ll, rr));
 			}
 			ttrp.set_terms(vmp);
-			fclose(fp);
 		}
+		
+		//if (fp != NULL)
+		//{
+		//	int l, ls, id, tn, bf; //mino num : connect list num : ttrp id
+		//	char rtdC[128];
+		//	string rtdS = "";
+		//	fscanf_s(fp, "%d %d %d %d %d %s ", &l, &ls, &id, &tn, &bf, rtdC, 64);
+		//	for (int i = 0; i < 128; i++) {
+		//		if (rtdC.at(i) == '\0') {
+		//			rtdS = std::string(rtdC, i);
+		//			break;
+		//		}
+		//	}
+		//	ttrp.Setup(l, ls, id, tn, rtdS, bf);
+		//	//
+		//	vector<Tetri> tpl(l);
+		//	std::vector<int> ts(l);
+		//	shig_rep(i, l) {
+		//		int r, x, y, d, s;
+		//		fscanf_s(fp, "%d %d %d %d %d", &r, &x, &y, &d, &s);
+		//		Tetri tp(r, x, y, d);
+		//		tpl.at(i) = tp;
+		//		ts.at(i) = s;
+		//	}
+		//	ttrp.set_list(tpl, ts);
+		//	//
+		//	std::vector<int> vil(ls);
+		//	shig_rep(i, ls) {
+		//		int temp = 0;
+		//		fscanf_s(fp, "%d", &temp);
+		//		vil.at(i) = temp;
+		//	}
+		//	ttrp.set_id_list(vil);
+		//	//
+		//	vector<pairI2> vmp(tn);
+		//	shig_rep(i, tn) {
+		//		int ll = 0, rr = 0;
+		//		fscanf_s(fp, "%d %d", &ll, &rr);
+		//		vmp.at(i) = make_pair(ll, rr);
+		//	}
+		//	ttrp.set_terms(vmp);
+		//	fclose(fp);
+		//}
 
 		return true;
 	}

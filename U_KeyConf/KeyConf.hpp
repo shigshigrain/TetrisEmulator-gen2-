@@ -1,6 +1,8 @@
 ﻿#pragma once
+#include "stdafx.h"
 
-const int KeyVal_size = 22;
+
+constexpr int KeyVal_size = 22;
 
 enum KeyVal {
 	R,
@@ -30,7 +32,6 @@ enum KeyVal {
 class KeyConf
 {
 private:
-
 	Input keyconf_R;
 	Input keyconf_C;
 	Input keyconf_X;
@@ -52,15 +53,13 @@ private:
 	Input keyconf_N;
 	Input keyconf_M;
 	Input keyconf_G;
-
 	std::vector<Input> Keyconf_list;
-
 public:
 
 	KeyConf();
-	void set_defalut();
-	void set_key(const KeyVal& key, const Input& s3d_key);
-	Input get_key(const KeyVal& keyStr);
+	void SetDefault();
+	void SetKey(const KeyVal& key, const Input& s3d_key);
+	Input GetKey(const KeyVal& keyStr);
 	//void load_key();
 
 	~KeyConf();

@@ -1,5 +1,5 @@
-﻿#include "stdafx.h"
-#include "KeyConf.h"
+﻿
+#include "KeyConf.hpp"
 
 KeyConf::KeyConf() {
 
@@ -25,11 +25,11 @@ KeyConf::KeyConf() {
 	keyconf_M = KeyM;
 	keyconf_G = KeyG;
 
-	Keyconf_list = std::vector<Input>(KeyVal_size);
+	Keyconf_list = std::vector<Input>(KeyVal_size, Input());
 
 };
 
-void KeyConf::set_defalut() {
+void KeyConf::SetDefault() {
 
 	Keyconf_list.at(0) = KeyR;
 	Keyconf_list.at(1) = KeyC;
@@ -53,11 +53,10 @@ void KeyConf::set_defalut() {
 	Keyconf_list.at(19) = KeyM;
 	Keyconf_list.at(20) = KeyG;
 
-
 	return;
 };
 
-void KeyConf::set_key(const KeyVal& key, const Input& s3d_key){
+void KeyConf::SetKey(const KeyVal& key, const Input& s3d_key){
 
 	/*switch (key)
 	{
@@ -131,7 +130,7 @@ void KeyConf::set_key(const KeyVal& key, const Input& s3d_key){
 
 	return;
 }
-Input KeyConf::get_key(const KeyVal& keyStr){
+Input KeyConf::GetKey(const KeyVal& keyStr){
 
 	return Keyconf_list.at(keyStr);
 }
@@ -142,10 +141,10 @@ KeyConf::~KeyConf() {
 };
 
 bool IsPressedKeyAnd(KeyConf& kc, const KeyVal& a, const KeyVal& b){
-	return kc.get_key(a).pressed() && kc.get_key(b).pressed();
+	return kc.GetKey(a).pressed() && kc.GetKey(b).pressed();
 }
 
 bool IsKeyVP(KeyConf& kc, const KeyVal& kv)
 {
-	return kc.get_key(kv).pressed();
+	return kc.GetKey(kv).pressed();
 }

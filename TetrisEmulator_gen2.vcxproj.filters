@@ -1046,7 +1046,7 @@
     <ClInclude Include="U_TetriCore\tetri.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="U_KeyConf\KeyConf.h">
+    <ClInclude Include="U_KeyConf\KeyConf.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="U_AI_Shigune\CmdPattern.hpp">

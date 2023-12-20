@@ -1,32 +1,39 @@
 ﻿#include "ai.hpp"
 
-
 Ai::Ai(const InitData& init)
 	: IScene{ init }
 {
-
-	m_soloTE = TetriEngine(2);
-	m_soloAI.loadTE(m_soloTE);
-	m_soloAI.load_ttrp();
-	m_soloAI.thinking();
-
+	m_1pTE.Init(1);
+	m_2pTE.Init(2);
+	m_2pAI.loadTE(m_2pTE);
+	m_2pAI.load_ttrp();
+	
 	m_bg = Texture{ U"tex\\background\\tetris_emulator_background02.bmp" };
 
-	m_KeyConfS = KeyConf();
+	//m_KeyConf1p = KeyConf();
+	m_KeyConf1p.SetDefault();
 
-	m_MinoTex = vector<Texture>(minotex_path_size);
-	for (int i = 0; i < minotex_path_size; i++) {
-		m_MinoTex.at(i) = Texture{ minotex_path.at(i) };
+	//m_MinoTex = Array<Texture>(0);
+	for (auto&& mp : minotex_path) {
+		m_MinoTex.emplace_back(Texture{mp});
 	}
 
 	sec_time = Time::GetMillisec();
 	delay_cnt = 0;
-	DAS_flame = 5;
-	Wait_flame = 0;
+	DASFlame1p = 5;
+	WaitFlame1p = 0;
+	WaitFlame2p = 0;
 	passed_flame = 0;
 	reset_flag = false;
-	suggest_flag = shig::BoolSwitch();//false
-	act_flame = vector<int>(8, 0);
+	//suggest_flag = shig::BoolSwitch();//false
+	FieldS = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
+	act_flame = std::vector<int>(8, 0);
+	abortAi = { false };
+	thinkAi = { false };
+	//CmdList2pAi = std::deque<int>(0);
+
+	// AI起動 
+	asyncAi = s3d::Async(shig::ExeThinking, ref(m_2pAI), ref(abortAi), ref(thinkAi), ref(CmdList2pAi));
 
 }
 
@@ -37,123 +44,130 @@ void Ai::update()
 		sec_time = Time::GetMillisec();
 		passed_flame++;
 
-		if (Wait_flame > 0) {
-			Wait_flame += -1;
+		// 1p 人間側 
+		if (WaitFlame1p > 0) {
+			WaitFlame1p--;
 		}
 		else {
-
-			/*if (delay_cnt > 0) {
-				delay_cnt += -1;
-
-			}
-			else {
-
-
-			}*/
-
-			m_soloTE.reset_pfield();
-
-			if (reset_flag) {
-				reset_manage();
-			}
-
-			m_KeyConfS.set_defalut();
+			m_1pTE.ResetFieldP();
+			m_KeyConf1p.SetDefault(); // キー入力情報のセット
+			if (reset_flag) ResetManage();
 
 			// テトリス側操作入力
-			tetris_manage();
+			TetrisManage1p();
 			// DASフレームの更新
 			actF_manage();
 			// ゲーム側操作入力
-			game_manage();
-
+			GameManage1p();
+			
+			
+		}
+		// 2p AI側 
+		if (WaitFlame2p > 0) {
+			WaitFlame2p--;
+		}
+		else {
+			m_2pTE.ResetFieldP();
+			if (reset_flag) ResetManage();
+			// テトリス側操作入力
+			TetrisManage2p();
+			// ゲーム側操作入力
+			GameManage2p();
+			
 		}
 
-
-
 	}
-
-	//m_KeyConfS.set_defalut(); // キー入力情報のセット
 
 	if (KeyQ.pressed())
 	{
+		thinkAi = false;
+		abortAi = true;
+		// 非同期処理の終了を待機 
+		if (asyncAi.isValid())asyncAi.wait();
 		changeScene(State::Title);
 	}
 
-	//m_soloTE.copy_pfield();// 描写用セットアップ
+	//m_1pTE.CopyFiledP();// 描写用セットアップ
 
 }
 
 void Ai::draw() const
 {
-
 	m_bg.draw(0, 0);
-	draw_field();
-	draw_s_field();
-	draw_tex();
-
+	DrawField();
+	DrawGhost();
+	DrawTex1p();
+	DrawTex2p();
 }
 
-void Ai::game_manage() {
+void Ai::GameManage1p() {
 
-	if (IsKeyVP(m_KeyConfS, KeyVal::R)) {
-		m_soloTE.copy_pfield();
-		Wait_flame = 30;
+	if (IsKeyVP(m_KeyConf1p, KeyVal::R)) {
+		m_1pTE.CopyFiledP();
+		m_2pTE.CopyFiledP();
+		WaitFlame1p = 40;
+		WaitFlame2p = 40;
 		reset_flag = true;
 	}
 
-	if (IsKeyVP(m_KeyConfS, KeyVal::G)) {
-		m_soloTE.copy_pfield();
-		m_soloTE.edit_garbage_cmd(1);
+	if (IsKeyVP(m_KeyConf1p, KeyVal::G)) {
+		m_1pTE.CopyFiledP();
+		m_1pTE.edit_garbage_cmd(1);
 	}
 
-	if (IsKeyVP(m_KeyConfS, KeyVal::I)) {
+}
+
+void Ai::GameManage2p()
+{
+	if (IsKeyVP(m_KeyConf1p, KeyVal::M)) {
 		/*if (suggest_flag)suggest_flag = false;
 		else suggest_flag = true;*/
 		if (suggest_flag.sw()) {
-			m_soloAI.thinking();
-			m_soloAI.make_AI_suggestion();
+			/*m_2pAI.thinking();
+			m_2pAI.make_AI_suggestion();*/
+			//abortAi = true;
 		}
-
 	}
 
 
 }
 
-void Ai::tetris_manage() {
+void Ai::TetrisManage1p() {
+
 	int g_check = 0;
 
-	if (m_KeyConfS.get_key(KeyVal::Left).pressed() && not m_KeyConfS.get_key(KeyVal::Right).pressed()) {
+	if (m_KeyConf1p.GetKey(KeyVal::Left).pressed() && not m_KeyConf1p.GetKey(KeyVal::Right).pressed()) {
 		if (act_flame[6] == 0) {
-			act_flame[6] = -1 * DAS_flame;
-			g_check = m_soloTE.game(6, 0);
+			act_flame[6] = -1 * DASFlame1p;
+			g_check = m_1pTE.Game(6, 0);
 		}
 		else if (act_flame[6] == -1) {
 			act_flame[6] = 1;
 		}
 		else if (act_flame[6] > 0) {
-			g_check = m_soloTE.game(6, 0);
+			g_check = m_1pTE.Game(6, 0);
 		}
 		delay_cnt = 2;
 	}
 
-	if (not m_KeyConfS.get_key(KeyVal::Left).pressed() && m_KeyConfS.get_key(KeyVal::Right).pressed()) {
+	if (not m_KeyConf1p.GetKey(KeyVal::Left).pressed() && m_KeyConf1p.GetKey(KeyVal::Right).pressed()) {
 		if (act_flame[7] == 0) {
-			act_flame[7] = -DAS_flame;
-			g_check = m_soloTE.game(7, 0);
+			act_flame[7] = -DASFlame1p;
+			g_check = m_1pTE.Game(7, 0);
 		}
 		else if (act_flame[7] == -1) {
 			act_flame[7] = 1;
 		}
 		else if (act_flame[7] > 0) {
-			g_check = m_soloTE.game(7, 0);
+			g_check = m_1pTE.Game(7, 0);
 		}
 		delay_cnt = 2;
 	}
 
-	if (m_KeyConfS.get_key(KeyVal::Up).pressed() && not m_KeyConfS.get_key(KeyVal::Z).pressed()) {
+	if (m_KeyConf1p.GetKey(KeyVal::Up).pressed() && not m_KeyConf1p.GetKey(KeyVal::Z).pressed()) {
 		if (act_flame[5] >= 0) {
-			act_flame[5] = -DAS_flame;
-			g_check = m_soloTE.game(5, 0);
+			act_flame[5] = -DASFlame1p;
+			g_check = m_1pTE.Game(5, 0);
 		}
 		else {
 			act_flame[5] -= 1;
@@ -161,10 +175,10 @@ void Ai::tetris_manage() {
 		delay_cnt = 2;
 	}
 
-	if (not m_KeyConfS.get_key(KeyVal::Up).pressed() && m_KeyConfS.get_key(KeyVal::Z).pressed()) {
+	if (not m_KeyConf1p.GetKey(KeyVal::Up).pressed() && m_KeyConf1p.GetKey(KeyVal::Z).pressed()) {
 		if (act_flame[4] >= 0) {
-			act_flame[4] = -DAS_flame;
-			g_check = m_soloTE.game(4, 0);
+			act_flame[4] = -DASFlame1p;
+			g_check = m_1pTE.Game(4, 0);
 		}
 		else {
 			act_flame[4] -= 1;
@@ -172,10 +186,10 @@ void Ai::tetris_manage() {
 		delay_cnt = 2;
 	}
 
-	if (m_KeyConfS.get_key(KeyVal::C).pressed()) {
+	if (m_KeyConf1p.GetKey(KeyVal::C).pressed()) {
 		if (act_flame[1] >= 0) {
 			act_flame[1] = -2;
-			g_check = m_soloTE.game(1, 0);
+			g_check = m_1pTE.Game(1, 0);
 		}
 		else {
 			act_flame[1] += -1;
@@ -184,10 +198,10 @@ void Ai::tetris_manage() {
 
 	}
 
-	if (m_KeyConfS.get_key(KeyVal::Down).pressed()) {
+	if (m_KeyConf1p.GetKey(KeyVal::Down).pressed()) {
 		if (act_flame[2] >= 0) {
 			act_flame[2] = -1;
-			g_check = m_soloTE.game(2, 0);
+			g_check = m_1pTE.Game(2, 0);
 		}
 		else {
 			act_flame[2] = 0;
@@ -195,113 +209,103 @@ void Ai::tetris_manage() {
 		delay_cnt = 2;
 	}
 
-	if (m_KeyConfS.get_key(KeyVal::Space).pressed()) {
+	if (m_KeyConf1p.GetKey(KeyVal::Space).pressed()) {
 		if (act_flame[3] >= 0) {
 			act_flame[3] = -2;
-			g_check = m_soloTE.game(3, 0);
-			delay_cnt = m_soloTE.get_delayF();
+			g_check = m_1pTE.Game(3, 0);
+			//delay_cnt = m_1pTE.get_delayF();
 		}
 		else {
 			act_flame[3] += -1;
 		}
-		delay_cnt = 2;
-
-		if (suggest_flag.get()) {
-			m_soloAI.loadTE(m_soloTE);
-			m_soloAI.thinking();
-			m_soloAI.make_AI_suggestion();
-			//Print << U"thinking";
-		}
+		//delay_cnt = 2;
 
 	}
 
 	if (g_check == 2) {
-		Wait_flame = m_soloTE.get_delayF();
+		WaitFlame1p = m_1pTE.get_delayF();
 		delay_cnt = 0;
 	}
 	else if (g_check == 1) {
-		m_soloTE.copy_pfield();
+		m_1pTE.CopyFiledP();
 		reset_flag = true;
-		Wait_flame = 72;
+		WaitFlame1p = 72;
 	}
 	else if (g_check == 0) {
-		m_soloTE.copy_pfield();
+		m_1pTE.CopyFiledP();
 	}
-
-
-
 
 	return;
 }
 
-void Ai::reset_manage() {
+void Ai::TetrisManage2p()
+{
+	int g_check = 0;
 
-	m_soloTE.set_field();
-	delay_cnt = 0;
-	DAS_flame = 7;
-	Wait_flame = 0;
-	reset_flag = false;
-	act_flame = vector<int>(8, 0);
-	m_soloAI.loadTE(m_soloTE);
-	m_soloAI.thinking();
-	//m_soloAI.make_AI_suggestion();
+	if (suggest_flag.get()) {
 
-	return;
-}
+		// 非同期処理側で推奨手計算が終了している場合
+		if (!thinkAi) {
 
-void Ai::draw_field() const {
+			FieldS = m_2pAI.get_AI_suggestion();
 
-	Rect{ 200, 50, 300, 630 }
-		.draw(Palette::White)
-		.drawFrame(0, 1, Palette::Black);
+			if (!CmdList2pAi.empty()) {
+				g_check = m_2pTE.Game(CmdList2pAi.front(), 0);
 
-	for (int i = 0; i < 11; i++) {
-		Line{ 200 + i * 30, 50, 200 + i * 30, 681 }.draw(1, Palette::Black);
-	}
-	for (int i = 0; i < 22; i++) {
-		Line{ 200, 50 + i * 30, 501, 50 + i * 30 }.draw(1, Palette::Black);
-	}
+				CmdList2pAi.pop_front();
 
-	for (int i = 0; i < 21; i++) {
-		for (int j = 0; j < 10; j++) {
-			Rect{ 201 + (j * 30), 51 + (i * 30), 29, 29 }
-			.draw(minoC.at(m_soloTE.get_field_state(20 - i, j, 0)));
+				// 操作をし終わったタイミングで先に思考開始
+				if (CmdList2pAi.empty()) {
+					m_2pAI.loadTE(m_2pTE);
+					thinkAi = true;
+				}
+
+			}
+			else {
+				
+			}
+		}
+		else if (thinkAi) {
+			// することがない 
 		}
 
 	}
 
-	return;
-}
-
-void Ai::draw_s_field() const {
-
-	vector<vector<int>> SF = m_soloAI.get_AI_suggestion();
-
-	for (int i = 0; i < 21; i++) {
-		for (int j = 0; j < 10; j++) {
-			if (SF.at(20 - i).at(j) == 0)continue;
-			Rect{ 201 + (j * 30), 51 + (i * 30), 29, 29 }
-			.drawFrame(2, 0, minoC.at(SF.at(20 - i).at(j)));
-		}
-
+	switch (g_check)
+	{
+	case 2:
+		WaitFlame2p = m_2pTE.get_delayF();
+		delay_cnt = 0;
+		break;
+	case 1:
+		m_2pTE.CopyFiledP();
+		reset_flag = true;
+		WaitFlame2p = 72;
+		break;
+	case 0:
+		m_2pTE.CopyFiledP();
+		break;
+	default:
+		break;
 	}
 
+
 	return;
+
 }
 
 void Ai::actF_manage() {
 
-	for (auto& i : act_flame) {
-		i++;
-		if (i > 0x10000000)i = 1;
+	for (auto&& af : act_flame) {
+		if (af <= 0x11111110)af++;
 	}
 
-	if (not IsKeyVP(m_KeyConfS, KeyVal::Right) && not IsKeyVP(m_KeyConfS, KeyVal::Left)) {
+	if (not IsKeyVP(m_KeyConf1p, KeyVal::Right) && not IsKeyVP(m_KeyConf1p, KeyVal::Left)) {
 		act_flame[6] = 0;
 		act_flame[7] = 0;
 	}
 
-	if (IsKeyVP(m_KeyConfS, KeyVal::Right) && IsKeyVP(m_KeyConfS, KeyVal::Left)) {
+	if (IsKeyVP(m_KeyConf1p, KeyVal::Right) && IsKeyVP(m_KeyConf1p, KeyVal::Left)) {
 		act_flame[6] = 1;
 		act_flame[7] = 1;
 	}
@@ -309,17 +313,114 @@ void Ai::actF_manage() {
 	return;
 }
 
-void Ai::draw_tex() const {
+void Ai::ResetManage() {
 
-	pair<int, deque<int>> data = m_soloTE.get_mino_state();
+	m_1pTE.SetField();
+	m_1pTE.CopyFiledP();
+
+	m_2pTE.SetField();
+	m_2pTE.CopyFiledP();
+
+	delay_cnt = 0;
+	DASFlame1p = 7;
+	WaitFlame1p = 0;
+	WaitFlame2p = 0;
+	reset_flag = false;
+	act_flame = {0 ,0 ,0 ,0, 0 ,0 ,0 ,0 };
+	thinkAi = false;
+	CmdList2pAi.clear();
+	m_2pAI.loadTE(m_2pTE);
+	//thinkAi = true;
+
+	return;
+}
+
+void Ai::DrawField() const {
+
+	// 左フィールド用 
+	Rect{ 150, 50, 300, 630 }
+		.draw(Palette::White)
+		.drawFrame(0, 1, Palette::Black);
+	// 右フィールド用 
+	Rect{ 790, 50, 300, 630 }
+		.draw(Palette::White)
+		.drawFrame(0, 1, Palette::Black);
+
+	// 左フィールド用 
+	for (int i = 0; i < 21; i++) {
+		for (int j = 0; j < 10; j++) {
+			Rect{ 151 + (j * 30), 51 + (i * 30), 29, 29 }
+			.draw(minoC.at((size_t)m_1pTE.get_field_state(20 - i, j, 0)));
+		}
+	}
+	// 右フィールド用 
+	for (int i = 0; i < 21; i++) {
+		for (int j = 0; j < 10; j++) {
+			Rect{ 791 + (j * 30), 51 + (i * 30), 29, 29 }
+			.draw(minoC.at((size_t)m_2pTE.get_field_state(20 - i, j, 0)));
+		}
+	}
+
+	// 左フィールド用 
+	for (size_t i = 0; i <= 10; i++) {
+		Line{ 150 + i * 30, 50, 150 + i * 30, 681 }.draw(1, Palette::Black);
+	}
+	for (size_t i = 0; i <= 21; i++) {
+		Line{ 150, 50 + i * 30, 451, 50 + i * 30 }.draw(1, Palette::Black);
+	}
+	// 右フィールド用 
+	for (size_t i = 0; i <= 10; i++) {
+		Line{ 790 + i * 30, 50, 790 + i * 30, 681 }.draw(1, Palette::Black);
+	}
+	for (size_t i = 0; i <= 21; i++) {
+		Line{ 790, 50 + i * 30, 1091, 50 + i * 30 }.draw(1, Palette::Black);
+	}
+
+	return;
+}
+
+void Ai::DrawGhost() const {
+
+	for (size_t i = 0; i < 21; i++) {
+		for (size_t j = 0; j < 10; j++) {
+			int fs = FieldS.at((size_t)20 - i).at(j);
+			if (fs == 0)continue;
+			Rect{ 791 + (j * 30), 51 + (i * 30), 29, 29 }
+			.drawFrame(2, 0, minoC.at((size_t)fs));
+		}
+
+	}
+
+	return;
+}
+
+void Ai::DrawTex1p() const {
+
+	pair<int, deque<int>> data = m_1pTE.get_mino_state();
 	int bhold = data.first; if (bhold < 0 || bhold > 7)bhold = 0;
 
-	m_MinoTex.at(bhold).draw(50, 80);
+	m_MinoTex.at(bhold).draw(20, 80);
 
-	int n_size = min(5, (int)data.second.size());
-	for (int i = 0; i < n_size; i++) {
-		int nq = data.second.at(i) + 8;
-		m_MinoTex.at(nq).draw(525, 80 + i * 100);
+	size_t n_size = min(5Ui64, data.second.size());
+	for (size_t i = 0; i < n_size; i++) {
+		size_t nq = (size_t)data.second.at(i) + 8;
+		m_MinoTex.at(nq).draw(490, 80 + (double)i * 100);
+	}
+
+	return;
+}
+
+void Ai::DrawTex2p() const {
+
+	std::pair<int, std::deque<int>> data = m_2pTE.get_mino_state();
+	int bhold = data.first; if (bhold < 0 || bhold > 7)bhold = 0;
+
+	m_MinoTex.at(bhold).draw(660, 80);
+
+	size_t n_size = std::min(5Ui64, data.second.size());
+	for (size_t i = 0; i < n_size; i++) {
+		size_t nq = (size_t)data.second.at(i) + 8;
+		m_MinoTex.at(nq).draw(1130, 80 + (double)i * 100);
 	}
 
 	return;

@@ -18,7 +18,7 @@ SamplerState	g_sampler0 : register(s0);
 namespace s3d
 {
 	//
-	//	VS Input
+	//	std::vector<std::string> Input
 	//
 	struct VSInput
 	{
@@ -28,7 +28,7 @@ namespace s3d
 	};
 
 	//
-	//	VS Output / PS Input
+	//	std::vector<std::string> Output / PS Input
 	//
 	struct PSInput
 	{
@@ -67,7 +67,7 @@ cbuffer PSConstants2D : register(b0)
 //
 //	Functions
 //
-s3d::PSInput VS(s3d::VSInput input)
+s3d::PSInput std::vector<std::string>(s3d::VSInput input)
 {
 	s3d::PSInput result;
 	result.position	= s3d::Transform2D(input.position, g_transform);

@@ -10,11 +10,9 @@ using namespace std;
 typedef long long LL;
 typedef pair<int, int> pairI2;
 typedef pair<LL, LL> pairLL2;
-typedef vector<int> VI;
 typedef vector<LL> VLL;
-typedef vector<VI> VVI;
-typedef vector<VVI> VVVI;
-typedef vector<string> VS;
+typedef vector<std::vector<std::vector<int>>> VVVI;
+
 #define shig_for(i, a, b) for(int i = (a); i < (b); ++i)
 #define shig_rep(i, n) shig_for(i, 0, n)
 #define shig_forB(bit,a,b) for(int bit = (a); bit < (1<<(b)); ++bit)
@@ -38,7 +36,7 @@ namespace shig{
 		~BoolSwitch();
 		bool sw();
 		bool set(bool s);
-		bool get();
+		bool get() const;
 
 
 	};
@@ -54,5 +52,6 @@ namespace shig{
 
 
 
+	static const std::vector<int> W_seed = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 }

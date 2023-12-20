@@ -23,14 +23,11 @@ namespace shig {
 	public:
 		TetriPlate();
 		bool set_def();
-		bool set(int& a, int& b, int& c, int& d, string& e, int& f);
-		bool set_id_list(VI& l);
-		bool set_list(vector<Tetri>& rnd, VI& rs);
-		bool set_terms(vector<pairI2>& tr);
+		bool Setup(const int& a, const int& b, const int& c, const int& d, const string& e, const int& f);
+		bool set_id_list(const std::vector<int>& l);
+		bool set_list(const vector<Tetri>& rnd, const std::vector<int>& rs);
+		bool set_terms(const std::vector<std::pair<int, int>>& tr);
 		~TetriPlate();
 	};
 
 }
-
-
-

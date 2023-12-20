@@ -3,48 +3,90 @@
 
 // 
 template <typename T>
-int binaryS(const vector<T> &v, const T key) {
-    int ng = -1; int ok = (int)v.size(); int mid = -1;
-    while (abs(ok - ng) > 1) {
-        mid = (ok + ng) / 2;
-        if ([&]() {return v.at(mid) >= key; }())ok = mid;
-        else ng = mid;
-    }
-    return ok;
+int binaryS(const vector<T>& v, const T key) {
+	int ng = -1; int ok = (int)v.size(); int mid = -1;
+	while (abs(ok - ng) > 1) {
+		mid = (ok + ng) / 2;
+		if ([&]() {return v.at(mid) >= key; }())ok = mid;
+		else ng = mid;
+	}
+	return ok;
 }
 
-bool vfind_sorted(const vector<int> &v, const int key) {
-    int itr = binaryS<int>(v, key);
-    if (itr < 0 || itr >= v.size())return false;
-    if (v.at(itr) == key)return true;
-    else return false;
+bool vfind_sorted(const vector<int>& v, const int key) {
+	int itr = binaryS<int>(v, key);
+	if (itr < 0 || itr >= v.size())return false;
+	if (v.at(itr) == key)return true;
+	else return false;
 }
 
 namespace shig {
 
-
-	void TetriEngine::add_next_que(deque<int>& que, VI& _sev) {
-		shuffle(_sev.begin(), _sev.end(), Rengine);
-		for (auto i : _sev) {
-			que.push_back(i);
+	void TetriEngine::AddNextQue(std::deque<int>& que, std::vector<int>& _sev) {
+		std::shuffle(_sev.begin(), _sev.end(), Rengine);
+		for (const auto& ni : _sev) {
+			que.push_back(ni);
 		}
 		return;
 	}
 
 	TetriEngine::TetriEngine() {
-		TetriEngine::now_mino = Tetri();
-		TetriEngine::id = 0;
-		TetriEngine::sev = { 1,2,3,4,5,6,7 };
-		TetriEngine::ts_state = vector <std::string>(2);
-		set_field();
+		now_mino = Tetri();
+		id = 0;
+		sev = { 1,2,3,4,5,6,7 };
+		ts_state = std::vector<std::string>(2, "");
+		mino_his = std::deque<std::string>(0);
+		field = std::vector<std::vector<int>>(45, (std::vector<int>(10, 0)));
+		p_field = std::vector<std::vector<int>>(45, (std::vector<int>(10, 0)));
+		//SetField();
+		current = 0;
+		hold_f = 0;
+		hold = 0;
+		counter = 0;
+		m_evn = 1;
+		hold_kind = 0;
+		hd_cnt = 0;
+		delay_flame = 0;
+		ts_kind = 0;
+		p_srs = -1;
+		btb = -1;
+		combo = 0;
+		garbage_cmd = 0;
+		l_erasef = false;
+		dead_f = false;
 	}
 
-	TetriEngine::TetriEngine(int id) {
-		TetriEngine::now_mino = Tetri();
-		TetriEngine::id = id;
-		TetriEngine::sev = { 1,2,3,4,5,6,7 };
-		TetriEngine::ts_state = vector <std::string>(2);
-		set_field();
+	TetriEngine::TetriEngine(int _id) {
+		now_mino = Tetri();
+		id = _id;
+		sev = { 1,2,3,4,5,6,7 };
+		ts_state = std::vector<std::string>(2);
+		mino_his = std::deque<std::string>(0);
+		field = std::vector<std::vector<int>>(45, (std::vector<int>(10, 0)));
+		p_field = std::vector<std::vector<int>>(45, (std::vector<int>(10, 0)));
+		//SetField();
+		current = 0;
+		hold_f = 0;
+		hold = 0;
+		counter = 0;
+		m_evn = 1;
+		hold_kind = 0;
+		hd_cnt = 0;
+		delay_flame = 0;
+		ts_kind = 0;
+		p_srs = -1;
+		btb = -1;
+		combo = 0;
+		garbage_cmd = 0;
+		l_erasef = false;
+		dead_f = false;
+	}
+
+	bool TetriEngine::Init(int _id)
+	{
+		id = _id;
+		SetField();
+		return true;
 	}
 
 	int TetriEngine::get_rnd(int l, int r) {
@@ -84,8 +126,8 @@ namespace shig {
 	}
 
 	bool TetriEngine::add_garbage(int line) {
-		VVI pre_field(fh);
-		VI garbage(10, 8);
+		std::vector<std::vector<int>> pre_field(fh);
+		std::vector<int> garbage(10, 8);
 		int g = get_rnd(0, 9);
 		shig_rep(i, line) {
 			if (!get_TF(0.7)) g = get_rnd(0, 9);
@@ -104,14 +146,14 @@ namespace shig {
 	}
 
 	bool TetriEngine::make_garbage(int X, int Y, bool sft) {
-		VVI pre_field(fh);
-		VI garbage(10, 8);
+		std::vector<std::vector<int>> pre_field(fh);
+		std::vector<int> garbage(10, 8);
 		if (sft) {
-			shig_rep(i, Y) {
+			for (size_t i = 0; i < Y; ++i) {
 				pre_field[i] = field[i];
 			}
-			shig_rep(i, field.size() - Y - 1) {
-				pre_field[(size_t)i + Y + 1] = field[(size_t)i + Y];
+			for (size_t i = 0; i < (field.size() - Y - 1); ++i) {
+				pre_field[i + Y + 1] = field[i + Y];
 			}
 		}
 		field[Y] = garbage;
@@ -128,8 +170,8 @@ namespace shig {
 		int ts_cnt = 0;
 		int rot = ts.rot;
 
-		VI testX = { 0, 0, 2, 2 };
-		VI testY = { 0, 2, 0, 2 };
+		std::vector<int> testX = { 0, 0, 2, 2 };
+		std::vector<int> testY = { 0, 2, 0, 2 };
 
 		pairI2 check = { 0, 0 };
 
@@ -178,7 +220,7 @@ namespace shig {
 
 	bool TetriEngine::move_check(int toX, int toY) {
 		int cnt = 0, cntt = 4;
-		auto [rot, size, H, W] = getTS(now_mino);
+		const auto& [rot, size, H, W] = getTS(now_mino);
 		shig_rep(i, H) {
 			shig_rep(j, W) {
 				if (now_mino.mino[rot][i][j] != 0) {
@@ -196,7 +238,7 @@ namespace shig {
 
 	bool TetriEngine::move_check(int toX, int toY, Tetri& check) {
 		int cnt = 0, cntt = 4;
-		auto [rot, size, H, W] = getTS(check);
+		const auto& [rot, size, H, W] = getTS(check);
 		shig_rep(i, H) {
 			shig_rep(j, W) {
 				if (check.mino[rot][i][j] != 0) {
@@ -733,7 +775,7 @@ namespace shig {
 		test.set_rot(NextRotate(rot, Rotate::Clockwise));
 		if (test.id == 1) {
 			int cnt = 0;
-			for (auto&& tester : WallKick_clockI.at(rot)) {
+			for (const auto& tester : WallKick_clockI.at(rot)) {
 				if (move_check(tester.first, tester.second, test)) {
 					p_srs = cnt;
 					to_X = tester.first;
@@ -748,7 +790,7 @@ namespace shig {
 		}
 		else {
 			int cnt = 0;
-			for (auto&& tester : WallKick_clockW.at(rot)) {
+			for (const auto& tester : WallKick_clockW.at(rot)) {
 				if (move_check(tester.first, tester.second, test)) {
 					p_srs = cnt;
 					to_X = tester.first;
@@ -781,7 +823,7 @@ namespace shig {
 		test.set_rot(NextRotate(rot, Rotate::CounterClockwise));
 		if (test.id == 1) {
 			int cnt = 0;
-			for (auto&& tester : WallKick_counterI.at(rot)) {
+			for (const auto& tester : WallKick_counterI.at(rot)) {
 				if (move_check(tester.first, tester.second, test)) {
 					p_srs = cnt;
 					to_X = tester.first;
@@ -796,7 +838,7 @@ namespace shig {
 		}
 		else {
 			int cnt = 0;
-			for (auto&& tester : WallKick_counterW.at(rot)) {
+			for (const auto& tester : WallKick_counterW.at(rot)) {
 				if (move_check(tester.first, tester.second, test)) {
 					p_srs = cnt;
 					to_X = tester.first;
@@ -820,8 +862,8 @@ namespace shig {
 		return;
 	}
 
-	void TetriEngine::print_mino(int p) {
-		auto [rot, size, H, W] = getTS(now_mino);
+	void TetriEngine::PrintMino(int p) {
+		const auto& [rot, size, H, W] = getTS(now_mino);
 		shig_rep(i, H) {
 			shig_rep(j, W) {
 				if (now_mino.mino[rot][i][j] != 0) {
@@ -840,12 +882,12 @@ namespace shig {
 		}
 	}
 
-	void TetriEngine::print_ghost(int p) {
+	void TetriEngine::PrintGhost(int p) {
 		Tetri ghost_mino = now_mino;
 		int sft = -1;
 		while (move_check(0, sft, ghost_mino))ghost_mino.addY(sft);
 		int gID = ghost_mino.id;
-		auto [rot, size, H, W] = getTS(ghost_mino);
+		const auto& [rot, size, H, W] = getTS(ghost_mino);
 		shig_rep(i, H) {
 			shig_rep(j, W) {
 				if (ghost_mino.mino[rot][i][j] != 0) {
@@ -864,9 +906,9 @@ namespace shig {
 		}
 	}
 
-	set<int> TetriEngine::erase_check() {
-		set<int> erase_itr;
-		print_mino(2);
+	std::set<int> TetriEngine::erase_check() {
+		std::set<int> erase_itr;
+		PrintMino(2);
 		int rot = now_mino.rot;
 		int H = (int)now_mino.mino[rot].size();
 		int pW = (int)field[0].size();
@@ -900,57 +942,65 @@ namespace shig {
 	}
 
 	int TetriEngine::line_erase() {
-		set<int> itr = erase_check();
-		VI empty = { 0, 0, 0, 0 ,0 ,0 ,0 ,0 ,0 ,0 };
-		VVI proxy(0); proxy.reserve(45);
-		VVI pre(0); pre.reserve(45);
+		std::set<int> itr = erase_check();
+		//std::vector<int> empty = { 0, 0, 0, 0 ,0 ,0 ,0 ,0 ,0 ,0 };
+		std::vector<std::vector<int>> proxy(0); proxy.reserve(45);
+		std::vector<std::vector<int>> pre(0); pre.reserve(45);
 
-		shig_rep(i, fh) {
+		for (int i = 0; i < fh; ++i) {
 			decltype(itr)::iterator it = itr.find(i);
-			if (it == itr.end()) pre.push_back(field[i]);
-			else pre.push_back(empty);
+			if (it == itr.end()) pre.push_back(field.at(i));
+			else pre.push_back(W_seed);
 		}
 
-		p_field = pre;
+		//p_field = pre;
+		for (size_t i = 0; i < fh; ++i) {
+			p_field.at(i) = pre.at(i);
+		}
+
 		if (itr.size() != 0) l_erasef = 1;
 
 
-		shig_rep(i, fh) {
+		for (int i = 0; i < fh; ++i) {
 			decltype(itr)::iterator it = itr.find(i);
-			if (it == itr.end()) proxy.push_back(field[i]);
+			if (it == itr.end()) proxy.push_back(field.at(i));
 		}
-		while (proxy.size() < fh) proxy.push_back(empty);
+		while (proxy.size() < fh) proxy.push_back(W_seed);
 
-		field = proxy;
+		//field = proxy;
+		for (size_t i = 0; i < fh; ++i) {
+			field.at(i) = proxy.at(i);
+		}
+
+		proxy.clear();
 
 		int s = (int)itr.size();
 
 		if (s > 0 && ts_kind > 0) {
 			combo++;
 			btb++;
-			if (s == 1)ts_state[0] = "T-spin Single";
+			/*if (s == 1)ts_state[0] = "T-spin Single";
 			else if (s == 2)ts_state[0] = "T-spin Double";
 			else if (s == 3)ts_state[0] = "T-spin Triple";
 
 			if (ts_kind == 2)ts_state[1] = "mini";
-			else ts_state[1] = "    ";
+			else ts_state[1] = "    ";*/
 		}
 		else if (s == 4) {
 			combo++;
 			btb++;
-			ts_state[0] = "4-LINE-eraser";
-			ts_state[1] = "    ";
+			/*ts_state[0] = "4-LINE-eraser";
+			ts_state[1] = "    ";*/
 		}
 		else if (s > 0) {
 			combo++;
 			btb = -1;
-			ts_state[0] = "    ";
-			ts_state[1] = "    ";
+			/*ts_state[0] = "    ";
+			ts_state[1] = "    ";*/
 		}
 		else {
 			combo = 0;
 		}
-
 
 		return s;
 	}
@@ -999,7 +1049,7 @@ namespace shig {
 			now_mino.addY(sft);
 			hd_cnt++;
 		}
-		if (move_check(0, 0))print_mino(1);
+		if (move_check(0, 0))PrintMino(1);
 
 		mino_his.push_front(now_mino.get_mino_str());
 		if (mino_his.size() > 7)mino_his.pop_back();
@@ -1014,7 +1064,7 @@ namespace shig {
 	void TetriEngine::ghost() {
 		int sft = -1;
 		while (move_check(0, sft))now_mino.addY(sft);
-		if (move_check(0, 0))print_mino(1);
+		if (move_check(0, 0))PrintMino(1);
 		line_erase();
 		return;
 	}
@@ -1055,19 +1105,16 @@ namespace shig {
 		return;
 	}
 
-	void TetriEngine::set_field() {
+	void TetriEngine::SetField() {
 
-		//shig_rep(i, fh)field[i] = { 0, 0, 0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 };
-		//shig_rep(i, fh)p_field[i] = { 0, 0, 0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 };
-		field = vector<vector<int>>(fh, vector<int>(10, 0));
-		p_field = vector<vector<int>>(fh, vector<int>(10, 0));
-		//while (!q_next.empty())q_next.pop_front();
-		q_next.clear();
-		add_next_que(q_next, sev);
+		for (auto&& fH : field) for (auto&& fW : fH)fW = 0;
+		for (auto&& fH : p_field)for (auto&& fW : fH)fW = 0;
+		
+		//q_next = std::deque<int>(0);
+		AddNextQue(q_next, sev);
 		current = q_next.front();
 		q_next.pop_front();
-		now_mino = Tetri(current);
-		//now_mino.set_mino(current);
+		now_mino.SetMino(current);
 		hold_f = 0;
 		hold = 0;
 		counter = 0;
@@ -1080,26 +1127,26 @@ namespace shig {
 		btb = -1;
 		combo = 0;
 		garbage_cmd = 0;
+		l_erasef = false;
 		dead_f = false;
-		ts_state[0] = "             ";
-		ts_state[1] = "    ";
-		mino_his.clear();
+		sev = sev_seed;
+		//mino_his.clear();
 		return;
 	}
 
-	void TetriEngine::copy_pfield() {
+	void TetriEngine::CopyFiledP() {
 		p_field = field;
-		print_ghost(2);
-		print_mino(2);
+		PrintGhost(2);
+		PrintMino(2);
 		return;
 	}
 
-	void TetriEngine::reset_pfield() {
+	void TetriEngine::ResetFieldP() {
 		p_field = field;
 		return;
 	}
 
-	int TetriEngine::game(int action, int evn) {
+	int TetriEngine::Game(int action, int evn) {
 
 		switch (action)
 		{
@@ -1107,7 +1154,7 @@ namespace shig {
 			if (hold_f == 0) {
 				act_hold(hold, current, m_evn);
 				hold_f = true;
-				dead_f = do_advance();
+				dead_f = Advance();
 			}
 			break;
 
@@ -1119,7 +1166,7 @@ namespace shig {
 			act_hard();
 			hold_f = false;
 			m_evn = -1;
-			dead_f = do_advance();
+			dead_f = Advance();
 			break;
 
 		case 4:
@@ -1150,62 +1197,16 @@ namespace shig {
 
 		return 0;
 
-		//if (m_evn == 1) {
-		//    if (action == 1) {//hold action
-		//        if (hold_f == 0) {
-		//            act_hold(hold, current, m_evn);
-		//            hold_f = 1;
-		//        }
-		//    }
-		//    else if (action == 2) {//soft drop
-		//        act_soft();
-		//    }
-		//    else if (action == 3) {//hard drop
-		//        act_hard();
-		//        hold_f = 0;
-		//        m_evn = -1;
-		//    }
-		//    else if (action == 4) {//left rot Z
-		//        act_rotL();
-		//    }
-		//    else if (action == 5) {//right rot up
-		//        act_rotR();
-		//    }
-		//    else if (action == 6) {//left move
-		//        act_left();
-		//    }
-		//    else if (action == 7) {//right move
-		//        act_right();
-		//    }
-		//}
-
-		/*if (m_evn == -1 || m_evn == -2) {
-			if (q_next.size() <= 6)add_next_que(q_next, sev);
-			if (m_evn == -1) {
-				current = q_next.front();
-				q_next.pop_front();
-			}
-			m_evn = 1;
-			now_mino.set_mino(current);
-			if (!(move_check(0, 0))) {
-				return 1;
-			}
-		}
-		if (l_erasef == 1) {
-			l_erasef = 0;
-			return 2;
-		}*/
-
 	}
 
-	bool TetriEngine::do_advance() {
-		if (q_next.size() <= 6)add_next_que(q_next, sev);
+	bool TetriEngine::Advance() {
+		if (q_next.size() <= 6)AddNextQue(q_next, sev);
 		if (m_evn == -1) {
 			current = q_next.front();
 			q_next.pop_front();
 		}
 		m_evn = 1;
-		now_mino.set_mino(current);
+		now_mino.SetMino(current);
 		if (!(move_check(0, 0))) {
 			return true;
 		}
@@ -1236,8 +1237,8 @@ namespace shig {
 		return;
 	}
 
-	VI TetriEngine::get_game_state() const {
-		VI state(13);
+	std::vector<int> TetriEngine::get_game_state() const {
+		std::vector<int> state(13);
 		state[0] = hold_f;
 		state[1] = hold;
 		state[2] = current;
@@ -1254,7 +1255,7 @@ namespace shig {
 		return state;
 	}
 
-	VS TetriEngine::get_ts_state() const {
+	std::vector<std::string> TetriEngine::get_ts_state() const {
 		return ts_state;
 	}
 
@@ -1272,6 +1273,3 @@ namespace shig {
 
 
 }
-
-
-

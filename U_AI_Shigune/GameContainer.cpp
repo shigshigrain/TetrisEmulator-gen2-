@@ -9,8 +9,8 @@ namespace shig {
 		pre_score = 0;
 		hold_AI = 0;
 		current_AI = 0;
-		next_AI = VI(0);
-		q_next_AI = deque<int>();
+		next_AI = std::vector<int>(0);
+		q_next_AI = deque<int>(0);
 		pc_cnt = 0;
 		SRS_kind = 0;
 		TS_kind = 0;
@@ -22,23 +22,21 @@ namespace shig {
 		ttrp_ofsY = 0;
 		total_s = 0;
 		ttrp_able = false;
-		field_AI = VVI(45, (VI(10, 0)));
-		p_field_AI = VVI(45, (VI(10, 0)));
-		height = VI(10, 0);
-		cv = vector<CmdPattern>(0);
-		cv.reserve(600);
-		ec = vector<CmdPattern>(0);
+		field_AI = std::vector<std::vector<int>>(45, W_seed);
+		p_field_AI = std::vector<std::vector<int>>(45, W_seed);
+		height = std::vector<int>(10, 0);
+		ec = std::vector<CmdPattern>(0);
 		ec.reserve(10);
 		int z = 0;
 		string zs = "nothing";
-		gc_ttrp.set(z, z, z, z, zs, z);
-		VI zv(0, 0);
+		gc_ttrp.Setup(z, z, z, z, zs, z);
+		std::vector<int> zv(0, 0);
 		gc_ttrp.set_id_list(zv);
 		vector<pairI2> zp(0, make_pair(0, 0));
 		gc_ttrp.set_terms(zp);
 	}
 
-	bool GameContainer::set_gc_int(const VI& si) {
+	bool GameContainer::set_gc_int(const std::vector<int>& si) {
 		if (si.size() != 12) return false;
 		hold_AI = si[0];
 		current_AI = si[1];
@@ -56,7 +54,7 @@ namespace shig {
 
 	}
 
-	bool GameContainer::set_gc_VI(const vector<VI>& sv) {
+	bool GameContainer::set_gc_VI(const vector<std::vector<int>>& sv) {
 		if (sv.size() != 1) return false;
 		height = sv[0];
 		return true;
@@ -68,13 +66,13 @@ namespace shig {
 		return true;
 	}
 
-	bool GameContainer::set_gc_next(const VI& nx, const deque<int>& qnx) {
+	bool GameContainer::set_gc_next(const std::vector<int>& nx, const deque<int>& qnx) {
 		next_AI = nx;
 		q_next_AI = qnx;
 		return true;
 	}
 
-	bool GameContainer::set_gc_field(const vector<VVI>& sf) {
+	bool GameContainer::set_gc_field(const vector<std::vector<std::vector<int>>>& sf) {
 		if (sf.size() != 3) return false;
 		field_AI = sf[0];
 		p_field_AI = sf[1];

@@ -5,11 +5,11 @@
 # version 410
 
 //
-//	VS Input (nothing)
+//	std::vector<std::string> Input (nothing)
 //
 
 //
-//	VS Output
+//	std::vector<std::string> Output
 //
 layout(location = 0) out vec4 Color;
 layout(location = 1) out vec2 UV;

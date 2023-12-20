@@ -18,7 +18,7 @@ SamplerState	g_sampler0 : register(s0);
 namespace s3d
 {
 	//
-	//	VS Input
+	//	std::vector<std::string> Input
 	//
 	struct VSInput
 	{
@@ -28,7 +28,7 @@ namespace s3d
 	};
 
 	//
-	//	VS Output / PS Input
+	//	std::vector<std::string> Output / PS Input
 	//
 	struct PSInput
 	{
@@ -85,7 +85,7 @@ float2 Transform(const float2 pos, const float3x3 mat)
 	return float2(x, y);
 }
 
-s3d::PSInput VS(s3d::VSInput input)
+s3d::PSInput std::vector<std::string>(s3d::VSInput input)
 {
 	s3d::PSInput result;
 	input.position	= Transform(input.position, g_homography);
