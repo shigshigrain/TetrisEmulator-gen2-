@@ -13,10 +13,10 @@ public:
 	void draw() const override;
 
 private:// メンバ変数
-	TetriEngine m_soloTE;
-	shig::AiShigune m_soloAI;
+	std::unique_ptr<TetriEngine> m_soloTE;
+	std::unique_ptr<AiShigune> m_soloAI;
 	Texture m_bg;
-	std::vector<Texture> m_MinoTex;
+	Array<Texture> m_MinoTex;
 	KeyConf m_KeyConfS;
 	uint64 sec_time;
 	int delay_cnt;

@@ -3,10 +3,13 @@
 Ai::Ai(const InitData& init)
 	: IScene{ init }
 {
-	m_1pTE.Init(1);
-	m_2pTE.Init(2);
-	m_2pAI.loadTE(m_2pTE);
-	m_2pAI.load_ttrp();
+	m_1pTE = std::make_unique<TetriEngine>(TetriEngine());
+	m_1pTE->Init(1);
+	m_2pTE = std::make_unique<TetriEngine>(TetriEngine());
+	m_2pTE->Init(2);
+	m_2pAI = std::make_unique<AiShigune>(AiShigune());
+	m_2pAI->loadTE(*m_2pTE);
+	m_2pAI->load_ttrp();
 	
 	m_bg = Texture{ U"tex\\background\\tetris_emulator_background02.bmp" };
 
@@ -27,13 +30,15 @@ Ai::Ai(const InitData& init)
 	reset_flag = false;
 	//suggest_flag = shig::BoolSwitch();//false
 	FieldS = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
-	act_flame = std::vector<int>(8, 0);
+	ActFlame = std::vector<int>(8, 0);
 	abortAi = { false };
 	thinkAi = { false };
-	//CmdList2pAi = std::deque<int>(0);
+	CmdList2pAi = std::deque<int>(0);
 
 	// AI起動 
-	asyncAi = s3d::Async(shig::ExeThinking, ref(m_2pAI), ref(abortAi), ref(thinkAi), ref(CmdList2pAi));
+	asyncAi = s3d::Async(shig::ExeThinking, ref(*m_2pAI), ref(abortAi), ref(thinkAi), ref(CmdList2pAi));
+
+	ResetManage();
 
 }
 
@@ -49,7 +54,7 @@ void Ai::update()
 			WaitFlame1p--;
 		}
 		else {
-			m_1pTE.ResetFieldP();
+			m_1pTE->ResetFieldP();
 			m_KeyConf1p.SetDefault(); // キー入力情報のセット
 			if (reset_flag) ResetManage();
 
@@ -67,7 +72,7 @@ void Ai::update()
 			WaitFlame2p--;
 		}
 		else {
-			m_2pTE.ResetFieldP();
+			m_2pTE->ResetFieldP();
 			if (reset_flag) ResetManage();
 			// テトリス側操作入力
 			TetrisManage2p();
@@ -86,9 +91,6 @@ void Ai::update()
 		if (asyncAi.isValid())asyncAi.wait();
 		changeScene(State::Title);
 	}
-
-	//m_1pTE.CopyFiledP();// 描写用セットアップ
-
 }
 
 void Ai::draw() const
@@ -103,16 +105,18 @@ void Ai::draw() const
 void Ai::GameManage1p() {
 
 	if (IsKeyVP(m_KeyConf1p, KeyVal::R)) {
-		m_1pTE.CopyFiledP();
-		m_2pTE.CopyFiledP();
+		m_1pTE->CopyFiledP();
+		m_2pTE->CopyFiledP();
 		WaitFlame1p = 40;
 		WaitFlame2p = 40;
 		reset_flag = true;
 	}
 
 	if (IsKeyVP(m_KeyConf1p, KeyVal::G)) {
-		m_1pTE.CopyFiledP();
-		m_1pTE.edit_garbage_cmd(1);
+		m_1pTE->CopyFiledP();
+		//m_1pTE->edit_garbage_cmd(1);
+		m_1pTE->StackGarbage(0);
+
 	}
 
 }
@@ -120,13 +124,16 @@ void Ai::GameManage1p() {
 void Ai::GameManage2p()
 {
 	if (IsKeyVP(m_KeyConf1p, KeyVal::M)) {
-		/*if (suggest_flag)suggest_flag = false;
-		else suggest_flag = true;*/
-		if (suggest_flag.sw()) {
-			/*m_2pAI.thinking();
-			m_2pAI.make_AI_suggestion();*/
-			//abortAi = true;
+		if (ActFlame.at(0) >= 0) {
+			ActFlame.at(0) = -15;
+			suggest_flag.sw();
 		}
+	}
+
+	if (IsKeyVP(m_KeyConf1p, KeyVal::O)) {
+		m_2pTE->CopyFiledP();
+		//m_1pTE->edit_garbage_cmd(1);
+		m_2pTE->StackGarbage(0);
 	}
 
 
@@ -137,102 +144,103 @@ void Ai::TetrisManage1p() {
 	int g_check = 0;
 
 	if (m_KeyConf1p.GetKey(KeyVal::Left).pressed() && not m_KeyConf1p.GetKey(KeyVal::Right).pressed()) {
-		if (act_flame[6] == 0) {
-			act_flame[6] = -1 * DASFlame1p;
-			g_check = m_1pTE.Game(6, 0);
+		if (ActFlame.at(6) == 0) {
+			ActFlame.at(6) = -1 * DASFlame1p;
+			g_check = m_1pTE->Game(6, 0);
 		}
-		else if (act_flame[6] == -1) {
-			act_flame[6] = 1;
+		else if (ActFlame.at(6) == -1) {
+			ActFlame.at(6) = 1;
 		}
-		else if (act_flame[6] > 0) {
-			g_check = m_1pTE.Game(6, 0);
+		else if (ActFlame.at(6) > 0) {
+			g_check = m_1pTE->Game(6, 0);
 		}
 		delay_cnt = 2;
 	}
 
 	if (not m_KeyConf1p.GetKey(KeyVal::Left).pressed() && m_KeyConf1p.GetKey(KeyVal::Right).pressed()) {
-		if (act_flame[7] == 0) {
-			act_flame[7] = -DASFlame1p;
-			g_check = m_1pTE.Game(7, 0);
+		if (ActFlame.at(7) == 0) {
+			ActFlame.at(7) = -DASFlame1p;
+			g_check = m_1pTE->Game(7, 0);
 		}
-		else if (act_flame[7] == -1) {
-			act_flame[7] = 1;
+		else if (ActFlame.at(7) == -1) {
+			ActFlame.at(7) = 1;
 		}
-		else if (act_flame[7] > 0) {
-			g_check = m_1pTE.Game(7, 0);
+		else if (ActFlame.at(7) > 0) {
+			g_check = m_1pTE->Game(7, 0);
 		}
 		delay_cnt = 2;
 	}
 
 	if (m_KeyConf1p.GetKey(KeyVal::Up).pressed() && not m_KeyConf1p.GetKey(KeyVal::Z).pressed()) {
-		if (act_flame[5] >= 0) {
-			act_flame[5] = -DASFlame1p;
-			g_check = m_1pTE.Game(5, 0);
+		if (ActFlame.at(5) >= 0) {
+			ActFlame.at(5) = -DASFlame1p;
+			g_check = m_1pTE->Game(5, 0);
 		}
 		else {
-			act_flame[5] -= 1;
+			ActFlame.at(5) -= 1;
 		}
 		delay_cnt = 2;
 	}
 
 	if (not m_KeyConf1p.GetKey(KeyVal::Up).pressed() && m_KeyConf1p.GetKey(KeyVal::Z).pressed()) {
-		if (act_flame[4] >= 0) {
-			act_flame[4] = -DASFlame1p;
-			g_check = m_1pTE.Game(4, 0);
+		if (ActFlame.at(4) >= 0) {
+			ActFlame.at(4) = -DASFlame1p;
+			g_check = m_1pTE->Game(4, 0);
 		}
 		else {
-			act_flame[4] -= 1;
+			ActFlame.at(4) -= 1;
 		}
 		delay_cnt = 2;
 	}
 
 	if (m_KeyConf1p.GetKey(KeyVal::C).pressed()) {
-		if (act_flame[1] >= 0) {
-			act_flame[1] = -2;
-			g_check = m_1pTE.Game(1, 0);
+		if (ActFlame.at(1) >= 0) {
+			ActFlame.at(1) = -2;
+			g_check = m_1pTE->Game(1, 0);
 		}
 		else {
-			act_flame[1] += -1;
+			ActFlame.at(1) += -1;
 		}
 		delay_cnt = 2;
 
 	}
 
 	if (m_KeyConf1p.GetKey(KeyVal::Down).pressed()) {
-		if (act_flame[2] >= 0) {
-			act_flame[2] = -1;
-			g_check = m_1pTE.Game(2, 0);
+		if (ActFlame.at(2) >= 0) {
+			ActFlame.at(2) = -1;
+			g_check = m_1pTE->Game(2, 0);
 		}
 		else {
-			act_flame[2] = 0;
+			ActFlame.at(2) = 0;
 		}
 		delay_cnt = 2;
 	}
 
 	if (m_KeyConf1p.GetKey(KeyVal::Space).pressed()) {
-		if (act_flame[3] >= 0) {
-			act_flame[3] = -2;
-			g_check = m_1pTE.Game(3, 0);
-			//delay_cnt = m_1pTE.get_delayF();
+		if (ActFlame.at(3) >= 0) {
+			ActFlame.at(3) = -2;
+			g_check = m_1pTE->Game(3, 0);
+			m_2pTE->StackGarbage(m_1pTE->getGarbage());
+			//delay_cnt = m_1pTE->get_delayF();
 		}
 		else {
-			act_flame[3] += -1;
+			ActFlame.at(3) += -1;
 		}
 		//delay_cnt = 2;
 
 	}
 
 	if (g_check == 2) {
-		WaitFlame1p = m_1pTE.get_delayF();
+		WaitFlame1p = m_1pTE->get_delayF();
 		delay_cnt = 0;
 	}
 	else if (g_check == 1) {
-		m_1pTE.CopyFiledP();
+		m_1pTE->CopyFiledP();
 		reset_flag = true;
 		WaitFlame1p = 72;
 	}
 	else if (g_check == 0) {
-		m_1pTE.CopyFiledP();
+		m_1pTE->CopyFiledP();
 	}
 
 	return;
@@ -243,47 +251,44 @@ void Ai::TetrisManage2p()
 	int g_check = 0;
 
 	if (suggest_flag.get()) {
-
 		// 非同期処理側で推奨手計算が終了している場合
 		if (!thinkAi) {
-
-			FieldS = m_2pAI.get_AI_suggestion();
-
+			FieldS = m_2pAI->getSuggestionAi();
 			if (!CmdList2pAi.empty()) {
-				g_check = m_2pTE.Game(CmdList2pAi.front(), 0);
-
-				CmdList2pAi.pop_front();
-
-				// 操作をし終わったタイミングで先に思考開始
-				if (CmdList2pAi.empty()) {
-					m_2pAI.loadTE(m_2pTE);
-					thinkAi = true;
+				g_check = m_2pTE->Game(CmdList2pAi.front(), 0);
+				if (CmdList2pAi.front() == 3) {
+					//m_1pTE->StackGarbage(m_2pTE->getGarbage());
+					m_2pTE->getGarbage();
 				}
 
+				CmdList2pAi.pop_front();
+				// 操作をし終わったタイミングで先に思考開始
+				if (CmdList2pAi.empty()) {
+					m_2pAI->loadTE(*m_2pTE);
+					thinkAi = true;
+				}
 			}
 			else {
-				
 			}
 		}
 		else if (thinkAi) {
 			// することがない 
 		}
-
 	}
 
 	switch (g_check)
 	{
 	case 2:
-		WaitFlame2p = m_2pTE.get_delayF();
+		WaitFlame2p = m_2pTE->get_delayF();
 		delay_cnt = 0;
 		break;
 	case 1:
-		m_2pTE.CopyFiledP();
+		m_2pTE->CopyFiledP();
 		reset_flag = true;
-		WaitFlame2p = 72;
+		WaitFlame2p = 30;
 		break;
 	case 0:
-		m_2pTE.CopyFiledP();
+		m_2pTE->CopyFiledP();
 		break;
 	default:
 		break;
@@ -296,18 +301,18 @@ void Ai::TetrisManage2p()
 
 void Ai::actF_manage() {
 
-	for (auto&& af : act_flame) {
+	for (auto&& af : ActFlame) {
 		if (af <= 0x11111110)af++;
 	}
 
 	if (not IsKeyVP(m_KeyConf1p, KeyVal::Right) && not IsKeyVP(m_KeyConf1p, KeyVal::Left)) {
-		act_flame[6] = 0;
-		act_flame[7] = 0;
+		ActFlame.at(6) = 0;
+		ActFlame.at(7) = 0;
 	}
 
 	if (IsKeyVP(m_KeyConf1p, KeyVal::Right) && IsKeyVP(m_KeyConf1p, KeyVal::Left)) {
-		act_flame[6] = 1;
-		act_flame[7] = 1;
+		ActFlame.at(6) = 1;
+		ActFlame.at(7) = 1;
 	}
 
 	return;
@@ -315,22 +320,25 @@ void Ai::actF_manage() {
 
 void Ai::ResetManage() {
 
-	m_1pTE.SetField();
-	m_1pTE.CopyFiledP();
+	m_1pTE->SetField();
+	m_1pTE->CopyFiledP();
 
-	m_2pTE.SetField();
-	m_2pTE.CopyFiledP();
+	m_2pTE->SetField();
+	m_2pTE->CopyFiledP();
 
 	delay_cnt = 0;
 	DASFlame1p = 7;
-	WaitFlame1p = 0;
-	WaitFlame2p = 0;
+	WaitFlame1p = 30;
+	WaitFlame2p = 30;
 	reset_flag = false;
-	act_flame = {0 ,0 ,0 ,0, 0 ,0 ,0 ,0 };
+	ActFlame = std::vector<int>(8, 0);
+	FieldS = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
 	thinkAi = false;
+
 	CmdList2pAi.clear();
-	m_2pAI.loadTE(m_2pTE);
-	//thinkAi = true;
+	m_2pAI->loadTE(*m_2pTE);
+
+	thinkAi = true;
 
 	return;
 }
@@ -350,14 +358,14 @@ void Ai::DrawField() const {
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
 			Rect{ 151 + (j * 30), 51 + (i * 30), 29, 29 }
-			.draw(minoC.at((size_t)m_1pTE.get_field_state(20 - i, j, 0)));
+			.draw(minoC.at((size_t)m_1pTE->get_field_state(20 - i, j, 0)));
 		}
 	}
 	// 右フィールド用 
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
 			Rect{ 791 + (j * 30), 51 + (i * 30), 29, 29 }
-			.draw(minoC.at((size_t)m_2pTE.get_field_state(20 - i, j, 0)));
+			.draw(minoC.at((size_t)m_2pTE->get_field_state(20 - i, j, 0)));
 		}
 	}
 
@@ -396,14 +404,15 @@ void Ai::DrawGhost() const {
 
 void Ai::DrawTex1p() const {
 
-	pair<int, deque<int>> data = m_1pTE.get_mino_state();
-	int bhold = data.first; if (bhold < 0 || bhold > 7)bhold = 0;
+	auto&& [bhold, n_data] = m_1pTE->get_mino_state();
+
+	if (bhold < 0 || bhold > 7)bhold = 0;
 
 	m_MinoTex.at(bhold).draw(20, 80);
 
-	size_t n_size = min(5Ui64, data.second.size());
+	size_t n_size = std::min(5Ui64, n_data.size());
 	for (size_t i = 0; i < n_size; i++) {
-		size_t nq = (size_t)data.second.at(i) + 8;
+		size_t nq = (size_t)n_data.at(i) + 8;
 		m_MinoTex.at(nq).draw(490, 80 + (double)i * 100);
 	}
 
@@ -412,14 +421,15 @@ void Ai::DrawTex1p() const {
 
 void Ai::DrawTex2p() const {
 
-	std::pair<int, std::deque<int>> data = m_2pTE.get_mino_state();
-	int bhold = data.first; if (bhold < 0 || bhold > 7)bhold = 0;
+	auto&& [bhold, n_data] = m_2pTE->get_mino_state();
+
+	if (bhold < 0 || bhold > 7)bhold = 0;
 
 	m_MinoTex.at(bhold).draw(660, 80);
 
-	size_t n_size = std::min(5Ui64, data.second.size());
+	size_t n_size = std::min(5Ui64, n_data.size());
 	for (size_t i = 0; i < n_size; i++) {
-		size_t nq = (size_t)data.second.at(i) + 8;
+		size_t nq = (size_t)n_data.at(i) + 8;
 		m_MinoTex.at(nq).draw(1130, 80 + (double)i * 100);
 	}
 

@@ -5,7 +5,6 @@ static int i32_one = 1;
 static int i32_minus_one = -1;
 constexpr size_t branch_num = 40;//branch_num <= 30
 const vector<size_t> expl_width = { 40, 40, 40, 30, 30, 30, 30, 10, 10, 10, 10, 10, 10, 10, 10 };
-//const vector<int> expl_width = { 20, 20, 20, 20, 20, 20, 20, 20, 15, 15, 15, 10, 10, 10, 10 };
 constexpr int cyc_num = 6;//up to 14
 
 // thread分割数 
@@ -17,13 +16,11 @@ constexpr int thd_num = 5;
 namespace shig {
 
 	AiShigune::AiShigune() {
-		//TE = TetriEngine(-1);
-		TE.Init(-1);
 		identifier = 0;
 		hold_AI = 0;
 		current_AI = 0;
 		next_AI = std::vector<int>(0);
-		q_next_AI = deque<int>();
+		q_next_AI = deque<int>(0);
 		mind = -1;
 		pc_cnt = 0;
 		SRS_kind = 0;
@@ -42,24 +39,23 @@ namespace shig {
 		height = std::vector<int>(10, 0);
 		cmd_list = std::vector<int>(0);
 		cmd_list.reserve(40);
-		ttrp_name_list = std::vector<std::string>(0, "");
-		ttrp_id_list = std::vector<int>(0, 0);
-		ttrp_list = std::vector<TetriPlate>(0, TetriPlate());
+		ttrp_name_list = std::vector<std::string>(0);
+		ttrp_id_list = std::vector<int>(0);
+		ttrp_list = std::vector<TetriPlate>(0);
 		ttrp_bgnF = std::vector<int>(0, 0);
 		select_ttrp.set_def();
-		gc_slot = std::vector<GameContainer>(branch_num, GameContainer());
+		gc_slot = std::vector<GameContainer>(branch_num);
 		now_gc = GameContainer();
-		s_branch = std::vector<CmdPattern>(0, CmdPattern());
+		s_branch = std::vector<CmdPattern>(0);
 
 	}
 
 	AiShigune::AiShigune(int ii) {
-		TE = TetriEngine(-1);
         identifier = ii;
 		hold_AI = 0;
 		current_AI = 0;
         next_AI = std::vector<int>(0);
-		q_next_AI = deque<int>();
+		q_next_AI = std::deque<int>(0);
 		mind = -1;
 		pc_cnt = 0;
         SRS_kind = 0;
@@ -76,21 +72,20 @@ namespace shig {
 		p_field_AI = std::vector<std::vector<int>>(45, W_seed);
 		s_field_AI = std::vector<std::vector<int>>(45, W_seed);
         height = std::vector<int>(10, 0);
-		cmd_list = std::vector<int>(0);
-        cmd_list.reserve(40);
+		cmd_list = std::vector<int>(0);  cmd_list.reserve(40);
 		ttrp_name_list = std::vector<std::string>(0);
 		ttrp_id_list = std::vector<int>(0, 0);
-		ttrp_list = std::vector<TetriPlate>(0, TetriPlate());
+		ttrp_list = std::vector<TetriPlate>(0);
 		ttrp_bgnF = std::vector<int>(0, 0);
 		select_ttrp.set_def();
-		gc_slot = std::vector<GameContainer>(branch_num, GameContainer());
+		gc_slot = std::vector<GameContainer>(branch_num);
 		now_gc = GameContainer();
-		s_branch = std::vector<CmdPattern>(0, CmdPattern());
+		s_branch = std::vector<CmdPattern>(0);
 
 	}
 
+	// TetriEngine をloadTEする 
 	AiShigune::AiShigune(const TetriEngine& te) {
-		TE = te;
 		identifier = te.id;
 		hold_AI = 0;
 		current_AI = 0;
@@ -116,13 +111,13 @@ namespace shig {
 		cmd_list.reserve(40);
 		ttrp_name_list = std::vector<std::string>(0);
 		ttrp_id_list = std::vector<int>(0, 0);
-		ttrp_list = std::vector<TetriPlate>(0, TetriPlate());
+		ttrp_list = std::vector<TetriPlate>(0);
 		ttrp_bgnF = std::vector<int>(0, 0);
 		select_ttrp.set_def();
-		gc_slot = std::vector<GameContainer>(branch_num, GameContainer());
+		gc_slot = std::vector<GameContainer>(branch_num);
 		now_gc = GameContainer();
-		s_branch = std::vector<CmdPattern>(0, CmdPattern());
-
+		s_branch = std::vector<CmdPattern>(0);
+		loadTE(te);
 	}
 
 	/*AiShigune::AiShigune(const AiShigune& copyAi)
@@ -166,8 +161,8 @@ namespace shig {
 	// let Ai think about the next move(return True or False)
 	bool AiShigune::thinking() {
 
-		get_state();
-		get_field();
+		SetupState();
+		SetupField();
         strategy_mark();
 
         set_gc(now_gc);
@@ -178,7 +173,7 @@ namespace shig {
 
 
 		Tetri s_pat = s_branch.front().pat;
-		std::set<int> el = erase_check_AI(s_pat, now_gc);
+		std::set<int> el = CheckErase(s_pat, now_gc);
 		int els = (int)el.size();
 
 		std::vector<int> mnL = make_order_list();
@@ -197,7 +192,7 @@ namespace shig {
 
 		Tetri s_pat = s_branch.front().pat;
 
-		set<int> el = erase_check_AI(s_pat, now_gc);
+		set<int> el = CheckErase(s_pat, now_gc);
 		int els = (int)el.size();
 
 		/*std::vector<std::vector<int>> proxy(0); proxy.reserve(45);
@@ -218,7 +213,7 @@ namespace shig {
 
 	}
 
-	bool AiShigune::make_AI_suggestion(){
+	bool AiShigune::makeAiSuggestion(){
 
 		std::lock_guard<std::mutex> _lock{ AiMtx };
 
@@ -234,7 +229,7 @@ namespace shig {
 		return true;
 	}
 
-	bool AiShigune::make_AI_suggestion(std::mutex& up)
+	bool AiShigune::makeAiSuggestion(std::mutex& up)
 	{
 
 		std::lock_guard<std::mutex> _lock{ up };
@@ -251,32 +246,33 @@ namespace shig {
 
 	}
 
-	vector<vector<int>> AiShigune::get_AI_suggestion() const{
+	vector<vector<int>> AiShigune::getSuggestionAi() const{
 
 		//std::lock_guard<std::mutex> _lock{ AiMtx };
 		//呼び出し側で制御
 		return AiShigune::s_field_AI;
 	}
 
-	vector<vector<int>> AiShigune::get_AI_suggestion(std::mutex& up)
+	vector<vector<int>> AiShigune::getSuggestionAi(std::mutex& up)
 	{
 		std::lock_guard<std::mutex> _lock{ up };
 		return AiShigune::s_field_AI;
 	}
 
-	void AiShigune::get_field() {
-		shig_rep(i, 45) {
+	void AiShigune::SetupField() {
+		/*shig_rep(i, 45) {
 			shig_rep(j, 10) {
 				field_AI.at(i).at(j) = TE.get_field_state(i, j, 1);
                 p_field_AI.at(i).at(j) = TE.get_field_state(i, j, 0);
 			}
-		}
+		}*/
+		p_field_AI = field_AI;
         height_sum = 0;
         height_mxm = 0;
         shig_rep(j, 10) {
-            int h = 44;
+            int h = fh - 1;
             while (h >= 0) {
-                if (field_AI[h].at(j) == 0) {
+                if (field_AI.at(h).at(j) == 0) {
                     height.at(j) = h;
                     h--;
                 }
@@ -292,20 +288,17 @@ namespace shig {
 		return;
 	}
 
-	void AiShigune::get_state() {
-        current_AI = TE.get_current().id;
-		pair<int, deque<int>> temp = TE.get_mino_state();
-		hold_AI = temp.first;
-		q_next_AI = temp.second;
-        next_AI.clear();
-        while (!temp.second.empty()) {
-            int q = temp.second.front();
-            next_AI.push_back(q);
-            temp.second.pop_front();
-        }
-		pair<int, int> temp2 = TE.get_combo();
-		combo = temp2.first; btb = temp2.second;
-
+	void AiShigune::SetupState() {
+		//current_AI = TE.get_current().id;
+		//pair<int, deque<int>> temp = TE.get_mino_state();
+		//hold_AI = temp.first;
+		//q_next_AI = temp.second;
+		next_AI.clear();
+		for (auto&& _nn : q_next_AI) {
+			next_AI.push_back(_nn);
+		}
+		/*pair<int, int> temp2 = TE.get_combo();
+		combo = temp2.first; btb = temp2.second;*/
 		return;
 	}
 
@@ -345,12 +338,12 @@ namespace shig {
 
 	bool AiShigune::strategy_mark() {
 
-		if (pc_check())bgn_strategy();
+		if (CheckPC())bgn_strategy();
 
 		return true;
 	}
 
-	bool AiShigune::pc_check() {
+	bool AiShigune::CheckPC() {
 		shig_rep(i, 10) {
 			if (field_AI[0].at(i) != 0)return false;
 		}
@@ -421,7 +414,7 @@ namespace shig {
             if (parent_tree[w] == w) {
                 test.SetMino(gc.current_AI);
                 shig_rep(i, search_tree[w].size() - 1) {
-                    if (!move_mino(test, search_tree[w].at(i), gc)) {
+                    if (!MoveMino(test, search_tree[w].at(i), gc)) {
                         can = false;
                         break;
                     }
@@ -431,8 +424,8 @@ namespace shig {
                     continue;
                 }
                 int sft = -1, hd_cnt = 0;
-                while (move_check(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
-                move_mino(test, 3, gc);
+                while (CheckMove(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
+                MoveMino(test, 3, gc);
                 CmdPattern c(test, search_tree[w], parent_tree[w]);
                 decltype(gc.cp)::iterator it = gc.cp.find(c);
                 if (it != gc.cp.end()) {
@@ -456,9 +449,9 @@ namespace shig {
                         test.SetMino(gc.current_AI);
                         can = true;
                         std::vector<int> add_tree = search_tree[w];
-                        add_tree.push_back(test_case[h]);
+                        add_tree.push_back(test_case.at(h));
                         shig_rep(i, add_tree.size()) {
-                            if (!move_mino(test, add_tree.at(i), gc)) {
+                            if (!MoveMino(test, add_tree.at(i), gc)) {
                                 can = false;
                                 break;
                             }
@@ -466,8 +459,8 @@ namespace shig {
                         if (!can) continue;
 
                         int sft = -1; int hd_cnt = 0;
-                        while (move_check(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
-                        move_mino(test, 3, gc);
+                        while (CheckMove(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
+                        MoveMino(test, 3, gc);
                         add_tree.push_back(3);
                         CmdPattern c(test, add_tree, w); c.set_isSFT(true);
                         decltype(gc.cp)::iterator it = gc.cp.find(c);
@@ -526,7 +519,7 @@ namespace shig {
 			soft_tree = SearchTree.front();
 
 			for (size_t i = 0; i < SearchTree.front().size(); i++) {
-				if (!move_mino(test, SearchTree.front().at(i), gc)) {
+				if (!MoveMino(test, SearchTree.front().at(i), gc)) {
 					can = false;
 					break;
 				}
@@ -538,11 +531,11 @@ namespace shig {
 			}
 
 			int sft = -1, hd_cnt = 0;
-			while (move_check(0, sft * (hd_cnt + 1), test, gc)) {
+			while (CheckMove(0, sft * (hd_cnt + 1), test, gc)) {
 				soft_tree.push_back(2);
 				hd_cnt++;
 			}
-			move_mino(test, 3, gc);
+			MoveMino(test, 3, gc);
 			//SearchList.insert(test);
 			c = CmdPattern(test, SearchTree.front(), w);
 			c.cmd_list.push_back(3);
@@ -566,7 +559,7 @@ namespace shig {
 				add_tree = soft_tree;
 				add_tree.push_back(tm_soft);
 				for (size_t i = 0; i < add_tree.size(); i++) {
-					if (!move_mino(test, add_tree.at(i), gc)) {
+					if (!MoveMino(test, add_tree.at(i), gc)) {
 						can = false;
 						break;
 					}
@@ -581,7 +574,7 @@ namespace shig {
 			//if (parent_tree.at(w) == w) {
 			//    test.SetMino(gc.current_AI);
 			//    shig_rep(i, search_tree.at(w).size() - 1) {
-			//        if (!move_mino(test, search_tree.at(w).at(i), gc)) {
+			//        if (!MoveMino(test, search_tree.at(w).at(i), gc)) {
 			//            can = false;
 			//            break;
 			//        }
@@ -591,8 +584,8 @@ namespace shig {
 			//        continue;
 			//    }
 			//    int sft = -1, hd_cnt = 0;
-			//    while (move_check(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
-			//    move_mino(test, 3, gc);
+			//    while (CheckMove(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
+			//    MoveMino(test, 3, gc);
 			//    CmdPattern c(test, search_tree.at(w), parent_tree.at(w));
 			//    decltype(gc.cp)::iterator it = gc.cp.find(c);
 			//    if (it != gc.cp.end()) {
@@ -616,17 +609,17 @@ namespace shig {
 			//            test.SetMino(gc.current_AI);
 			//            can = true;
 			//            std::vector<int> add_tree = search_tree.at(w);
-			//            add_tree.push_back(test_case[h]);
+			//            add_tree.push_back(test_case.at(h));
 			//            shig_rep(i, add_tree.size()) {
-			//                if (!move_mino(test, add_tree.at(i), gc)) {
+			//                if (!MoveMino(test, add_tree.at(i), gc)) {
 			//                    can = false;
 			//                    break;
 			//                }
 			//            }
 			//            if (!can) continue;
 			//            int sft = -1; int hd_cnt = 0;
-			//            while (move_check(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
-			//            move_mino(test, 3, gc);
+			//            while (CheckMove(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
+			//            MoveMino(test, 3, gc);
 			//            add_tree.push_back(3);
 			//            CmdPattern c(test, add_tree, w); c.set_isSFT(true);
 			//            decltype(gc.cp)::iterator it = gc.cp.find(c);
@@ -664,7 +657,7 @@ namespace shig {
 			test.SetMino(gc.current_AI);
 			soft_tree = SearchTree.front();
 			for (size_t i = 0; i < SearchTree.front().size(); i++) {
-				if (!move_mino(test, SearchTree.front().at(i), gc)) {
+				if (!MoveMino(test, SearchTree.front().at(i), gc)) {
 					can = false;
 					break;
 				}
@@ -688,7 +681,7 @@ namespace shig {
 				add_tree = SearchTree.front();
 				add_tree.push_back(tm_side);
 				for (size_t i = 0; i < add_tree.size(); i++) {
-					if (!move_mino(test, add_tree.at(i), gc)) {
+					if (!MoveMino(test, add_tree.at(i), gc)) {
 						can = false;
 						break;
 					}
@@ -696,7 +689,7 @@ namespace shig {
 				if (!can) continue;
 				SearchTree.push(add_tree);
 			}
-			move_mino(test, 3, gc);
+			MoveMino(test, 3, gc);
 			c = CmdPattern(test, SearchTree.front(), w);
 			c.cmd_list.push_back(3);
 			decltype(gc.cp)::iterator it = gc.cp.find(c);
@@ -854,7 +847,7 @@ namespace shig {
 
 		//gcs.p_field_AI = gcs.field_AI;
 		//shigune_AI::ApplyMino(gcs.p_field_AI, cd.pat); ↓やってくれていた
-		std::set<int> L = erase_check_AI(cd.pat, gcs);
+		std::set<int> L = CheckErase(cd.pat, gcs);
 
 		//shigune_AI::height_calc(gcs);
 
@@ -880,8 +873,8 @@ namespace shig {
 
 		int rot = cd.pat.rot;
 		int idnt = cd.pat.id - 1;
-		int H = (int)cd.pat.mino[rot].size();
-		int W = (int)cd.pat.mino[rot][0].size();
+		int H = (int)cd.pat.mino.at(rot).size();
+		int W = (int)cd.pat.mino.at(rot)[0].size();
 		int Ls = (int)L.size();
 
 		//constexpr int hm = 12;
@@ -962,17 +955,17 @@ namespace shig {
 				if (sX < 0 || sX >= 10)continue;
 				int sY = cd.pat.Y - i - 1;
 				if (sY < 0 || sY >= (field_AI.size() - 1))continue;
-				if (strategy_map[sY][sX] == cd.pat.mino[rot].at(i).at(j) && strategy_map[sY][sX] != 0) {
+				if (strategy_map[sY].at(sX) == cd.pat.mino.at(rot).at(i).at(j) && strategy_map[sY].at(sX) != 0) {
 					fusion += 100;
 				}
 				else {
-					if (strategy_map[sY][sX] == -1 && cd.pat.mino[rot].at(i).at(j) != 0) {
+					if (strategy_map[sY].at(sX) == -1 && cd.pat.mino.at(rot).at(i).at(j) != 0) {
 						fusion -= 100;
 					}
-					else if (strategy_map[sY][sX] > 0 && cd.pat.mino[rot].at(i).at(j) != 0) {
+					else if (strategy_map[sY].at(sX) > 0 && cd.pat.mino.at(rot).at(i).at(j) != 0) {
 						fusion -= 50;
 					}
-					else if (strategy_map[sY][sX] > 0 && cd.pat.mino[rot].at(i).at(j) == 0) {
+					else if (strategy_map[sY].at(sX) > 0 && cd.pat.mino.at(rot).at(i).at(j) == 0) {
 						//fusion += 500;
 					}
 				}
@@ -1248,7 +1241,7 @@ namespace shig {
 
 		shig_rep(i, H) {
 			shig_rep(j, W) {
-				if (cd.pat.mino[rot].at(i).at(j) == 0)continue;
+				if (cd.pat.mino.at(rot).at(i).at(j) == 0)continue;
 				int sX = cd.pat.X + j;
 				if (sX < 0 || sX >= 10)continue;
 				int sY = cd.pat.Y - i - 1;
@@ -1670,7 +1663,7 @@ namespace shig {
         shig_rep(j, 10) {
             int h = 44;
             while (h >= 0) {
-                if (gch.field_AI[h].at(j) == 0) {
+                if (gch.field_AI.at(h).at(j) == 0) {
                     gch.height.at(j) = h;
                     h--;
                 }
@@ -1686,17 +1679,17 @@ namespace shig {
         return true;
     }
 
-    bool AiShigune::move_check(int to_x, int to_y, Tetri& s_check, GameContainer& ggc) {
+    bool AiShigune::CheckMove(int to_x, int to_y, Tetri& s_check, GameContainer& ggc) {
         int cnt = 0, cntt = 4;
 		auto&& [rot, size, H, W] = getTS(s_check);
         shig_rep(i, H) {
             shig_rep(j, W) {
-                if (s_check.mino[rot].at(i).at(j) != 0) {
+                if (s_check.mino.at(rot).at(i).at(j) != 0) {
                     int sX = s_check.X + j + to_x;
                     if (sX < 0 || sX >= 10)break;
                     int sY = s_check.Y - i + to_y;
                     if (sY <= 0 || sY >= (ggc.field_AI.size() - 1))break;
-                    if (ggc.field_AI[sY - 1LL][sX] == 0)cnt++;
+                    if (ggc.field_AI.at(sY - 1LL).at(sX) == 0)cnt++;
                 }
             }
         }
@@ -1719,506 +1712,6 @@ namespace shig {
 		}
 	}
 
-    bool AiShigune::SRS_check(int lr, Tetri& now, GameContainer& ggc) {
-        Tetri test = now;
-        int to_X = 0, to_Y = 0, rot = test.rot;
-        ggc.SRS_kind = -1;
-        bool can = true;
-        if (test.id == 1) {//I-mino SRS
-            if (test.rot == 0) {
-                if (lr == -1) {
-                    test.set_rot(3);
-                    rot = 3;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(-1, 0, test, ggc)) {
-                        ggc.SRS_kind = 1;
-                        to_X = -1;
-                    }
-                    else if (move_check(2, 0, test, ggc)) {
-                        ggc.SRS_kind = 2;
-                        to_X = 2;
-                    }
-                    else if (move_check(-1, 2, test, ggc)) {
-                        ggc.SRS_kind = 3;
-                        to_X = -1;
-                        to_Y = 2;
-                    }
-                    else if (move_check(2, -1, test, ggc)) {
-                        ggc.SRS_kind = 4;
-                        to_X = 2;
-                        to_Y = -1;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-                else if (lr == 1) {
-                    test.set_rot(1);
-                    rot = 1;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(-2, 0, test, ggc)) {
-                        ggc.SRS_kind = 1;
-                        to_X = -2;
-                    }
-                    else if (move_check(1, 0, test, ggc)) {
-                        ggc.SRS_kind = 2;
-                        to_X = 1;
-                    }
-                    else if (move_check(-2, -1, test, ggc)) {
-                        ggc.SRS_kind = 3;
-                        to_X = -2;
-                        to_Y = -1;
-                    }
-                    else if (move_check(1, 2, test, ggc)) {
-                        ggc.SRS_kind = 4;
-                        to_X = 1;
-                        to_Y = 2;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-            }
-            else if (test.rot == 1) {
-                if (lr == -1) {
-                    test.set_rot(0);
-                    rot = 0;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(2, 0, test, ggc)) {
-                        ggc.SRS_kind = 1;
-                        to_X = 2;
-                    }
-                    else if (move_check(-1, 0, test, ggc)) {
-                        ggc.SRS_kind = 2;
-                        to_X = -1;
-                    }
-                    else if (move_check(2, 1, test, ggc)) {
-                        ggc.SRS_kind = 3;
-                        to_X = 2;
-                        to_Y = 1;
-                    }
-                    else if (move_check(-1, -2, test, ggc)) {
-                        ggc.SRS_kind = 4;
-                        to_X = -1;
-                        to_Y = -2;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-                else if (lr == 1) {
-                    test.set_rot(2);
-                    rot = 2;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(-1, 0, test, ggc)) {
-                        ggc.SRS_kind = 1;
-                        to_X = -1;
-                    }
-                    else if (move_check(2, 0, test, ggc)) {
-                        ggc.SRS_kind = 2;
-                        to_X = 2;
-                    }
-                    else if (move_check(-1, 2, test, ggc)) {
-                        ggc.SRS_kind = 3;
-                        to_X = -1;
-                        to_Y = 2;
-                    }
-                    else if (move_check(2, -1, test, ggc)) {
-                        ggc.SRS_kind = 4;
-                        to_X = 2;
-                        to_Y = -1;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-            }
-            else if (test.rot == 2) {
-                if (lr == -1) {
-                    test.set_rot(1);
-                    rot = 1;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(1, 0, test, ggc)) {
-                        to_X = 1;
-                        ggc.SRS_kind = 1;
-                    }
-                    else if (move_check(-2, 0, test, ggc)) {
-                        to_X = -2;
-                        ggc.SRS_kind = 2;
-                    }
-                    else if (move_check(1, -2, test, ggc)) {
-                        to_X = 1;
-                        to_Y = -2;
-                        ggc.SRS_kind = 3;
-                    }
-                    else if (move_check(-2, 1, test, ggc)) {
-                        to_X = -2;
-                        to_Y = 1;
-                        ggc.SRS_kind = 4;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-                else if (lr == 1) {
-                    test.set_rot(3);
-                    rot = 3;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(2, 0, test, ggc)) {
-                        to_X = 2;
-                        ggc.SRS_kind = 1;
-                    }
-                    else if (move_check(-1, 0, test, ggc)) {
-                        to_X = -1;
-                        ggc.SRS_kind = 2;
-                    }
-                    else if (move_check(2, 1, test, ggc)) {
-                        to_X = 2;
-                        to_Y = 1;
-                        ggc.SRS_kind = 3;
-                    }
-                    else if (move_check(-1, -2, test, ggc)) {
-                        to_X = -1;
-                        to_Y = -2;
-                        ggc.SRS_kind = 4;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-            }
-            else if (test.rot == 3) {
-                if (lr == -1) {
-                    test.set_rot(2);
-                    rot = 2;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(-2, 0, test, ggc)) {
-                        to_X = -2;
-                        ggc.SRS_kind = 1;
-                    }
-                    else if (move_check(1, 0, test, ggc)) {
-                        to_X = 1;
-                        ggc.SRS_kind = 2;
-                    }
-                    else if (move_check(-2, -1, test, ggc)) {
-                        to_X = -2;
-                        to_Y = -1;
-                        ggc.SRS_kind = 3;
-                    }
-                    else if (move_check(1, 2, test, ggc)) {
-                        to_X = 1;
-                        to_Y = 2;
-                        ggc.SRS_kind = 4;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-                else if (lr == 1) {
-                    test.set_rot(0);
-                    rot = 0;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(1, 0, test, ggc)) {
-                        to_X = 1;
-                        ggc.SRS_kind = 1;
-                    }
-                    else if (move_check(-2, 0, test, ggc)) {
-                        to_X = -2;
-                        ggc.SRS_kind = 2;
-                    }
-                    else if (move_check(1, -2, test, ggc)) {
-                        to_X = 1;
-                        to_Y = -2;
-                        ggc.SRS_kind = 3;
-                    }
-                    else if (move_check(-2, 1, test, ggc)) {
-                        to_X = -2;
-                        to_Y = 1;
-                        ggc.SRS_kind = 4;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-            }
-        }
-        else {
-            if (test.rot == 0) {
-                if (lr == -1) {
-                    test.set_rot(3);
-                    rot = 3;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(1, 0, test, ggc)) {
-                        ggc.SRS_kind = 1;
-                        to_X = 1;
-                    }
-                    else if (move_check(1, 1, test, ggc)) {
-                        ggc.SRS_kind = 2;
-                        to_X = 1;
-                        to_Y = 1;
-                    }
-                    else if (move_check(0, -2, test, ggc)) {
-                        ggc.SRS_kind = 3;
-                        to_Y = -2;
-                    }
-                    else if (move_check(1, -2, test, ggc)) {
-                        ggc.SRS_kind = 4;
-                        to_X = 1;
-                        to_Y = -2;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-                else if (lr == 1) {
-                    test.set_rot(1);
-                    rot = 1;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(-1, 0, test, ggc)) {
-                        ggc.SRS_kind = 1;
-                        to_X = -1;
-                    }
-                    else if (move_check(-1, 1, test, ggc)) {
-                        ggc.SRS_kind = 2;
-                        to_X = -1;
-                        to_Y = 1;
-                    }
-                    else if (move_check(0, -2, test, ggc)) {
-                        ggc.SRS_kind = 3;
-                        to_Y = -2;
-                    }
-                    else if (move_check(-1, -2, test, ggc)) {
-                        ggc.SRS_kind = 4;
-                        to_X = -1;
-                        to_Y = -2;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-            }
-            else if (test.rot == 1) {
-                if (lr == -1) {
-                    test.set_rot(0);
-                    rot = 0;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(1, 0, test, ggc)) {
-                        ggc.SRS_kind = 1;
-                        to_X = 1;
-                    }
-                    else if (move_check(1, -1, test, ggc)) {
-                        ggc.SRS_kind = 2;
-                        to_X = 1;
-                        to_Y = -1;
-                    }
-                    else if (move_check(0, 2, test, ggc)) {
-                        ggc.SRS_kind = 3;
-                        to_Y = 2;
-                    }
-                    else if (move_check(1, 2, test, ggc)) {
-                        ggc.SRS_kind = 4;
-                        to_X = 1;
-                        to_Y = 2;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-                else if (lr == 1) {
-                    test.set_rot(2);
-                    rot = 2;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(1, 0, test, ggc)) {
-                        ggc.SRS_kind = 1;
-                        to_X = 1;
-                    }
-                    else if (move_check(1, -1, test, ggc)) {
-                        ggc.SRS_kind = 2;
-                        to_X = 1;
-                        to_Y = -1;
-                    }
-                    else if (move_check(0, 2, test, ggc)) {
-                        ggc.SRS_kind = 3;
-                        to_Y = 2;
-                    }
-                    else if (move_check(1, 2, test, ggc)) {
-                        ggc.SRS_kind = 4;
-                        to_X = 1;
-                        to_Y = 2;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-            }
-            else if (test.rot == 2) {
-                if (lr == -1) {
-                    test.set_rot(1);
-                    rot = 1;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(-1, 0, test, ggc)) {
-                        ggc.SRS_kind = 1;
-                        to_X = -1;
-                    }
-                    else if (move_check(-1, 1, test, ggc)) {
-                        ggc.SRS_kind = 2;
-                        to_X = -1;
-                        to_Y = 1;
-                    }
-                    else if (move_check(0, -2, test, ggc)) {
-                        ggc.SRS_kind = 3;
-                        to_Y = -2;
-                    }
-                    else if (move_check(-1, -2, test, ggc)) {
-                        ggc.SRS_kind = 4;
-                        to_X = -1;
-                        to_Y = -2;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-                else if (lr == 1) {
-                    test.set_rot(3);
-                    rot = 3;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(1, 0, test, ggc)) {
-                        ggc.SRS_kind = 1;
-                        to_X = 1;
-                    }
-                    else if (move_check(1, 1, test, ggc)) {
-                        ggc.SRS_kind = 2;
-                        to_X = 1;
-                        to_Y = 1;
-                    }
-                    else if (move_check(0, -2, test, ggc)) {
-                        ggc.SRS_kind = 3;
-                        to_Y = -2;
-                    }
-                    else if (move_check(1, -2, test, ggc)) {
-                        ggc.SRS_kind = 4;
-                        to_X = 1;
-                        to_Y = -2;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-            }
-            else if (test.rot == 3) {
-                if (lr == -1) {
-                    test.set_rot(2);
-                    rot = 2;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(-1, 0, test, ggc)) {
-                        ggc.SRS_kind = 1;
-                        to_X = -1;
-                    }
-                    else if (move_check(-1, -1, test, ggc)) {
-                        ggc.SRS_kind = 2;
-                        to_X = -1;
-                        to_Y = -1;
-                    }
-                    else if (move_check(0, 2, test, ggc)) {
-                        ggc.SRS_kind = 3;
-                        to_Y = 2;
-                    }
-                    else if (move_check(-1, 2, test, ggc)) {
-                        ggc.SRS_kind = 4;
-                        to_X = -1;
-                        to_Y = 2;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-                else if (lr == 1) {
-                    test.set_rot(0);
-                    rot = 0;
-                    if (move_check(0, 0, test, ggc)) {
-                        ggc.SRS_kind = 0;
-                    }
-                    else if (move_check(-1, 0, test, ggc)) {
-                        ggc.SRS_kind = 1;
-                        to_X = -1;
-                    }
-                    else if (move_check(-1, -1, test, ggc)) {
-                        ggc.SRS_kind = 2;
-                        to_X = -1;
-                        to_Y = -1;
-                    }
-                    else if (move_check(0, 2, test, ggc)) {
-                        ggc.SRS_kind = 3;
-                        to_Y = 2;
-                    }
-                    else if (move_check(-1, 2, test, ggc)) {
-                        ggc.SRS_kind = 4;
-                        to_X = -1;
-                        to_Y = 2;
-                    }
-                    else {
-                        ggc.SRS_kind = -1;
-                        can = false;
-                    }
-                }
-            }
-        }
-
-        if (can) {
-            ggc.TS_kind = TS_check(to_X, to_Y, test, ggc);
-            now.set_rot(rot);
-            now.addX(to_X);
-            now.addY(to_Y);
-        }
-        return can;
-
-    }
-
 	bool AiShigune::CheckSRS_Clockwise(Tetri& s_now, GameContainer& ggc)
 	{
 		Tetri test = s_now;
@@ -2228,7 +1721,7 @@ namespace shig {
 		if (test.id == 1) {
 			int cnt = 0;
 			for (auto&& tester : WallKick_clockI.at(rot)) {
-				if (move_check(tester.first, tester.second, test, ggc)) {
+				if (CheckMove(tester.first, tester.second, test, ggc)) {
 					ggc.SRS_kind = cnt;
 					to_X = tester.first;
 					to_Y = tester.second;
@@ -2243,7 +1736,7 @@ namespace shig {
 		else {
 			int cnt = 0;
 			for (auto&& tester : WallKick_clockW.at(rot)) {
-				if (move_check(tester.first, tester.second, test, ggc)) {
+				if (CheckMove(tester.first, tester.second, test, ggc)) {
 					ggc.SRS_kind = cnt;
 					to_X = tester.first;
 					to_Y = tester.second;
@@ -2276,7 +1769,7 @@ namespace shig {
 		if (test.id == 1) {
 			int cnt = 0;
 			for (auto&& tester : WallKick_counterI.at(rot)) {
-				if (move_check(tester.first, tester.second, test, ggc)) {
+				if (CheckMove(tester.first, tester.second, test, ggc)) {
 					ggc.SRS_kind = cnt;
 					to_X = tester.first;
 					to_Y = tester.second;
@@ -2291,7 +1784,7 @@ namespace shig {
 		else {
 			int cnt = 0;
 			for (auto&& tester : WallKick_counterW.at(rot)) {
-				if (move_check(tester.first, tester.second, test, ggc)) {
+				if (CheckMove(tester.first, tester.second, test, ggc)) {
 					ggc.SRS_kind = cnt;
 					to_X = tester.first;
 					to_Y = tester.second;
@@ -2336,7 +1829,7 @@ namespace shig {
                 ts_cnt++;
                 continue;
             }
-            if (ggc.field_AI[sY][sX] != 0)ts_cnt++;
+            if (ggc.field_AI[sY].at(sX) != 0)ts_cnt++;
             else check = { testX.at(i), testY.at(i) };
         }
 
@@ -2368,13 +1861,13 @@ namespace shig {
         return ggc.TS_kind;
     }
 
-    set<int> AiShigune::erase_check_AI(Tetri& s_now, GameContainer &gce) {
+    set<int> AiShigune::CheckErase(Tetri& s_now, GameContainer &gce) {
         set<int> erase_itr;
         gce.p_field_AI = gce.field_AI;
         AiShigune::ApplyMino(gce.p_field_AI, s_now);
         int rot = s_now.rot;
         
-        int H = (int)s_now.mino[rot].size();
+        int H = (int)s_now.mino.at(rot).size();
         int pW = 10;
 
         shig_rep(i, H) {
@@ -2405,7 +1898,7 @@ namespace shig {
         }
     }
 
-    bool AiShigune::move_mino(Tetri& m_now, int s_action, GameContainer& ggc) {
+    bool AiShigune::MoveMino(Tetri& m_now, int s_action, GameContainer& ggc) {
         if (s_action == 1) {
             if (ggc.hold_AI == 0) {
                 m_now.SetMino(ggc.q_next_AI.front());
@@ -2417,7 +1910,7 @@ namespace shig {
         }
         else if (s_action == 2) {
             int sft = -1;
-            if (move_check(0, sft, m_now, ggc)) {
+            if (CheckMove(0, sft, m_now, ggc)) {
                 m_now.addY(sft);
                 return true;
             }
@@ -2425,7 +1918,7 @@ namespace shig {
         }
         else if (s_action == 3) {
             int sft = -1;
-            while (move_check(0, sft, m_now, ggc)) {
+            while (CheckMove(0, sft, m_now, ggc)) {
                 m_now.addY(sft);
             }
             return true;
@@ -2440,7 +1933,7 @@ namespace shig {
         }
         else if (s_action == 6) {
             int sft = -1;
-            if (move_check(sft, 0, m_now, ggc)) {
+            if (CheckMove(sft, 0, m_now, ggc)) {
                 m_now.addX(sft);
                 return true;
             }
@@ -2448,7 +1941,7 @@ namespace shig {
         }
         else if (s_action == 7) {
             int sft = 1;
-            if (move_check(sft, 0, m_now, ggc)) {
+            if (CheckMove(sft, 0, m_now, ggc)) {
                 m_now.addX(sft);
                 return true;
             }
@@ -2693,7 +2186,7 @@ namespace shig {
 
     GameContainer AiShigune::update_gc(CmdPattern& ct, GameContainer gcp) {
         
-        set<int> itr = AiShigune::erase_check_AI(ct.pat, gcp);
+        set<int> itr = AiShigune::CheckErase(ct.pat, gcp);
         int itr_s = (int)itr.size();
 
         std::vector<std::vector<int>> proxy(0); proxy.reserve(45);
@@ -2769,13 +2262,16 @@ namespace shig {
 
     }
 
-    TetriEngine shig::AiShigune::getTE()
-    {
-        return shig::AiShigune::TE;
-    }
-
 	void shig::AiShigune::loadTE(const TetriEngine& te){
-		AiShigune::TE = te;
+		
+		te.GetField(field_AI);
+		current_AI = te.get_current().id;
+		auto&& [_hold, _next] = te.get_mino_state();
+		hold_AI = _hold;
+		q_next_AI = _next;
+		auto&& [_c, _b] = te.get_combo();
+		combo = _c; btb = _b;
+
 		return;
 	}
 
@@ -2797,7 +2293,7 @@ namespace shig {
 
 			if (think) {
 				As.thinking();
-				As.make_AI_suggestion();
+				As.makeAiSuggestion();
 				for (auto&& cmd : As.getCmd().cmd_list) {
 					CmdListS.push_back(cmd);
 				}
