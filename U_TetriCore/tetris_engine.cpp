@@ -1,5 +1,5 @@
 ﻿
-#include "tetris_engine.h"
+#include "tetris_engine.hpp"
 
 // 
 template <typename T>
@@ -24,7 +24,7 @@ namespace shig {
 
 	void TetriEngine::AddNextQue(std::deque<int>& que, std::vector<int>& _sev) {
 		std::shuffle(_sev.begin(), _sev.end(), Rengine);
-		for (const auto& ni : _sev) {
+		for (const auto ni : _sev) {
 			que.push_back(ni);
 		}
 		return;
@@ -51,7 +51,9 @@ namespace shig {
 		p_srs = -1;
 		btb = -1;
 		combo = 0;
-		garbage_cmd = 0;
+		garbage_flag = 0;
+		garbage_stack = 0;
+		garbage_send = 0;
 		l_erasef = false;
 		dead_f = false;
 	}
@@ -77,7 +79,9 @@ namespace shig {
 		p_srs = -1;
 		btb = -1;
 		combo = 0;
-		garbage_cmd = 0;
+		garbage_flag = 0;
+		garbage_stack = 0;
+		garbage_send = 0;
 		l_erasef = false;
 		dead_f = false;
 	}
@@ -125,21 +129,18 @@ namespace shig {
 		return ceil;
 	}
 
-	bool TetriEngine::add_garbage(int line) {
+	bool TetriEngine::AddGarbage(int line) {
 		std::vector<std::vector<int>> pre_field(fh);
-		std::vector<int> garbage(10, 8);
 		int g = get_rnd(0, 9);
 		shig_rep(i, line) {
 			if (!get_TF(0.7)) g = get_rnd(0, 9);
-			if (g < 0 || g > 9)g = 0;
-			pre_field[i] = garbage;
-			pre_field[i][g] = 0;
+			pre_field.at(i) = garbage;
+			pre_field.at(i).at(g) = 0;
 		}
 		shig_rep(i, fh - line) {
 			if (i >= field.size())return false;
-			pre_field[(size_t)i + line] = field[i];
+			pre_field.at((size_t)i + line) = field.at(i);
 		}
-
 		field = pre_field;
 
 		return true;
@@ -147,17 +148,16 @@ namespace shig {
 
 	bool TetriEngine::make_garbage(int X, int Y, bool sft) {
 		std::vector<std::vector<int>> pre_field(fh);
-		std::vector<int> garbage(10, 8);
 		if (sft) {
 			for (size_t i = 0; i < Y; ++i) {
-				pre_field[i] = field[i];
+				pre_field.at(i) = field.at(i);
 			}
 			for (size_t i = 0; i < (field.size() - Y - 1); ++i) {
 				pre_field[i + Y + 1] = field[i + Y];
 			}
 		}
-		field[Y] = garbage;
-		field[Y][X] = 0;
+		field.at(Y) = garbage;
+		field.at(Y).at(X) = 0;
 
 		return true;
 	}
@@ -176,18 +176,18 @@ namespace shig {
 		pairI2 check = { 0, 0 };
 
 		shig_rep(i, 4) {
-			int sX = ts.X + testX[i] + toX;
+			int sX = ts.X + testX.at(i) + toX;
 			if (sX < 0 || sX >= 10) {
 				ts_cnt++;
 				continue;
 			}
-			int sY = ts.Y - testY[i] + toY - 1;
+			int sY = ts.Y - testY.at(i) + toY - 1;
 			if (sY < 0 || sY >= (field.size() - 1)) {
 				ts_cnt++;
 				continue;
 			}
-			if (field[sY][sX] != 0)ts_cnt++;
-			else check = { testX[i], testY[i] };
+			if (field[sY].at(sX) != 0)ts_cnt++;
+			else check = { testX.at(i), testY.at(i) };
 		}
 
 		if (ts_cnt == 3 && p_srs != 4) {
@@ -218,17 +218,17 @@ namespace shig {
 		return;
 	}
 
-	bool TetriEngine::move_check(int toX, int toY) {
+	bool TetriEngine::CheckMove(int toX, int toY) {
 		int cnt = 0, cntt = 4;
 		const auto& [rot, size, H, W] = getTS(now_mino);
 		shig_rep(i, H) {
 			shig_rep(j, W) {
-				if (now_mino.mino[rot][i][j] != 0) {
+				if (now_mino.mino.at(rot).at(i).at(j) != 0) {
 					int sX = now_mino.X + j + toX;
 					if (sX < 0 || sX >= 10)continue;
 					int sY = now_mino.Y - i + toY;
 					if (sY <= 0 || sY >= (field.size() - 1))continue;
-					if (field[sY - 1LL][sX] == 0)cnt++;
+					if (field.at(sY - 1LL).at(sX) == 0)cnt++;
 				}
 			}
 		}
@@ -236,17 +236,17 @@ namespace shig {
 		else return false;
 	}
 
-	bool TetriEngine::move_check(int toX, int toY, Tetri& check) {
+	bool TetriEngine::CheckMove(int toX, int toY, Tetri& check) {
 		int cnt = 0, cntt = 4;
 		const auto& [rot, size, H, W] = getTS(check);
 		shig_rep(i, H) {
 			shig_rep(j, W) {
-				if (check.mino[rot][i][j] != 0) {
+				if (check.mino.at(rot).at(i).at(j) != 0) {
 					int sX = check.X + j + toX;
 					if (sX < 0 || sX >= 10)continue;
 					int sY = check.Y - i + toY;
 					if (sY <= 0 || sY >= (field.size() - 1))continue;
-					if (field[sY - 1LL][sX] == 0)cnt++;
+					if (field.at(sY - 1LL).at(sX) == 0)cnt++;
 				}
 			}
 		}
@@ -279,23 +279,23 @@ namespace shig {
 				if (lr == -1) {
 					test.set_rot(3);
 					rot = 3;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(-1, 0, test)) {
+					else if (CheckMove(-1, 0, test)) {
 						p_srs = 1;
 						to_X = -1;
 					}
-					else if (move_check(2, 0, test)) {
+					else if (CheckMove(2, 0, test)) {
 						p_srs = 2;
 						to_X = 2;
 					}
-					else if (move_check(-1, 2, test)) {
+					else if (CheckMove(-1, 2, test)) {
 						p_srs = 3;
 						to_X = -1;
 						to_Y = 2;
 					}
-					else if (move_check(2, -1, test)) {
+					else if (CheckMove(2, -1, test)) {
 						p_srs = 4;
 						to_X = 2;
 						to_Y = -1;
@@ -308,23 +308,23 @@ namespace shig {
 				else if (lr == 1) {
 					test.set_rot(1);
 					rot = 1;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(-2, 0, test)) {
+					else if (CheckMove(-2, 0, test)) {
 						p_srs = 1;
 						to_X = -2;
 					}
-					else if (move_check(1, 0, test)) {
+					else if (CheckMove(1, 0, test)) {
 						p_srs = 2;
 						to_X = 1;
 					}
-					else if (move_check(-2, -1, test)) {
+					else if (CheckMove(-2, -1, test)) {
 						p_srs = 3;
 						to_X = -2;
 						to_Y = -1;
 					}
-					else if (move_check(1, 2, test)) {
+					else if (CheckMove(1, 2, test)) {
 						p_srs = 4;
 						to_X = 1;
 						to_Y = 2;
@@ -339,23 +339,23 @@ namespace shig {
 				if (lr == -1) {
 					test.set_rot(0);
 					rot = 0;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(2, 0, test)) {
+					else if (CheckMove(2, 0, test)) {
 						p_srs = 1;
 						to_X = 2;
 					}
-					else if (move_check(-1, 0, test)) {
+					else if (CheckMove(-1, 0, test)) {
 						p_srs = 2;
 						to_X = -1;
 					}
-					else if (move_check(2, 1, test)) {
+					else if (CheckMove(2, 1, test)) {
 						p_srs = 3;
 						to_X = 2;
 						to_Y = 1;
 					}
-					else if (move_check(-1, -2, test)) {
+					else if (CheckMove(-1, -2, test)) {
 						p_srs = 4;
 						to_X = -1;
 						to_Y = -2;
@@ -368,22 +368,22 @@ namespace shig {
 				else if (lr == 1) {
 					test.set_rot(2);
 					rot = 2;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(-1, 0, test)) {
+					else if (CheckMove(-1, 0, test)) {
 						p_srs = 1;
 						to_X = -1;
 					}
-					else if (move_check(2, 0, test)) {
+					else if (CheckMove(2, 0, test)) {
 						p_srs = 2;
 						to_X = 2;
 					}
-					else if (move_check(-1, 2, test)) {
+					else if (CheckMove(-1, 2, test)) {
 						to_X = -1;
 						to_Y = 2;
 					}
-					else if (move_check(2, -1, test)) {
+					else if (CheckMove(2, -1, test)) {
 						to_X = 2;
 						to_Y = -1;
 					}
@@ -397,23 +397,23 @@ namespace shig {
 				if (lr == -1) {
 					test.set_rot(1);
 					rot = 1;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(1, 0, test)) {
+					else if (CheckMove(1, 0, test)) {
 						to_X = 1;
 						p_srs = 1;
 					}
-					else if (move_check(-2, 0, test)) {
+					else if (CheckMove(-2, 0, test)) {
 						to_X = -2;
 						p_srs = 2;
 					}
-					else if (move_check(1, -2, test)) {
+					else if (CheckMove(1, -2, test)) {
 						to_X = 1;
 						to_Y = -2;
 						p_srs = 3;
 					}
-					else if (move_check(-2, 1, test)) {
+					else if (CheckMove(-2, 1, test)) {
 						to_X = -2;
 						to_Y = 1;
 						p_srs = 4;
@@ -426,23 +426,23 @@ namespace shig {
 				else if (lr == 1) {
 					test.set_rot(3);
 					rot = 3;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(2, 0, test)) {
+					else if (CheckMove(2, 0, test)) {
 						to_X = 2;
 						p_srs = 1;
 					}
-					else if (move_check(-1, 0, test)) {
+					else if (CheckMove(-1, 0, test)) {
 						to_X = -1;
 						p_srs = 2;
 					}
-					else if (move_check(2, 1, test)) {
+					else if (CheckMove(2, 1, test)) {
 						to_X = 2;
 						to_Y = 1;
 						p_srs = 3;
 					}
-					else if (move_check(-1, -2, test)) {
+					else if (CheckMove(-1, -2, test)) {
 						to_X = -1;
 						to_Y = -2;
 						p_srs = 4;
@@ -457,23 +457,23 @@ namespace shig {
 				if (lr == -1) {
 					test.set_rot(2);
 					rot = 2;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(-2, 0, test)) {
+					else if (CheckMove(-2, 0, test)) {
 						to_X = -2;
 						p_srs = 1;
 					}
-					else if (move_check(1, 0, test)) {
+					else if (CheckMove(1, 0, test)) {
 						to_X = 1;
 						p_srs = 2;
 					}
-					else if (move_check(-2, -1, test)) {
+					else if (CheckMove(-2, -1, test)) {
 						to_X = -2;
 						to_Y = -1;
 						p_srs = 3;
 					}
-					else if (move_check(1, 2, test)) {
+					else if (CheckMove(1, 2, test)) {
 						to_X = 1;
 						to_Y = 2;
 						p_srs = 4;
@@ -486,23 +486,23 @@ namespace shig {
 				else if (lr == 1) {
 					test.set_rot(0);
 					rot = 0;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(1, 0, test)) {
+					else if (CheckMove(1, 0, test)) {
 						to_X = 1;
 						p_srs = 1;
 					}
-					else if (move_check(-2, 0, test)) {
+					else if (CheckMove(-2, 0, test)) {
 						to_X = -2;
 						p_srs = 2;
 					}
-					else if (move_check(1, -2, test)) {
+					else if (CheckMove(1, -2, test)) {
 						to_X = 1;
 						to_Y = -2;
 						p_srs = 3;
 					}
-					else if (move_check(-2, 1, test)) {
+					else if (CheckMove(-2, 1, test)) {
 						to_X = -2;
 						to_Y = 1;
 						p_srs = 4;
@@ -519,23 +519,23 @@ namespace shig {
 				if (lr == -1) {
 					test.set_rot(3);
 					rot = 3;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(1, 0, test)) {
+					else if (CheckMove(1, 0, test)) {
 						p_srs = 1;
 						to_X = 1;
 					}
-					else if (move_check(1, 1, test)) {
+					else if (CheckMove(1, 1, test)) {
 						p_srs = 2;
 						to_X = 1;
 						to_Y = 1;
 					}
-					else if (move_check(0, -2, test)) {
+					else if (CheckMove(0, -2, test)) {
 						p_srs = 3;
 						to_Y = -2;
 					}
-					else if (move_check(1, -2, test)) {
+					else if (CheckMove(1, -2, test)) {
 						p_srs = 4;
 						to_X = 1;
 						to_Y = -2;
@@ -548,23 +548,23 @@ namespace shig {
 				else if (lr == 1) {
 					test.set_rot(1);
 					rot = 1;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(-1, 0, test)) {
+					else if (CheckMove(-1, 0, test)) {
 						p_srs = 1;
 						to_X = -1;
 					}
-					else if (move_check(-1, 1, test)) {
+					else if (CheckMove(-1, 1, test)) {
 						p_srs = 2;
 						to_X = -1;
 						to_Y = 1;
 					}
-					else if (move_check(0, -2, test)) {
+					else if (CheckMove(0, -2, test)) {
 						p_srs = 3;
 						to_Y = -2;
 					}
-					else if (move_check(-1, -2, test)) {
+					else if (CheckMove(-1, -2, test)) {
 						p_srs = 4;
 						to_X = -1;
 						to_Y = -2;
@@ -579,23 +579,23 @@ namespace shig {
 				if (lr == -1) {
 					test.set_rot(0);
 					rot = 0;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(1, 0, test)) {
+					else if (CheckMove(1, 0, test)) {
 						p_srs = 1;
 						to_X = 1;
 					}
-					else if (move_check(1, -1, test)) {
+					else if (CheckMove(1, -1, test)) {
 						p_srs = 2;
 						to_X = 1;
 						to_Y = -1;
 					}
-					else if (move_check(0, 2, test)) {
+					else if (CheckMove(0, 2, test)) {
 						p_srs = 3;
 						to_Y = 2;
 					}
-					else if (move_check(1, 2, test)) {
+					else if (CheckMove(1, 2, test)) {
 						p_srs = 4;
 						to_X = 1;
 						to_Y = 2;
@@ -608,23 +608,23 @@ namespace shig {
 				else if (lr == 1) {
 					test.set_rot(2);
 					rot = 2;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(1, 0, test)) {
+					else if (CheckMove(1, 0, test)) {
 						p_srs = 1;
 						to_X = 1;
 					}
-					else if (move_check(1, -1, test)) {
+					else if (CheckMove(1, -1, test)) {
 						p_srs = 2;
 						to_X = 1;
 						to_Y = -1;
 					}
-					else if (move_check(0, 2, test)) {
+					else if (CheckMove(0, 2, test)) {
 						p_srs = 3;
 						to_Y = 2;
 					}
-					else if (move_check(1, 2, test)) {
+					else if (CheckMove(1, 2, test)) {
 						p_srs = 4;
 						to_X = 1;
 						to_Y = 2;
@@ -639,23 +639,23 @@ namespace shig {
 				if (lr == -1) {
 					test.set_rot(1);
 					rot = 1;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(-1, 0, test)) {
+					else if (CheckMove(-1, 0, test)) {
 						p_srs = 1;
 						to_X = -1;
 					}
-					else if (move_check(-1, 1, test)) {
+					else if (CheckMove(-1, 1, test)) {
 						p_srs = 2;
 						to_X = -1;
 						to_Y = 1;
 					}
-					else if (move_check(0, -2, test)) {
+					else if (CheckMove(0, -2, test)) {
 						p_srs = 3;
 						to_Y = -2;
 					}
-					else if (move_check(-1, -2, test)) {
+					else if (CheckMove(-1, -2, test)) {
 						p_srs = 4;
 						to_X = -1;
 						to_Y = -2;
@@ -668,23 +668,23 @@ namespace shig {
 				else if (lr == 1) {
 					test.set_rot(3);
 					rot = 3;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(1, 0, test)) {
+					else if (CheckMove(1, 0, test)) {
 						p_srs = 1;
 						to_X = 1;
 					}
-					else if (move_check(1, 1, test)) {
+					else if (CheckMove(1, 1, test)) {
 						p_srs = 2;
 						to_X = 1;
 						to_Y = 1;
 					}
-					else if (move_check(0, -2, test)) {
+					else if (CheckMove(0, -2, test)) {
 						p_srs = 3;
 						to_Y = -2;
 					}
-					else if (move_check(1, -2, test)) {
+					else if (CheckMove(1, -2, test)) {
 						p_srs = 4;
 						to_X = 1;
 						to_Y = -2;
@@ -699,23 +699,23 @@ namespace shig {
 				if (lr == -1) {
 					test.set_rot(2);
 					rot = 2;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(-1, 0, test)) {
+					else if (CheckMove(-1, 0, test)) {
 						p_srs = 1;
 						to_X = -1;
 					}
-					else if (move_check(-1, -1, test)) {
+					else if (CheckMove(-1, -1, test)) {
 						p_srs = 2;
 						to_X = -1;
 						to_Y = -1;
 					}
-					else if (move_check(0, 2, test)) {
+					else if (CheckMove(0, 2, test)) {
 						p_srs = 3;
 						to_Y = 2;
 					}
-					else if (move_check(-1, 2, test)) {
+					else if (CheckMove(-1, 2, test)) {
 						p_srs = 4;
 						to_X = -1;
 						to_Y = 2;
@@ -728,23 +728,23 @@ namespace shig {
 				else if (lr == 1) {
 					test.set_rot(0);
 					rot = 0;
-					if (move_check(0, 0, test)) {
+					if (CheckMove(0, 0, test)) {
 						p_srs = 0;
 					}
-					else if (move_check(-1, 0, test)) {
+					else if (CheckMove(-1, 0, test)) {
 						p_srs = 1;
 						to_X = -1;
 					}
-					else if (move_check(-1, -1, test)) {
+					else if (CheckMove(-1, -1, test)) {
 						p_srs = 2;
 						to_X = -1;
 						to_Y = -1;
 					}
-					else if (move_check(0, 2, test)) {
+					else if (CheckMove(0, 2, test)) {
 						p_srs = 3;
 						to_Y = 2;
 					}
-					else if (move_check(-1, 2, test)) {
+					else if (CheckMove(-1, 2, test)) {
 						p_srs = 4;
 						to_X = -1;
 						to_Y = 2;
@@ -776,7 +776,7 @@ namespace shig {
 		if (test.id == 1) {
 			int cnt = 0;
 			for (const auto& tester : WallKick_clockI.at(rot)) {
-				if (move_check(tester.first, tester.second, test)) {
+				if (CheckMove(tester.first, tester.second, test)) {
 					p_srs = cnt;
 					to_X = tester.first;
 					to_Y = tester.second;
@@ -791,7 +791,7 @@ namespace shig {
 		else {
 			int cnt = 0;
 			for (const auto& tester : WallKick_clockW.at(rot)) {
-				if (move_check(tester.first, tester.second, test)) {
+				if (CheckMove(tester.first, tester.second, test)) {
 					p_srs = cnt;
 					to_X = tester.first;
 					to_Y = tester.second;
@@ -824,7 +824,7 @@ namespace shig {
 		if (test.id == 1) {
 			int cnt = 0;
 			for (const auto& tester : WallKick_counterI.at(rot)) {
-				if (move_check(tester.first, tester.second, test)) {
+				if (CheckMove(tester.first, tester.second, test)) {
 					p_srs = cnt;
 					to_X = tester.first;
 					to_Y = tester.second;
@@ -839,7 +839,7 @@ namespace shig {
 		else {
 			int cnt = 0;
 			for (const auto& tester : WallKick_counterW.at(rot)) {
-				if (move_check(tester.first, tester.second, test)) {
+				if (CheckMove(tester.first, tester.second, test)) {
 					p_srs = cnt;
 					to_X = tester.first;
 					to_Y = tester.second;
@@ -866,16 +866,16 @@ namespace shig {
 		const auto& [rot, size, H, W] = getTS(now_mino);
 		shig_rep(i, H) {
 			shig_rep(j, W) {
-				if (now_mino.mino[rot][i][j] != 0) {
+				if (now_mino.mino.at(rot).at(i).at(j) != 0) {
 					int sX = now_mino.X + j;
 					int sY = now_mino.Y - i;
 					if (sX < 0 || sX >= 10)continue;
 					if (sY - 1 < 0 || sY - 1 > 45)continue;
 					if (p == 1) {
-						field[sY - 1LL][sX] = now_mino.id;
+						field.at(sY - 1LL).at(sX) = now_mino.id;
 					}
 					else {
-						p_field[sY - 1LL][sX] = now_mino.id;
+						p_field.at(sY - 1LL).at(sX) = now_mino.id;
 					}
 				}
 			}
@@ -884,22 +884,22 @@ namespace shig {
 
 	void TetriEngine::PrintGhost(int p) {
 		Tetri ghost_mino = now_mino;
-		int sft = -1;
-		while (move_check(0, sft, ghost_mino))ghost_mino.addY(sft);
+		const int sft = -1;
+		while (CheckMove(0, sft, ghost_mino))ghost_mino.addY(sft);
 		int gID = ghost_mino.id;
 		const auto& [rot, size, H, W] = getTS(ghost_mino);
 		shig_rep(i, H) {
 			shig_rep(j, W) {
-				if (ghost_mino.mino[rot][i][j] != 0) {
+				if (ghost_mino.mino.at(rot).at(i).at(j) != 0) {
 					int sX = ghost_mino.X + j;
 					int sY = ghost_mino.Y - i;
 					if (sX < 0 || sX >= 10)continue;
 					if (sY - 1 < 0 || sY - 1 > 45)continue;
 					if (p == 1) {
-						field[sY - 1LL][sX] = gID + 8;
+						field.at(sY - 1LL).at(sX) = gID + 8;
 					}
 					else {
-						p_field[sY - 1LL][sX] = gID + 8;
+						p_field.at(sY - 1LL).at(sX) = gID + 8;
 					}
 				}
 			}
@@ -910,8 +910,8 @@ namespace shig {
 		std::set<int> erase_itr;
 		PrintMino(2);
 		int rot = now_mino.rot;
-		int H = (int)now_mino.mino[rot].size();
-		int pW = (int)field[0].size();
+		int H = (int)now_mino.mino.at(rot).size();
+		int pW = (int)field.at(0).size();
 
 		shig_rep(i, H) {
 			int sY = now_mino.Y - i;
@@ -919,7 +919,7 @@ namespace shig {
 			int cnt = 0;
 			if (itr < 0 || itr >= fh)continue;
 			shig_rep(j, pW) {
-				if (field[itr][j] != 0) cnt++;
+				if (field[itr].at(j) != 0) cnt++;
 				else break;
 			}
 			if (cnt == pW) erase_itr.insert(itr);
@@ -941,9 +941,8 @@ namespace shig {
 		return erase_itr;
 	}
 
-	int TetriEngine::line_erase() {
+	int TetriEngine::EraseLine() {
 		std::set<int> itr = erase_check();
-		//std::vector<int> empty = { 0, 0, 0, 0 ,0 ,0 ,0 ,0 ,0 ,0 };
 		std::vector<std::vector<int>> proxy(0); proxy.reserve(45);
 		std::vector<std::vector<int>> pre(0); pre.reserve(45);
 
@@ -974,29 +973,45 @@ namespace shig {
 
 		proxy.clear();
 
-		int s = (int)itr.size();
+		size_t s = itr.size();
+		if (ts_kind < 0 || ts_kind > 3)ts_kind = 0;
+
+		garbage_send += fire_list.at(ts_kind).at(s);
 
 		if (s > 0 && ts_kind > 0) {
 			combo++;
 			btb++;
-			/*if (s == 1)ts_state[0] = "T-spin Single";
-			else if (s == 2)ts_state[0] = "T-spin Double";
-			else if (s == 3)ts_state[0] = "T-spin Triple";
+			if (btb >= 0)garbage_send += 1;
+			if (s == 1) {
+				ts_state.at(0) = "T-spin Single";
+			}
+			else if (s == 2) {
+				ts_state.at(0) = "T-spin Double";
+			}
+			else if (s == 3) {
+				ts_state.at(0) = "T-spin Triple";
+			}
 
-			if (ts_kind == 2)ts_state[1] = "mini";
-			else ts_state[1] = "    ";*/
+			if (ts_kind == 2) {
+				ts_state.at(1) = "mini";
+			}
+			else {
+				ts_state.at(1) = "    ";
+			}
+
 		}
 		else if (s == 4) {
+			if (btb >= 0)garbage_send += 1;
 			combo++;
 			btb++;
-			/*ts_state[0] = "4-LINE-eraser";
-			ts_state[1] = "    ";*/
+			ts_state.at(0) = "4-LINE-eraser";
+			ts_state.at(1) = "    ";
 		}
 		else if (s > 0) {
 			combo++;
 			btb = -1;
-			/*ts_state[0] = "    ";
-			ts_state[1] = "    ";*/
+			ts_state.at(0) = "    ";
+			ts_state.at(1) = "    ";
 		}
 		else {
 			combo = 0;
@@ -1005,14 +1020,15 @@ namespace shig {
 		return s;
 	}
 
-	bool TetriEngine::pc_check() {
+	bool TetriEngine::CheckPC() {
 		int cnt = 0;
 		shig_rep(i, 10) {
-			cnt += field[0][i];
+			cnt += field.at(0).at(i);
 		}
 		if (cnt > 0)return false;
 		else {
 			delay_flame = 0;
+			garbage_send += 10;
 			return true;
 		}
 	}
@@ -1033,8 +1049,8 @@ namespace shig {
 	}
 
 	void TetriEngine::act_soft() {
-		int sft = -1;
-		if (move_check(0, sft)) {
+		const int sft = -1;
+		if (CheckMove(0, sft)) {
 			now_mino.addY(sft);
 			ts_kind = 0;
 		}
@@ -1043,35 +1059,43 @@ namespace shig {
 	}
 
 	void TetriEngine::act_hard() {
-		int sft = -1;
+		const int sft = -1;
 		hd_cnt = 0;
-		while (move_check(0, sft)) {
+		while (CheckMove(0, sft)) {
 			now_mino.addY(sft);
 			hd_cnt++;
 		}
-		if (move_check(0, 0))PrintMino(1);
+		if (CheckMove(0, 0))PrintMino(1);
 
 		mino_his.push_front(now_mino.get_mino_str());
-		if (mino_his.size() > 7)mino_his.pop_back();
-		line_erase();
-		pc_check();
-		if (garbage_cmd == 1) add_garbage(get_rnd(1, 6));
-		garbage_cmd = 0;
+		if ((int)mino_his.size() > 7)mino_his.pop_back();
+		EraseLine();
+		CheckPC();
+		//if (garbage_flag == 1) AddGarbage(get_rnd(1, 6));
+		//garbage_flag = 0;
+		garbage_stack = std::max(garbage_stack, 0);
+		garbage_stack -= garbage_send;
+		garbage_send = -1 * garbage_stack;
+		garbage_send = std::max(garbage_send, 0);
+		garbage_stack = std::min(garbage_stack, 22);
+		garbage_stack = std::max(garbage_stack, 0);
+		AddGarbage(garbage_stack);
+		garbage_stack = 0;
 
 		return;
 	}
 
 	void TetriEngine::ghost() {
-		int sft = -1;
-		while (move_check(0, sft))now_mino.addY(sft);
-		if (move_check(0, 0))PrintMino(1);
-		line_erase();
+		const int sft = -1;
+		while (CheckMove(0, sft))now_mino.addY(sft);
+		if (CheckMove(0, 0))PrintMino(1);
+		EraseLine();
 		return;
 	}
 
 	void TetriEngine::act_left() {
-		int sft = -1;
-		if (move_check(sft, 0)) {
+		const int sft = -1;
+		if (CheckMove(sft, 0)) {
 			now_mino.addX(sft);
 			ts_kind = 0;
 		}
@@ -1080,8 +1104,8 @@ namespace shig {
 	}
 
 	void TetriEngine::act_right() {
-		int sft = 1;
-		if (move_check(sft, 0)) {
+		const int sft = 1;
+		if (CheckMove(sft, 0)) {
 			now_mino.addX(sft);
 			ts_kind = 0;
 		}
@@ -1110,7 +1134,7 @@ namespace shig {
 		for (auto&& fH : field) for (auto&& fW : fH)fW = 0;
 		for (auto&& fH : p_field)for (auto&& fW : fH)fW = 0;
 		
-		//q_next = std::deque<int>(0);
+		q_next.clear();
 		AddNextQue(q_next, sev);
 		current = q_next.front();
 		q_next.pop_front();
@@ -1126,7 +1150,8 @@ namespace shig {
 		p_srs = -1;
 		btb = -1;
 		combo = 0;
-		garbage_cmd = 0;
+		garbage_flag = 0;
+		garbage_stack = 0;
 		l_erasef = false;
 		dead_f = false;
 		sev = sev_seed;
@@ -1207,20 +1232,51 @@ namespace shig {
 		}
 		m_evn = 1;
 		now_mino.SetMino(current);
-		if (!(move_check(0, 0))) {
+		if (!(CheckMove(0, 0))) {
 			return true;
 		}
 		return false;
 	}
 
+	bool TetriEngine::StackGarbage(int line)
+	{
+		if (line >= 0) {
+			garbage_stack += line;
+		}
+		else if(line < 0){
+			garbage_stack += get_rnd(1, 7);
+		}
+
+		return true;
+	}
+
+	int TetriEngine::getGarbage()
+	{
+		int _gbg = garbage_send;
+		garbage_send = 0;
+		return _gbg;
+	}
+
 	int TetriEngine::get_field_state(int i, int j, int m) const {
 
-		if (m == 0) return p_field[i][j];
-		else if (m == 1) return field[i][j];
+		if (m == 0) return p_field.at(i).at(j);
+		else if (m == 1) return field.at(i).at(j);
 		return 0;
 	}
 
-	pair<int, deque<int>> TetriEngine::get_mino_state() const {
+	// fieldのコピーを返す 
+	std::vector<std::vector<int>> TetriEngine::GetField() const
+	{
+		return field;
+	}
+
+	bool TetriEngine::GetField(std::vector<std::vector<int>>& _field) const
+	{
+		_field = field;
+		return true;
+	}
+
+	std::pair<int, std::deque<int>> TetriEngine::get_mino_state() const {
 		return make_pair(hold, q_next);
 	}
 
@@ -1233,14 +1289,14 @@ namespace shig {
 	}
 
 	void TetriEngine::edit_garbage_cmd(int i) {
-		garbage_cmd = i;
+		garbage_flag = i;
 		return;
 	}
 
 	std::vector<int> TetriEngine::get_game_state() const {
 		std::vector<int> state(13);
-		state[0] = hold_f;
-		state[1] = hold;
+		state.at(0) = hold_f;
+		state.at(1) = hold;
 		state[2] = current;
 		state[3] = counter;
 		state[4] = m_evn;

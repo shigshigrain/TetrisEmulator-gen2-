@@ -88,8 +88,8 @@
       <AdditionalLibraryDirectories>"C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2";C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_utility;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_TetriCore;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_scene;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_KeyConf;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_AI_Shigune;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <HeapReserveSize>2000000</HeapReserveSize>
       <StackReserveSize>2000000</StackReserveSize>
-      <HeapCommitSize>8000</HeapCommitSize>
-      <StackCommitSize>8000</StackCommitSize>
+      <HeapCommitSize>16000</HeapCommitSize>
+      <StackCommitSize>16000</StackCommitSize>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(ProjectDir)App"</Command>
@@ -488,7 +488,7 @@
     <ClInclude Include="U_scene\settings.hpp" />
     <ClInclude Include="U_scene\solo.hpp" />
     <ClInclude Include="U_scene\title.hpp" />
-    <ClInclude Include="U_TetriCore\tetris_engine.h" />
+    <ClInclude Include="U_TetriCore\tetris_engine.hpp" />
     <ClInclude Include="U_utility\shig_utility.h" />
   </ItemGroup>
   <ItemGroup>

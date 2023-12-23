@@ -12,9 +12,9 @@ public:
 	void draw() const override;
 
 private:// メンバ変数
-	shig::TetriEngine m_1pTE;
-	shig::TetriEngine m_2pTE;
-	//shig::AiShigune m_2pAI;
+	std::unique_ptr<TetriEngine> m_1pTE;
+	std::unique_ptr<TetriEngine> m_2pTE;
+	std::unique_ptr<AiShigune> m_2pAI;
 	Texture m_bg;
 	Array<Texture> m_MinoTex;
 	KeyConf m_KeyConf1p;
@@ -27,11 +27,11 @@ private:// メンバ変数
 	bool reset_flag;
 	shig::BoolSwitch suggest_flag;
 	std::vector<vector<int>> FieldS;
-	std::vector<int> act_flame;
+	std::vector<int> ActFlame;
 	std::atomic<bool> abortAi;
 	std::atomic<bool> thinkAi;
 	std::deque<int> CmdList2pAi;
-	//AsyncTask<int32> asyncAi;
+	AsyncTask<int32> asyncAi;
 
 private:// update関数
 	void GameManage1p();

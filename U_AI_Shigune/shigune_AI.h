@@ -1,8 +1,11 @@
 ﻿#pragma once
-#include "tetris_engine.h"
+#include "tetris_engine.hpp"
 #include "GameContainer.hpp"
 
 // shigune : main part of AI and do decide act;
+
+
+static std::mutex AiMtx;
 
 const std::vector<int> cx = { -1, 0, 1 };
 const std::vector<int> cy = { -1, 0, 1 };
@@ -821,14 +824,12 @@ const vector<vector<vector<pair<int, int>>>> touch_list = {
 
 };
 
-
 namespace shig {
 	// hold : 1, soft : 2, hard : 3, L_rot : 4, R_rot : 5, l_move : 6, r_move : 7;
 
 	class AiShigune
 	{
 	private:
-		TetriEngine TE;
 		int identifier;
 		int mind;
 		int hold_AI;
@@ -859,7 +860,6 @@ namespace shig {
 		vector<GameContainer> gc_slot;
 		GameContainer now_gc;
 		vector<CmdPattern> s_branch;
-		std::mutex AiMtx;
 
 	public:
 		AiShigune();
@@ -868,16 +868,16 @@ namespace shig {
 		//AiShigune(const AiShigune& copyAi);
 		bool thinking();
 		vector<int> get_recent_cmd();
-		bool make_AI_suggestion();
-		bool make_AI_suggestion(std::mutex& up);
-		vector<vector<int>> get_AI_suggestion() const;
-		vector<vector<int>> get_AI_suggestion(std::mutex& up);
-		void get_field();
-		void get_state();
+		bool makeAiSuggestion();
+		bool makeAiSuggestion(std::mutex& up);
+		vector<vector<int>> getSuggestionAi() const;
+		vector<vector<int>> getSuggestionAi(std::mutex& up);
+		void SetupField();
+		void SetupState();
 		vector<int> make_order_list();
 		vector<int> make_order_list(GameContainer& gc);
 		bool strategy_mark();
-		bool pc_check();
+		bool CheckPC();
 		void bgn_strategy();
 		vector<CmdPattern> search_way(GameContainer gc, int loop);
 		void do_sw(vector<CmdPattern> &ctl, GameContainer gc, size_t loop);
@@ -885,15 +885,14 @@ namespace shig {
 		void CalcScore(CmdPattern& cd, GameContainer& gcs, size_t loopc);
 		LL gs_BFS(CmdPattern& cb, std::vector<std::vector<int>>& qf);
 		bool height_calc(GameContainer& gch);
-		bool move_check(int to_x, int to_y, Tetri& s_check, GameContainer& ggc);
+		bool CheckMove(int to_x, int to_y, Tetri& s_check, GameContainer& ggc);
 		int  NextRotate(int n_rot, Rotate rt);
-		bool SRS_check(int lr, Tetri& s_now, GameContainer& ggc);
 		bool CheckSRS_Clockwise(Tetri& s_now, GameContainer& ggc);
 		bool CheckSRS_CounterClock(Tetri& s_now, GameContainer& ggc);
 		int TS_check(int toX, int toY, Tetri& ts, GameContainer& ggc);
-		set<int> erase_check_AI(Tetri& s_now, GameContainer &gce);
+		set<int> CheckErase(Tetri& s_now, GameContainer &gce);
 		void ApplyMino(std::vector<std::vector<int>>& c_field, const Tetri& s_now);
-		bool move_mino(Tetri& m_now, int s_action, GameContainer& ggc);
+		bool MoveMino(Tetri& m_now, int s_action, GameContainer& ggc);
 		void PrintGhost(const Tetri& s_now);
 		std::pair<int, std::string> get_sttrp_name();
 		bool load_ttrp();
@@ -904,7 +903,6 @@ namespace shig {
 		bool set_gc(GameContainer &gc);
 		GameContainer update_gc(CmdPattern& ct, GameContainer gcp);
 		int ttrp_check_mino(Tetri& fd, GameContainer& gcf);
-		TetriEngine getTE();
 		void loadTE(const TetriEngine& te);
 		CmdPattern getCmd(); // 呼び出し側で制御
 

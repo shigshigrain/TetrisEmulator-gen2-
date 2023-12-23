@@ -25,7 +25,7 @@ private:// メンバ変数
 	int passed_flame;
 	bool reset_flag;
 	shig::BoolSwitch suggest_flag;
-	std::vector<int> act_flame;
+	std::vector<int> ActFlame;
 
 private:// update関数
 	void game_manage();
