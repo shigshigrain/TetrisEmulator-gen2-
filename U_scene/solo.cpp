@@ -22,7 +22,7 @@ Solo::Solo(const InitData& init)
 
 	sec_time = Time::GetMillisec();
 	delay_cnt = 0;
-	DAS_flame = 5;
+	DAS_flame = 6;
 	Wait_flame = 0;
 	passed_flame = 0;
 	reset_flag = false;
@@ -226,7 +226,7 @@ void Solo::reset_manage(){
 	m_soloTE->SetField();
 	m_soloTE->CopyFiledP();
 	delay_cnt = 0;
-	DAS_flame = 7;
+	DAS_flame = 6;
 	Wait_flame = 0;
 	reset_flag = false;
 	act_flame = vector<int>(8, 0);
