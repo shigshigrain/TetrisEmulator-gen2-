@@ -23,7 +23,7 @@ Ai::Ai(const InitData& init)
 
 	sec_time = Time::GetMillisec();
 	delay_cnt = 0;
-	DASFlame1p = 7;
+	DASFlame1p = 5;
 	WaitFlame1p = 0;
 	WaitFlame2p = 0;
 	passed_flame = 0;
@@ -328,7 +328,7 @@ void Ai::ResetManage() {
 	m_2pTE->CopyFiledP();
 
 	delay_cnt = 0;
-	DASFlame1p = 7;
+	DASFlame1p = 5;
 	WaitFlame1p = 30;
 	WaitFlame2p = 30;
 	reset_flag = false;
