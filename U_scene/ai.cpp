@@ -23,7 +23,7 @@ Ai::Ai(const InitData& init)
 
 	sec_time = Time::GetMillisec();
 	delay_cnt = 0;
-	DASFlame1p = 5;
+	DASFlame1p = 7;
 	WaitFlame1p = 0;
 	WaitFlame2p = 0;
 	passed_flame = 0;
