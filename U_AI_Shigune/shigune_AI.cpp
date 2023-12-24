@@ -160,7 +160,6 @@ namespace shig {
 
 	// let Ai think about the next move(return True or False)
 	bool AiShigune::thinking() {
-
 		SetupState();
 		SetupField();
         strategy_mark();
@@ -171,7 +170,6 @@ namespace shig {
 
 		next_crr_check();
 
-
 		Tetri s_pat = s_branch.front().pat;
 		std::set<int> el = CheckErase(s_pat, now_gc);
 		int els = (int)el.size();
@@ -180,9 +178,7 @@ namespace shig {
 		
 		AiShigune::ttrp_check(s_branch.front(), els, mnL);
 
-
 		return true;
-
 	}
 
 	// get Ai's suggestion of move cmd (by {int, int, ...})
@@ -732,10 +728,13 @@ namespace shig {
 
         std::sort(catalog.begin(), catalog.end(), [&](const CmdPattern& l, const CmdPattern& r) { return r.scr < l.scr; });
 
-        if (catalog.size() == 0) {
+        if (catalog.size() <= frt) {
+
+			s_branch = { CmdPattern()};
+
             return false;
         }
-        else if (catalog.size() < branch_num && catalog.size() > 0) {
+        /*else if (catalog.size() < branch_num && catalog.size() > 0) {
             for (size_t i = 0; i < catalog.size(); i++) {
                 branch.at(i).push_back(catalog.at(i));
                 gc_slot.at(i) = update_gc(catalog.at(i), gc_org);
@@ -745,7 +744,7 @@ namespace shig {
                 gc_slot.at(i) = GameContainer();
                 gc_slot.at(i).slot_id = (int)i;
             }
-        }
+        }*/
         else {
 			for (size_t i = 0; i < frt; i++) { // 一時的に具体値指定
                 branch.at(i).push_back(catalog.at(i));
@@ -1861,7 +1860,7 @@ namespace shig {
         return ggc.TS_kind;
     }
 
-    set<int> AiShigune::CheckErase(Tetri& s_now, GameContainer &gce) {
+    std::set<int> AiShigune::CheckErase(Tetri& s_now, GameContainer &gce) {
         set<int> erase_itr;
         gce.p_field_AI = gce.field_AI;
         AiShigune::ApplyMino(gce.p_field_AI, s_now);
@@ -2290,7 +2289,6 @@ namespace shig {
 	{
 		// 中断命令が出るまで
 		while (!abort) {
-
 			if (think) {
 				As.thinking();
 				As.makeAiSuggestion();
@@ -2300,6 +2298,9 @@ namespace shig {
 				think = false;
 			}
 		}
+
+		std::cerr << "非同期処理終了";
+
 		return 334;
 	}
 

@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Intel® VTune™ Profiler Results
+/GPUCache
+/DawnCache
+/App/e000

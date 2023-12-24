@@ -13,14 +13,18 @@ namespace shig {
 		ttrp_f = -1;
 		pre_gc = 0;
 		isSFT = false;
-		cmd_list = {};
+		cmd_list = {3};
 		pat = Tetri();
 	}
 
-	CmdPattern::CmdPattern(const Tetri& p, const std::vector<int>& list, const int& d) : pat(p), cmd_list(list), index(d) {
+	CmdPattern::CmdPattern(const Tetri& p, const std::vector<int>& list, const int& d){
 		score = 1000000000;
 		scr = shig::CmdScore();
-		srs = 0, kind = 0;
+		pat = p;
+		cmd_list = list;
+		index = d;
+		srs = 0;
+		kind = 0;
 		ttrp_f = -1;
 		pre_gc = 0;
 		isSFT = false;

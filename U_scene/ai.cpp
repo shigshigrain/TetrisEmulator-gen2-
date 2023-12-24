@@ -257,7 +257,7 @@ void Ai::TetrisManage2p()
 			if (!CmdList2pAi.empty()) {
 				g_check = m_2pTE->Game(CmdList2pAi.front(), 0);
 				if (CmdList2pAi.front() == 3) {
-					//m_1pTE->StackGarbage(m_2pTE->getGarbage());
+					m_1pTE->StackGarbage((int)(m_2pTE->getGarbage() / 2));
 					m_2pTE->getGarbage();
 				}
 
@@ -269,6 +269,7 @@ void Ai::TetrisManage2p()
 				}
 			}
 			else {
+				thinkAi = true;
 			}
 		}
 		else if (thinkAi) {
