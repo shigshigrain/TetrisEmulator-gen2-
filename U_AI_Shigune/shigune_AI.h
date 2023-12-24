@@ -857,9 +857,9 @@ namespace shig {
 		vector<TetriPlate> ttrp_list;
 		std::vector<int> ttrp_bgnF;
 		TetriPlate select_ttrp;
-		vector<GameContainer> gc_slot;
+		std::vector<GameContainer> gc_slot;
 		GameContainer now_gc;
-		vector<CmdPattern> s_branch;
+		std::vector<CmdPattern> s_branch;
 
 	public:
 		AiShigune();

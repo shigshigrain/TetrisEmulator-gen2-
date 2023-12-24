@@ -489,7 +489,7 @@ namespace shig {
 
     void AiShigune::do_sw(vector<CmdPattern> &ctl, GameContainer gc, size_t loop) {
 
-        vector<shig::CmdPattern> pcv(0);
+        std::vector<CmdPattern> pcv(0);
 
         if (gc.current_AI == 0)return;
         gc.p_field_AI = gc.field_AI;
@@ -566,78 +566,6 @@ namespace shig {
 
 			w++;
 			SearchTree.pop();
-
-			//if (parent_tree.at(w) == w) {
-			//    test.SetMino(gc.current_AI);
-			//    shig_rep(i, search_tree.at(w).size() - 1) {
-			//        if (!MoveMino(test, search_tree.at(w).at(i), gc)) {
-			//            can = false;
-			//            break;
-			//        }
-			//    }
-			//    if (!can) {
-			//        w++;
-			//        continue;
-			//    }
-			//    int sft = -1, hd_cnt = 0;
-			//    while (CheckMove(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
-			//    MoveMino(test, 3, gc);
-			//    CmdPattern c(test, search_tree.at(w), parent_tree.at(w));
-			//    decltype(gc.cp)::iterator it = gc.cp.find(c);
-			//    if (it != gc.cp.end()) {
-			//        w++;
-			//        continue;
-			//    }
-			//    CalcScore(c, gc, loop);
-			//    c.pre_gc = gc.slot_id;
-			//    pcv.push_back(c);
-			//    gc.cp.insert(c);
-			//    std::vector<int> w_sft = search_tree.at(w);
-			//    w_sft.pop_back();
-			//    shig_rep(i, hd_cnt)w_sft.push_back(2);
-			//    search_tree[to] = w_sft; parent_tree[to] = parent_tree.at(w); to++;
-			//    w++;
-			//}
-			//else {
-			//    if (search_tree.at(w).back() != 3) {
-			//        const std::vector<int> test_case = { 6, 7, 4, 5 };
-			//        shig_rep(h, test_case.size()) {
-			//            test.SetMino(gc.current_AI);
-			//            can = true;
-			//            std::vector<int> add_tree = search_tree.at(w);
-			//            add_tree.push_back(test_case.at(h));
-			//            shig_rep(i, add_tree.size()) {
-			//                if (!MoveMino(test, add_tree.at(i), gc)) {
-			//                    can = false;
-			//                    break;
-			//                }
-			//            }
-			//            if (!can) continue;
-			//            int sft = -1; int hd_cnt = 0;
-			//            while (CheckMove(0, sft * (hd_cnt + 1), test, gc)) hd_cnt++;
-			//            MoveMino(test, 3, gc);
-			//            add_tree.push_back(3);
-			//            CmdPattern c(test, add_tree, w); c.set_isSFT(true);
-			//            decltype(gc.cp)::iterator it = gc.cp.find(c);
-			//            if (it != gc.cp.end()) continue;
-			//            CalcScore(c, gc, loop);
-			//            gc.cp.insert(c);
-			//            add_tree.pop_back();
-			//            c.pre_gc = gc.slot_id;
-			//            pcv.push_back(c);
-			//            shig_rep(i, hd_cnt)add_tree.push_back(2);
-			//            if (to < mxm - 1) {
-			//                search_tree[to] = add_tree;
-			//                parent_tree[to] = parent_tree.at(w);
-			//                to++;
-			//            }
-			//        }
-			//        w++;
-			//    }
-			//    else {
-			//        w++;
-			//    }
-			//}
 
 		}
 
@@ -2389,7 +2317,7 @@ namespace shig {
 				int r = 0, x = 0, y = 0, d = 0, s = 0;
 				std::getline(ifs, readS);
 				stringstream mns(readS);
-				ss >> r >> x >> y >> d >> s;
+				mns >> r >> x >> y >> d >> s;
 				Tetri tp(r, x, y, d);
 				tpl.push_back(tp);
 				ts.push_back(s);
@@ -2404,7 +2332,7 @@ namespace shig {
 				int tid = 0;
 				std::getline(ifs, readS);
 				stringstream tpid(readS);
-				ss >> tid;
+				tpid >> tid;
 				vil.push_back(tid);
 			}
 			ttrp.set_id_list(vil);
@@ -2417,56 +2345,14 @@ namespace shig {
 				int ll = 0, rr = 0;
 				std::getline(ifs, readS);
 				stringstream terms(readS);
-				ss >> ll >> rr;
+				terms >> ll >> rr;
 				vmp.push_back(std::make_pair(ll, rr));
 			}
 			ttrp.set_terms(vmp);
 		}
 		
-		//if (fp != NULL)
-		//{
-		//	int l, ls, id, tn, bf; //mino num : connect list num : ttrp id
-		//	char rtdC[128];
-		//	string rtdS = "";
-		//	fscanf_s(fp, "%d %d %d %d %d %s ", &l, &ls, &id, &tn, &bf, rtdC, 64);
-		//	for (int i = 0; i < 128; i++) {
-		//		if (rtdC.at(i) == '\0') {
-		//			rtdS = std::string(rtdC, i);
-		//			break;
-		//		}
-		//	}
-		//	ttrp.Setup(l, ls, id, tn, rtdS, bf);
-		//	//
-		//	vector<Tetri> tpl(l);
-		//	std::vector<int> ts(l);
-		//	shig_rep(i, l) {
-		//		int r, x, y, d, s;
-		//		fscanf_s(fp, "%d %d %d %d %d", &r, &x, &y, &d, &s);
-		//		Tetri tp(r, x, y, d);
-		//		tpl.at(i) = tp;
-		//		ts.at(i) = s;
-		//	}
-		//	ttrp.set_list(tpl, ts);
-		//	//
-		//	std::vector<int> vil(ls);
-		//	shig_rep(i, ls) {
-		//		int temp = 0;
-		//		fscanf_s(fp, "%d", &temp);
-		//		vil.at(i) = temp;
-		//	}
-		//	ttrp.set_id_list(vil);
-		//	//
-		//	vector<pairI2> vmp(tn);
-		//	shig_rep(i, tn) {
-		//		int ll = 0, rr = 0;
-		//		fscanf_s(fp, "%d %d", &ll, &rr);
-		//		vmp.at(i) = make_pair(ll, rr);
-		//	}
-		//	ttrp.set_terms(vmp);
-		//	fclose(fp);
-		//}
-
 		return true;
 	}
+
 }
 
