@@ -135,8 +135,8 @@ namespace shig {
 
 		Tetri();
 		Tetri(int id);
-		Tetri(int rot, int X, int Y, int id);
-
+		Tetri(int r, int x, int y, int d);
+		bool Init(int r, int x, int y, int d);
 		void set(int a, int b, int c, int d);
 		void addX(int add);
 		void addY(int add);

@@ -490,6 +490,7 @@
     <ClInclude Include="U_scene\title.hpp" />
     <ClInclude Include="U_TetriCore\tetris_engine.hpp" />
     <ClInclude Include="U_utility\shig_utility.h" />
+    <ClInclude Include="U_AI_Shigune\WallProfile.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App\example\obj\blacksmith.obj">

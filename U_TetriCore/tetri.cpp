@@ -4,33 +4,54 @@
 namespace shig {
 
 	Tetri::Tetri() {
-		Tetri::rot = 0;
-		Tetri::X = 0;
-		Tetri::Y = 0;
-		Tetri::id = 0;
-		Tetri::px_size = 30;
-		Tetri::mino = minoT;
-		SetMino(6);
+		Tetri::Init(0, 3, 21, 6);
 	};
 
 	Tetri::Tetri(int id) {
-		Tetri::rot = 0;
-		Tetri::X = 0;
-		Tetri::Y = 0;
-		Tetri::id = id;
-		Tetri::px_size = 30;
-		Tetri::mino = minoT;
-		Tetri::SetMino(id);
+		Tetri::Init(0, 3, 21, id);
 	};
 
-	Tetri::Tetri(int rot, int X, int Y, int id) {
-		Tetri::rot = rot;
-		Tetri::X = X;
-		Tetri::Y = Y;
-		Tetri::id = id;
-		Tetri::mino = minoT;
-		Tetri::SetMino(id);
-	};
+	Tetri::Tetri(int r, int x, int y, int d) {
+		Tetri::Init(r, x, y, d);
+	}
+
+	bool Tetri::Init(int r, int x, int y, int d)
+	{
+		if (1 <= d && d <= 7)Tetri::id = d;
+		else Tetri::id = 6;
+		Tetri::rot = r;
+		Tetri::X = x;
+		Tetri::Y = y;
+
+		switch (Tetri::id)
+		{
+		case 1:
+			Tetri::mino = minoI;
+			break;
+		case 2:
+			Tetri::mino = minoJ;
+			break;
+		case 3:
+			Tetri::mino = minoL;
+			break;
+		case 4:
+			Tetri::mino = minoO;
+			break;
+		case 5:
+			Tetri::mino = minoS;
+			break;
+		case 6:
+			Tetri::mino = minoT;
+			break;
+		case 7:
+			Tetri::mino = minoZ;
+			break;
+		default:
+			Tetri::mino = minoT;
+			break;
+		}
+		return true;
+	}
 
 	void Tetri::set(int a, int b, int c, int d) {
 		Tetri::rot = a; Tetri::X = b; Tetri::Y = c; Tetri::id = d;

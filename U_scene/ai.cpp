@@ -48,14 +48,15 @@ void Ai::update()
 	if (Time::GetMillisec() - sec_time >= refrashRate60) {
 		sec_time = Time::GetMillisec();
 		passed_flame++;
+		m_KeyConf1p.SetDefault(); // キー入力情報のセット
 
-		// 1p 人間側 
+		// 1p 人間側
 		if (WaitFlame1p > 0) {
 			WaitFlame1p--;
 		}
 		else {
 			m_1pTE->ResetFieldP();
-			m_KeyConf1p.SetDefault(); // キー入力情報のセット
+			
 			if (reset_flag) ResetManage();
 
 			// テトリス側操作入力
@@ -83,7 +84,7 @@ void Ai::update()
 
 	}
 
-	if (KeyQ.pressed())
+	if (KeyQ.pressed() or KeyEscape.pressed())
 	{
 		thinkAi = false;
 		abortAi = true;
@@ -115,7 +116,7 @@ void Ai::GameManage1p() {
 	if (IsKeyVP(m_KeyConf1p, KeyVal::G)) {
 		m_1pTE->CopyFiledP();
 		//m_1pTE->edit_garbage_cmd(1);
-		m_1pTE->StackGarbage(0);
+		m_1pTE->StackGarbage(-1);
 
 	}
 
@@ -132,8 +133,7 @@ void Ai::GameManage2p()
 
 	if (IsKeyVP(m_KeyConf1p, KeyVal::O)) {
 		m_2pTE->CopyFiledP();
-		//m_1pTE->edit_garbage_cmd(1);
-		m_2pTE->StackGarbage(0);
+		m_2pTE->StackGarbage(-1);
 	}
 
 
@@ -256,8 +256,10 @@ void Ai::TetrisManage2p()
 			FieldS = m_2pAI->getSuggestionAi();
 			if (!CmdList2pAi.empty()) {
 				g_check = m_2pTE->Game(CmdList2pAi.front(), 0);
+				WaitFlame2p += 4;
 				if (CmdList2pAi.front() == 3) {
-					m_1pTE->StackGarbage((int)(m_2pTE->getGarbage() / 2));
+					//m_1pTE->StackGarbage((int)(m_2pTE->getGarbage() / 2));
+					m_1pTE->StackGarbage(m_2pTE->getGarbage());
 					m_2pTE->getGarbage();
 				}
 

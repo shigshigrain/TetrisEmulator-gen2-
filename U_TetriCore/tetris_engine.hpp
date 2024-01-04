@@ -62,6 +62,8 @@ namespace shig {
 		{ 0, 0, 1, 2, 0 },
 	};
 
+	const std::vector<int> combo_fire = { 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5};
+
 	/*static const std::vector<std::vector<int>> baseField = {
 
 		{0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0},

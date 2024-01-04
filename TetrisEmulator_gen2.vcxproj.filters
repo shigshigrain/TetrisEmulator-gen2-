@@ -1061,5 +1061,8 @@
     <ClInclude Include="U_AI_Shigune\TetriPlate.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="U_AI_Shigune\WallProfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

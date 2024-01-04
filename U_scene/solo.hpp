@@ -30,8 +30,8 @@ private:// メンバ変数
 private:// update関数
 	void game_manage();
 	void tetris_manage();
-	void reset_manage();
 	void actF_manage();
+	void reset_manage();
 	
 private:// draw関数 const
 	void draw_field() const;

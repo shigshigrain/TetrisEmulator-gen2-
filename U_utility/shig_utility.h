@@ -52,6 +52,6 @@ namespace shig{
 
 
 
-	static const std::vector<int> W_seed = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	const std::vector<int> W_seed = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 }

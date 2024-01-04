@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "tetris_engine.hpp"
 #include "GameContainer.hpp"
+#include "WallProfile.h"
 
 // shigune : main part of AI and do decide act;
 
@@ -854,7 +855,7 @@ namespace shig {
 		std::vector<int> cmd_list;
 		std::vector<std::string> ttrp_name_list;
 		std::vector<int> ttrp_id_list;
-		vector<TetriPlate> ttrp_list;
+		std::vector<TetriPlate> ttrp_list;
 		std::vector<int> ttrp_bgnF;
 		TetriPlate select_ttrp;
 		std::vector<GameContainer> gc_slot;
@@ -879,18 +880,19 @@ namespace shig {
 		bool strategy_mark();
 		bool CheckPC();
 		void bgn_strategy();
-		vector<CmdPattern> search_way(GameContainer gc, int loop);
+		std::vector<CmdPattern> search_way(GameContainer gc, int loop);
 		void do_sw(vector<CmdPattern> &ctl, GameContainer gc, size_t loop);
-		bool explore_choices(GameContainer gc_org);
+		bool ChoiceExplore(GameContainer gc_org);
 		void CalcScore(CmdPattern& cd, GameContainer& gcs, size_t loopc);
-		LL gs_BFS(CmdPattern& cb, std::vector<std::vector<int>>& qf);
+		LL cs_BFS(const std::vector<std::vector<int>>& qf);
+		LL cs_Wall(const std::vector<std::vector<int>>& qf);
 		bool height_calc(GameContainer& gch);
 		bool CheckMove(int to_x, int to_y, Tetri& s_check, GameContainer& ggc);
 		int  NextRotate(int n_rot, Rotate rt);
 		bool CheckSRS_Clockwise(Tetri& s_now, GameContainer& ggc);
 		bool CheckSRS_CounterClock(Tetri& s_now, GameContainer& ggc);
 		int TS_check(int toX, int toY, Tetri& ts, GameContainer& ggc);
-		set<int> CheckErase(Tetri& s_now, GameContainer &gce);
+		std::set<int> CheckErase(Tetri& s_now, GameContainer &gce);
 		void ApplyMino(std::vector<std::vector<int>>& c_field, const Tetri& s_now);
 		bool MoveMino(Tetri& m_now, int s_action, GameContainer& ggc);
 		void PrintGhost(const Tetri& s_now);
@@ -900,7 +902,7 @@ namespace shig {
 		bool ttrp_check(CmdPattern& slc, int& sle, std::vector<int>& mnL);
 		bool ttrp_check(CmdPattern& slc, int& sle, GameContainer& gct);
 		bool next_crr_check();
-		bool set_gc(GameContainer &gc);
+		bool set_gc(GameContainer &gc) const;
 		GameContainer update_gc(CmdPattern& ct, GameContainer gcp);
 		int ttrp_check_mino(Tetri& fd, GameContainer& gcf);
 		void loadTE(const TetriEngine& te);

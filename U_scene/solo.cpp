@@ -88,7 +88,7 @@ void Solo::game_manage(){
 
 	if (IsKeyVP(m_KeyConfS, KeyVal::G)) {
 		m_soloTE->CopyFiledP();
-		m_soloTE->edit_garbage_cmd(1);
+		m_soloTE->edit_garbage_cmd(-1);
 	}
 
 	if (IsKeyVP(m_KeyConfS, KeyVal::I)) {
@@ -221,6 +221,28 @@ void Solo::tetris_manage(){
 	return;
 }
 
+
+void Solo::actF_manage() {
+
+	for (auto&& i : act_flame) {
+		i++;
+		if (i > 0x11111110)i = 1;
+	}
+
+	if (not IsKeyVP(m_KeyConfS, KeyVal::Right) && not IsKeyVP(m_KeyConfS, KeyVal::Left)) {
+		act_flame.at(6) = 0;
+		act_flame.at(7) = 0;
+	}
+
+	if (IsKeyVP(m_KeyConfS, KeyVal::Right) && IsKeyVP(m_KeyConfS, KeyVal::Left)) {
+		act_flame.at(6) = 1;
+		act_flame.at(7) = 1;
+	}
+
+	return;
+}
+
+
 void Solo::reset_manage(){
 
 	m_soloTE->SetField();
@@ -277,26 +299,6 @@ void Solo::draw_s_field() const{
 			.drawFrame(2, 0, minoC.at(SF.at((size_t)20 - i).at(j)));
 		}
 
-	}
-
-	return;
-}
-
-void Solo::actF_manage(){
-
-	for (auto&& i : act_flame) {
-		i++;
-		if (i > 0x11111110)i = 1;
-	}
-
-	if (not IsKeyVP(m_KeyConfS, KeyVal::Right) && not IsKeyVP(m_KeyConfS, KeyVal::Left)) {
-		act_flame.at(6) = 0;
-		act_flame.at(7) = 0;
-	}
-
-	if ( IsKeyVP(m_KeyConfS, KeyVal::Right) && IsKeyVP(m_KeyConfS, KeyVal::Left)) {
-		act_flame.at(6) = 1;
-		act_flame.at(7) = 1;
 	}
 
 	return;

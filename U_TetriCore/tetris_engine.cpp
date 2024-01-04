@@ -1073,6 +1073,13 @@ namespace shig {
 		CheckPC();
 		//if (garbage_flag == 1) AddGarbage(get_rnd(1, 6));
 		//garbage_flag = 0;
+		if (combo >= ((int)combo_fire.size() - 1)) {
+			garbage_send += combo_fire.back();
+		}
+		else {
+			combo = std::max(combo, 0);
+			garbage_send += combo_fire.at(combo);
+		}
 		garbage_stack = std::max(garbage_stack, 0);
 		garbage_stack -= garbage_send;
 		garbage_send = -1 * garbage_stack;
@@ -1244,7 +1251,7 @@ namespace shig {
 			garbage_stack += line;
 		}
 		else if(line < 0){
-			garbage_stack += get_rnd(1, 7);
+			garbage_stack += get_rnd(1, 3);
 		}
 
 		return true;
