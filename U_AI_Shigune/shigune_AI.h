@@ -914,7 +914,7 @@ namespace shig {
 	};
 
 	// 非同期処理用
-	int32 ExeThinking(AiShigune& As, const std::atomic<bool>& abort, std::atomic<bool>& think, std::deque<int>& CmdListS);
+	bool ExeThinking(AiShigune& As, const std::atomic<bool>& abort, std::atomic<bool>& think, std::deque<int>& CmdListS);
 
 }
 

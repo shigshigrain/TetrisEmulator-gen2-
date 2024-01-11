@@ -1,5 +1,6 @@
 ﻿#include "shigune_AI.h"
 
+
 static int i32_zero = 0;
 static int i32_one = 1;
 static int i32_minus_one = -1;
@@ -2206,7 +2207,7 @@ namespace shig {
 	}
 
 	// 非同期処理用
-	int32 ExeThinking(AiShigune& As, const std::atomic<bool>& abort, std::atomic<bool>& think, std::deque<int>& CmdListS)
+	bool ExeThinking(AiShigune& As, const std::atomic<bool>& abort, std::atomic<bool>& think, std::deque<int>& CmdListS)
 	{
 		// 中断命令が出るまで
 		while (!abort) {
