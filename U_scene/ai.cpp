@@ -82,6 +82,9 @@ void Ai::update()
 			
 		}
 
+		//GameManage1p();
+		//GameManage2p();
+
 	}
 
 	if (KeyQ.pressed() or KeyEscape.pressed())
@@ -101,6 +104,14 @@ void Ai::draw() const
 	DrawGhost();
 	DrawTex1p();
 	DrawTex2p();
+}
+
+Ai::~Ai()
+{
+	thinkAi = false;
+	abortAi = true;
+	// 非同期処理の終了を待機 
+	if (asyncAi.isValid())asyncAi.wait();
 }
 
 void Ai::GameManage1p() {
@@ -256,7 +267,7 @@ void Ai::TetrisManage2p()
 			FieldS = m_2pAI->getSuggestionAi();
 			if (!CmdList2pAi.empty()) {
 				g_check = m_2pTE->Game(CmdList2pAi.front(), 0);
-				WaitFlame2p += 0;
+				WaitFlame2p += 4;
 				if (CmdList2pAi.front() == 3) {
 					//m_1pTE->StackGarbage((int)(m_2pTE->getGarbage() / 2));
 					m_1pTE->StackGarbage(m_2pTE->getGarbage());

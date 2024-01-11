@@ -11,6 +11,8 @@ public:
 
 	void draw() const override;
 
+	~Ai();
+
 private:// メンバ変数
 	std::unique_ptr<TetriEngine> m_1pTE;
 	std::unique_ptr<TetriEngine> m_2pTE;
