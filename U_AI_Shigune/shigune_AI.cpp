@@ -650,7 +650,7 @@ namespace shig {
         //catalog.clear();
 
 		// frt = 25 まで善手選択
-		static const size_t frt = 28;
+		static const size_t frt = 25;
 
         do_sw(ref(catalog), gc_org, 0);
 
@@ -1195,16 +1195,16 @@ namespace shig {
 			if (gcs.TS_kind == 1) {
 
 				if (gcs.height_sum >= 80 && gcs.height_mxm >= 10) {
-					ve += 20000;
+					ve += 5000;
 				}
 				else if (gcs.height_sum >= 48 && gcs.height_mxm >= 6) {
-					ve += 100000;
+					ve += 80000;
 				}
 				else {
-					ve += 50000;
+					ve += 60000;
 				}
 
-				if (gcs.btb > -1)btbc += 5000;
+				if (gcs.btb > -1)btbc += 10000;
 
 			}
 			else if (gcs.TS_kind == 2) {
@@ -1253,16 +1253,16 @@ namespace shig {
 			if (gcs.TS_kind == 1) {
 
 				if (gcs.height_sum >= 80 && gcs.height_mxm >= 10) {
-					ve +=   50000000;
+					ve +=   500000;
 				}
 				else if (gcs.height_sum >= 48 && gcs.height_mxm >= 6) {
-					ve += 1000000000;
+					ve += 1000000;
 				}
 				else {
-					ve += 2000000000;
+					ve += 2000000;
 				}
 
-				if (gcs.btb > -1)btbc += 10000000;
+				if (gcs.btb > -1)btbc += 100000;
 
 			}
 			else if (gcs.TS_kind == 2) {
@@ -1320,7 +1320,7 @@ namespace shig {
 					ve += 700000;
 				}
 
-				if (gcs.btb > -1)btbc += 50000;
+				if (gcs.btb > -1)btbc += 20000;
 
 			}
 			else if (gcs.TS_kind == 2) {
@@ -1388,12 +1388,12 @@ namespace shig {
 		//cd.update(shigune_AI::cs_BFS(cd, gcs));
 		//cd.scr.closed = shigune_AI::cs_BFS(cd, r_field_AI);
 		if (gcs.height_sum >= 64 && gcs.height_mxm >= 8) {
-			cd.scr.closed = cs_BFS(r_field_AI) * 1000;
-			Wall += cs_Wall(r_field_AI) * 800;
+			cd.scr.closed = cs_BFS(r_field_AI) * 1800;
+			Wall += cs_Wall(r_field_AI) * 1000;
 		}
 		else {
-			cd.scr.closed = cs_BFS(r_field_AI) * 1500;
-			Wall += cs_Wall(r_field_AI) * 1500;
+			cd.scr.closed = cs_BFS(r_field_AI) * 1800;
+			Wall += cs_Wall(r_field_AI) * 1200;
 		}
 
 		cd.scr.sum = shig::secure_add(cd.scr.sum, Wall);
