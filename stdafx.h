@@ -1,6 +1,6 @@
 ﻿# pragma once
 //# define NO_S3D_USING
-#include <Siv3D.hpp>
+//#include <Siv3D.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 #include <utility>
+#include <numeric>
 #include <queue>
 #include <deque>
 #include <stack>

@@ -1,6 +1,5 @@
 ﻿#include "shigune_AI.h"
 
-
 static int i32_zero = 0;
 static int i32_one = 1;
 static int i32_minus_one = -1;

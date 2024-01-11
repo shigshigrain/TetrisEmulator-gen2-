@@ -1,4 +1,5 @@
 ﻿# pragma once
+
 # include <Siv3D.hpp>
 # include "shigune_AI.h"
 # include "KeyConf.hpp"

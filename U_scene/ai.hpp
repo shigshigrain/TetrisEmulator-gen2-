@@ -33,7 +33,7 @@ private:// メンバ変数
 	std::atomic<bool> abortAi;
 	std::atomic<bool> thinkAi;
 	std::deque<int> CmdList2pAi;
-	AsyncTask<int32> asyncAi;
+	AsyncTask<bool> asyncAi;
 
 private:// update関数
 	void GameManage1p();

@@ -4,7 +4,7 @@
 
 namespace shig {
 
-	enum TetriMino :int16
+	enum TetriMino
 	{
 		I,
 		J,

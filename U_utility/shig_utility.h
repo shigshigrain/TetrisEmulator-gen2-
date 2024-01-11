@@ -3,8 +3,6 @@
 #include "stdafx.h"
 // shig_utility
 
-
-
 using namespace std;
 //using namespace shig;
 typedef long long LL;
