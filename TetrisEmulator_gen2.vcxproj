@@ -77,7 +77,7 @@
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_utility;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_TetriCore;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_scene;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_KeyConf;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_AI_Shigune;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_scene;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_KeyConf;C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_utility;C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_TetriCore;C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_AI_Shigune</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <BuildStlModules>false</BuildStlModules>
       <EnableModules>false</EnableModules>
@@ -92,6 +92,7 @@
       <StackReserveSize>2000000</StackReserveSize>
       <HeapCommitSize>16000</HeapCommitSize>
       <StackCommitSize>16000</StackCommitSize>
+      <AdditionalDependencies>C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\x64\Release\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(ProjectDir)App"</Command>
@@ -112,7 +113,7 @@
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_AI_Shigune;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_KeyConf;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_scene;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_TetriCore;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_utility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_scene;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_KeyConf;C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_utility;C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_TetriCore;C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_AI_Shigune</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <BuildStlModules>false</BuildStlModules>
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
@@ -128,6 +129,7 @@
       <SubSystem>Windows</SubSystem>
       <DelayLoadDLLs>advapi32.dll;crypt32.dll;dwmapi.dll;gdi32.dll;imm32.dll;ole32.dll;oleaut32.dll;opengl32.dll;shell32.dll;shlwapi.dll;user32.dll;winmm.dll;ws2_32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <AdditionalLibraryDirectories>C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\x64\Release\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(ProjectDir)App"</Command>
@@ -137,28 +139,17 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="U_AI_Shigune\GameContainer.cpp" />
-    <ClCompile Include="U_AI_Shigune\TetriPlate.cpp" />
-    <ClCompile Include="U_AI_Shigune\CmdScore.cpp" />
-    <ClCompile Include="U_AI_Shigune\CmdPattern.cpp" />
     <ClCompile Include="U_KeyConf\KeyConf.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="U_TetriCore\tetri.cpp" />
-    <ClCompile Include="U_AI_Shigune\shigune_AI.cpp">
-      <UseMSVC Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</UseMSVC>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="U_scene\ai.cpp" />
     <ClCompile Include="U_scene\common.hpp" />
     <ClCompile Include="U_scene\settings.cpp" />
     <ClCompile Include="U_scene\solo.cpp" />
     <ClCompile Include="U_scene\title.cpp" />
-    <ClCompile Include="U_TetriCore\tetris_engine.cpp" />
-    <ClCompile Include="U_utility\ShigUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\engine\texture\box-shadow\128.png" />
@@ -260,7 +251,6 @@
     <Text Include="template\ミノステータスについて.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include=".editorconfig" />
     <None Include="App\dll\soundtouch\SoundTouch_x64.dll" />
     <None Include="App\engine\font\fontawesome\fontawesome-brands.otf.zstdcmp" />
     <None Include="App\engine\font\fontawesome\fontawesome-solid.otf.zstdcmp" />
@@ -482,21 +472,12 @@
     <Xml Include="App\example\xml\test.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="U_AI_Shigune\GameContainer.hpp" />
-    <ClInclude Include="U_AI_Shigune\TetriPlate.hpp" />
-    <ClInclude Include="U_AI_Shigune\CmdScore.hpp" />
-    <ClInclude Include="U_AI_Shigune\CmdPattern.hpp" />
     <ClInclude Include="U_KeyConf\KeyConf.hpp" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="U_TetriCore\tetri.h" />
-    <ClInclude Include="U_AI_Shigune\shigune_AI.h" />
     <ClInclude Include="U_scene\ai.hpp" />
     <ClInclude Include="U_scene\settings.hpp" />
     <ClInclude Include="U_scene\solo.hpp" />
     <ClInclude Include="U_scene\title.hpp" />
-    <ClInclude Include="U_TetriCore\tetris_engine.hpp" />
-    <ClInclude Include="U_utility\ShigUtility.h" />
-    <ClInclude Include="U_AI_Shigune\WallProfile.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App\example\obj\blacksmith.obj">
