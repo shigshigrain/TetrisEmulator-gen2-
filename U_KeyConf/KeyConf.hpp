@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "stdafx.h"
-#include<Siv3D.hpp>
+#include <Siv3D.hpp>
 constexpr int KeyVal_size = 22;
 
 enum KeyVal {

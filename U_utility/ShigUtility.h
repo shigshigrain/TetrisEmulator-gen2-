@@ -36,7 +36,6 @@ namespace shig{
 		bool set(bool s);
 		bool get() const;
 
-
 	};
 
 	//non-menber-function

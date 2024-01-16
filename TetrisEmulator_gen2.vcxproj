@@ -158,7 +158,7 @@
     <ClCompile Include="U_scene\solo.cpp" />
     <ClCompile Include="U_scene\title.cpp" />
     <ClCompile Include="U_TetriCore\tetris_engine.cpp" />
-    <ClCompile Include="U_utility\shig_utility.cpp" />
+    <ClCompile Include="U_utility\ShigUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\engine\texture\box-shadow\128.png" />
@@ -495,7 +495,7 @@
     <ClInclude Include="U_scene\solo.hpp" />
     <ClInclude Include="U_scene\title.hpp" />
     <ClInclude Include="U_TetriCore\tetris_engine.hpp" />
-    <ClInclude Include="U_utility\shig_utility.h" />
+    <ClInclude Include="U_utility\ShigUtility.h" />
     <ClInclude Include="U_AI_Shigune\WallProfile.h" />
   </ItemGroup>
   <ItemGroup>

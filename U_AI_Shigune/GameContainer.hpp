@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "shig_utility.h"
+#include "ShigUtility.h"
 #include "CmdPattern.hpp"
 #include "TetriPlate.hpp"
 
