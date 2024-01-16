@@ -23,6 +23,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableDPCppRuntimeEnvironment>true</EnableDPCppRuntimeEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -31,6 +32,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseInteloneTBB>false</UseInteloneTBB>
+    <EnableDPCppRuntimeEnvironment>true</EnableDPCppRuntimeEnvironment>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -51,7 +53,7 @@
     <TargetName>$(ProjectName)(debug)</TargetName>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
     <IncludePath>$(SIV3D_0_6_13)\include;$(SIV3D_0_6_13)\include\ThirdParty;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SIV3D_0_6_13)\lib\Windows;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SIV3D_0_6_13)\lib\Windows;C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -59,7 +61,7 @@
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\Intermediate\</IntDir>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
     <IncludePath>$(SIV3D_0_6_13)\include;$(SIV3D_0_6_13)\include\ThirdParty;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SIV3D_0_6_13)\lib\Windows;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SIV3D_0_6_13)\lib\Windows;C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -85,7 +87,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <DelayLoadDLLs>advapi32.dll;crypt32.dll;dwmapi.dll;gdi32.dll;imm32.dll;ole32.dll;oleaut32.dll;opengl32.dll;shell32.dll;shlwapi.dll;user32.dll;winmm.dll;ws2_32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <AdditionalLibraryDirectories>"C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2";C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_utility;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_TetriCore;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_scene;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_KeyConf;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_AI_Shigune;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\x64\Release</AdditionalLibraryDirectories>
       <HeapReserveSize>2000000</HeapReserveSize>
       <StackReserveSize>2000000</StackReserveSize>
       <HeapCommitSize>16000</HeapCommitSize>
@@ -125,7 +127,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <DelayLoadDLLs>advapi32.dll;crypt32.dll;dwmapi.dll;gdi32.dll;imm32.dll;ole32.dll;oleaut32.dll;opengl32.dll;shell32.dll;shlwapi.dll;user32.dll;winmm.dll;ws2_32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <AdditionalLibraryDirectories>C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_AI_Shigune;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_KeyConf;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_scene;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_TetriCore;C:\Users\Soya Kawasaki\source\repos\TetrisEmulator_gen2\U_utility;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\x64\Release</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(ProjectDir)App"</Command>

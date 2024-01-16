@@ -39,16 +39,8 @@ namespace shig{
 
 	};
 
-
-
-
 	//non-menber-function
 	long long secure_add(long long a, long long b);
-
-
-
-
-
 
 	const std::vector<int> W_seed = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
