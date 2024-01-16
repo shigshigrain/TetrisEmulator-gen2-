@@ -795,7 +795,7 @@ namespace shig {
 		std::vector<std::vector<int>> r_field_AI(0); r_field_AI.reserve(fh);
 		if (Ls > 0) {
 			for (size_t i = 0; i < fh; ++i) {
-				decltype(L)::iterator it = L.find(i);
+				decltype(L)::iterator it = L.find((int)i);
 				if (it == L.end()) r_field_AI.push_back(gcs.p_field_AI.at(i));
 			}
 			while (r_field_AI.size() < fh) r_field_AI.push_back(ev_empty);
@@ -1045,12 +1045,12 @@ namespace shig {
 		else if (cdY > 5)
 		{
 			high = (-5LL * cdY * cdY + 115);
-			high -= (cdY - gcs.height_mxm + 1) * 250;
+			high -= (cdY - gcs.height_mxm + 1) * 500;
 
 		}
 		else {
 			high = (-2LL * cdY - 0);
-			high -= (cdY - gcs.height_mxm + 1) * 50;
+			high -= (cdY - gcs.height_mxm + 1) * 250;
 		}
 
 
@@ -1317,7 +1317,7 @@ namespace shig {
 					ve += 200000;
 				}
 				else {
-					ve += 700000;
+					ve += 800000;
 				}
 
 				if (gcs.btb > -1)btbc += 20000;
@@ -1478,10 +1478,10 @@ namespace shig {
             }
         }
 
-        LL b_closure = 10000;
-        if (clos_blc > 0)b_closure += -200 * clos_blc;
+        LL b_closure = 100000;
+        if (clos_blc > 0)b_closure = 0;
         b_closure += -1000 * clos_blc;
-        b_closure += -100 * grbg_blc;
+        b_closure += -500 * grbg_blc;
         b_closure += 0 * open_blc;
 
         b_closure *= 1;
@@ -1574,8 +1574,6 @@ namespace shig {
 
 		return Wall;
 	}
-
-
 
     bool AiShigune::height_calc(GameContainer& gch) {
         gch.height_sum = 0;
@@ -2222,7 +2220,7 @@ namespace shig {
 
 		std::cerr << "非同期処理終了";
 
-		return 334;
+		return true;
 	}
 
 }
