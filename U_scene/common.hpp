@@ -20,9 +20,6 @@ enum class State
 struct GameData
 {
 
-	//TetriEngine shared_TE;
-	//shig::AiShigune shared_AI;
-
 };
 
 using App = SceneManager<State, GameData>;
