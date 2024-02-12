@@ -3,11 +3,11 @@
 Ai::Ai(const InitData& init)
 	: IScene{ init }
 {
-	m_1pTE = std::make_unique<TetriEngine>(TetriEngine());
+	m_1pTE = std::make_unique<TetriEngine>(1);
 	m_1pTE->Init(1);
-	m_2pTE = std::make_unique<TetriEngine>(TetriEngine());
+	m_2pTE = std::make_unique<TetriEngine>(2);
 	m_2pTE->Init(2);
-	m_2pAI = std::make_unique<AiShigune>(AiShigune());
+	m_2pAI = std::make_unique<AiShigune>(2);
 	m_2pAI->loadTE(*m_2pTE);
 	m_2pAI->load_ttrp();
 	

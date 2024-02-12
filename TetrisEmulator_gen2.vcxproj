@@ -92,7 +92,8 @@
       <StackReserveSize>2000000</StackReserveSize>
       <HeapCommitSize>16000</HeapCommitSize>
       <StackCommitSize>16000</StackCommitSize>
-      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2024.0\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.0\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.0\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.0\lib\libmmt.lib;C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\x64\Release\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2024.0\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.0\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.0\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.0\lib\libmmt.lib;C:\Users\Soya Kawasaki\source\repos\AiShigune_StaticLib_DPCPP\x64\Debug\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(ProjectDir)App"</Command>
