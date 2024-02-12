@@ -144,15 +144,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="U_AI_Shigune\shigune_AI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="U_TetriCore\tetris_engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="U_utility\shig_utility.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="U_scene\common.hpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -168,22 +159,7 @@
     <ClCompile Include="U_scene\title.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="U_TetriCore\tetri.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="U_KeyConf\KeyConf.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="U_AI_Shigune\CmdPattern.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="U_AI_Shigune\CmdScore.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="U_AI_Shigune\GameContainer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="U_AI_Shigune\TetriPlate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -697,7 +673,6 @@
     <None Include="App\example\zip\zip_test.zip">
       <Filter>Resource Files\example\zip</Filter>
     </None>
-    <None Include=".editorconfig" />
     <None Include="App\example\obj\blacksmith.mtl">
       <Filter>Resource Files\example\obj</Filter>
     </None>
@@ -1022,15 +997,6 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="U_utility\shig_utility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="U_AI_Shigune\shigune_AI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="U_TetriCore\tetris_engine.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="U_scene\ai.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1043,25 +1009,7 @@
     <ClInclude Include="U_scene\title.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="U_TetriCore\tetri.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="U_KeyConf\KeyConf.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="U_AI_Shigune\CmdPattern.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="U_AI_Shigune\CmdScore.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="U_AI_Shigune\GameContainer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="U_AI_Shigune\TetriPlate.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="U_AI_Shigune\WallProfile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

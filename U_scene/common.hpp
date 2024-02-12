@@ -2,6 +2,7 @@
 
 # include <Siv3D.hpp>
 # include "shigune_AI.h"
+//# include "ShigUtility.h"
 # include "KeyConf.hpp"
 
 using namespace shig;
@@ -18,9 +19,6 @@ enum class State
 // 共有するデータ
 struct GameData
 {
-
-	//TetriEngine shared_TE;
-	//shig::AiShigune shared_AI;
 
 };
 

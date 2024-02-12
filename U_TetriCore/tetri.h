@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "shig_utility.h"
+#include "ShigUtility.h"
 
 namespace shig {
 

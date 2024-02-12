@@ -5,7 +5,7 @@ Solo::Solo(const InitData& init)
 {
 	m_soloTE = std::make_unique<TetriEngine>(TetriEngine());
 	m_soloTE->Init(0);
-	m_soloAI = std::make_unique<AiShigune>(AiShigune(1));
+	m_soloAI = std::make_unique<AiShigune>(1);
 	m_soloAI->loadTE(*m_soloTE);
 	m_soloAI->load_ttrp();
 	//m_soloAI->thinking();
@@ -88,7 +88,7 @@ void Solo::game_manage(){
 
 	if (IsKeyVP(m_KeyConfS, KeyVal::G)) {
 		m_soloTE->CopyFiledP();
-		m_soloTE->edit_garbage_cmd(-1);
+		m_soloTE->StackGarbage(-1);
 	}
 
 	if (IsKeyVP(m_KeyConfS, KeyVal::I)) {
