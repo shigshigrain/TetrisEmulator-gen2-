@@ -267,7 +267,7 @@ void Ai::TetrisManage2p()
 			FieldS = m_2pAI->getSuggestionAi();
 			if (!CmdList2pAi.empty()) {
 				g_check = m_2pTE->Game(CmdList2pAi.front(), 0);
-				WaitFlame2p = 4;
+				WaitFlame2p = 1;
 				if (CmdList2pAi.front() == 3) {
 					//m_1pTE->StackGarbage((int)(m_2pTE->getGarbage() / 2));
 					m_1pTE->StackGarbage(m_2pTE->getGarbage());
@@ -307,7 +307,6 @@ void Ai::TetrisManage2p()
 	default:
 		break;
 	}
-
 
 	return;
 
