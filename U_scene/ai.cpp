@@ -5,16 +5,20 @@ Ai::Ai(const InitData& init)
 {
 	m_1pTE = std::make_unique<TetriEngine>(1);
 	m_1pTE->Init(1);
+	m_1pAI = std::make_unique<AiShigune>(1);
+	m_1pAI->loadTE(*m_1pTE);
+	m_1pAI->loadTTRP();
+	//
 	m_2pTE = std::make_unique<TetriEngine>(2);
 	m_2pTE->Init(2);
 	m_2pAI = std::make_unique<AiShigune>(2);
 	m_2pAI->loadTE(*m_2pTE);
-	m_2pAI->load_ttrp();
+	m_2pAI->loadTTRP();
 	
 	m_bg = Texture{ U"tex\\background\\tetris_emulator_background02.bmp" };
 
-	//m_KeyConf1p = KeyConf();
-	m_KeyConf1p.SetDefault();
+	m_KeyConf1p = make_unique<KeyConf>();
+	m_KeyConf1p->SetDefault();
 
 	//m_MinoTex = Array<Texture>(0);
 	for (auto&& mp : minotex_path) {
@@ -29,14 +33,19 @@ Ai::Ai(const InitData& init)
 	passed_flame = 0;
 	reset_flag = false;
 	//suggest_flag = shig::BoolSwitch();//false
-	FieldS = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
+	FieldS1 = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
+	FieldS2 = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
 	ActFlame = std::vector<int>(8, 0);
-	abortAi = { false };
-	thinkAi = { false };
+	abortAi1 = { false };
+	thinkAi1 = { false };
+	abortAi2 = { false };
+	thinkAi2 = { false };
+	CmdList1pAi = std::deque<int>(0);
 	CmdList2pAi = std::deque<int>(0);
 
 	// AI起動 
-	asyncAi = s3d::Async(shig::ExeThinking, ref(*m_2pAI), ref(abortAi), ref(thinkAi), ref(CmdList2pAi));
+	asyncAi1 = s3d::Async(shig::ExeThinking, ref(*m_1pAI), ref(abortAi1), ref(thinkAi1), ref(CmdList1pAi));
+	asyncAi2 = s3d::Async(shig::ExeThinking, ref(*m_2pAI), ref(abortAi2), ref(thinkAi2), ref(CmdList2pAi));
 
 	ResetManage();
 
@@ -48,9 +57,9 @@ void Ai::update()
 	if (Time::GetMillisec() - sec_time >= refrashRate60) {
 		sec_time = Time::GetMillisec();
 		passed_flame++;
-		m_KeyConf1p.SetDefault(); // キー入力情報のセット
+		m_KeyConf1p->SetDefault(); // キー入力情報のセット
 
-		// 1p 人間側
+		// 1p Ai
 		if (WaitFlame1p > 0) {
 			WaitFlame1p--;
 		}
@@ -62,7 +71,7 @@ void Ai::update()
 			// テトリス側操作入力
 			TetrisManage1p();
 			// DASフレームの更新
-			actF_manage();
+			InputFlameManage();
 			// ゲーム側操作入力
 			GameManage1p();
 			
@@ -89,10 +98,13 @@ void Ai::update()
 
 	if (KeyQ.pressed() or KeyEscape.pressed())
 	{
-		thinkAi = false;
-		abortAi = true;
+		thinkAi1 = false;
+		abortAi1 = true;
+		thinkAi2 = false;
+		abortAi2 = true;
 		// 非同期処理の終了を待機 
-		if (asyncAi.isValid())asyncAi.wait();
+		if (asyncAi1.isValid())asyncAi1.wait();
+		if (asyncAi2.isValid())asyncAi2.wait();
 		changeScene(State::Title);
 	}
 }
@@ -108,15 +120,18 @@ void Ai::draw() const
 
 Ai::~Ai()
 {
-	thinkAi = false;
-	abortAi = true;
+	thinkAi1 = false;
+	abortAi1 = true;
+	thinkAi2 = false;
+	abortAi2 = true;
 	// 非同期処理の終了を待機 
-	if (asyncAi.isValid())asyncAi.wait();
+	if (asyncAi1.isValid())asyncAi1.wait();
+	if (asyncAi2.isValid())asyncAi2.wait();
 }
 
 void Ai::GameManage1p() {
 
-	if (IsKeyVP(m_KeyConf1p, KeyVal::R)) {
+	if (IsKeyVP(*m_KeyConf1p, KeyVal::R)) {
 		m_1pTE->CopyFiledP();
 		m_2pTE->CopyFiledP();
 		WaitFlame1p = 40;
@@ -124,9 +139,8 @@ void Ai::GameManage1p() {
 		reset_flag = true;
 	}
 
-	if (IsKeyVP(m_KeyConf1p, KeyVal::G)) {
+	if (IsKeyVP(*m_KeyConf1p, KeyVal::G)) {
 		m_1pTE->CopyFiledP();
-		//m_1pTE->edit_garbage_cmd(1);
 		m_1pTE->StackGarbage(-1);
 
 	}
@@ -135,14 +149,14 @@ void Ai::GameManage1p() {
 
 void Ai::GameManage2p()
 {
-	if (IsKeyVP(m_KeyConf1p, KeyVal::M)) {
+	if (IsKeyVP(*m_KeyConf1p, KeyVal::M)) {
 		if (ActFlame.at(0) >= 0) {
 			ActFlame.at(0) = -15;
 			suggest_flag.sw();
 		}
 	}
 
-	if (IsKeyVP(m_KeyConf1p, KeyVal::O)) {
+	if (IsKeyVP(*m_KeyConf1p, KeyVal::O)) {
 		m_2pTE->CopyFiledP();
 		m_2pTE->StackGarbage(-1);
 	}
@@ -154,105 +168,145 @@ void Ai::TetrisManage1p() {
 
 	int g_check = 0;
 
-	if (m_KeyConf1p.GetKey(KeyVal::Left).pressed() && not m_KeyConf1p.GetKey(KeyVal::Right).pressed()) {
-		if (ActFlame.at(6) == 0) {
-			ActFlame.at(6) = -1 * DASFlame1p;
-			g_check = m_1pTE->Game(6, 0);
+	if (suggest_flag.get()) {
+		// 非同期処理側で推奨手計算が終了している場合
+		if (!thinkAi1) {
+			FieldS1 = m_1pAI->getSuggestionAi();
+			if (!CmdList1pAi.empty()) {
+				g_check = m_1pTE->Game(CmdList1pAi.front(), 0);
+				WaitFlame1p = 0;
+				if (CmdList1pAi.front() == 3) {
+					//m_1pTE->StackGarbage((int)(m_2pTE->getGarbage() / 2));
+					m_2pTE->StackGarbage(m_1pTE->getGarbage());
+					m_1pTE->getGarbage();
+				}
+
+				CmdList1pAi.pop_front();
+				// 操作をし終わったタイミングで先に思考開始
+				if (CmdList1pAi.empty()) {
+					m_1pAI->loadTE(*m_1pTE);
+					thinkAi1 = true;
+				}
+			}
+			else {
+				thinkAi1 = true;
+			}
 		}
-		else if (ActFlame.at(6) == -1) {
-			ActFlame.at(6) = 1;
+		else if (thinkAi1) {
+			// することがない 
 		}
-		else if (ActFlame.at(6) > 0) {
-			g_check = m_1pTE->Game(6, 0);
-		}
-		delay_cnt = 2;
 	}
 
-	if (not m_KeyConf1p.GetKey(KeyVal::Left).pressed() && m_KeyConf1p.GetKey(KeyVal::Right).pressed()) {
-		if (ActFlame.at(7) == 0) {
-			ActFlame.at(7) = -DASFlame1p;
-			g_check = m_1pTE->Game(7, 0);
-		}
-		else if (ActFlame.at(7) == -1) {
-			ActFlame.at(7) = 1;
-		}
-		else if (ActFlame.at(7) > 0) {
-			g_check = m_1pTE->Game(7, 0);
-		}
-		delay_cnt = 2;
-	}
-
-	if (m_KeyConf1p.GetKey(KeyVal::Up).pressed() && not m_KeyConf1p.GetKey(KeyVal::Z).pressed()) {
-		if (ActFlame.at(5) >= 0) {
-			ActFlame.at(5) = -DASFlame1p;
-			g_check = m_1pTE->Game(5, 0);
-		}
-		else {
-			ActFlame.at(5) -= 1;
-		}
-		delay_cnt = 2;
-	}
-
-	if (not m_KeyConf1p.GetKey(KeyVal::Up).pressed() && m_KeyConf1p.GetKey(KeyVal::Z).pressed()) {
-		if (ActFlame.at(4) >= 0) {
-			ActFlame.at(4) = -DASFlame1p;
-			g_check = m_1pTE->Game(4, 0);
-		}
-		else {
-			ActFlame.at(4) -= 1;
-		}
-		delay_cnt = 2;
-	}
-
-	if (m_KeyConf1p.GetKey(KeyVal::C).pressed()) {
-		if (ActFlame.at(1) >= 0) {
-			ActFlame.at(1) = -2;
-			g_check = m_1pTE->Game(1, 0);
-		}
-		else {
-			ActFlame.at(1) += -1;
-		}
-		delay_cnt = 2;
-
-	}
-
-	if (m_KeyConf1p.GetKey(KeyVal::Down).pressed()) {
-		if (ActFlame.at(2) >= 0) {
-			ActFlame.at(2) = -1;
-			g_check = m_1pTE->Game(2, 0);
-		}
-		else {
-			ActFlame.at(2) = 0;
-		}
-		delay_cnt = 2;
-	}
-
-	if (m_KeyConf1p.GetKey(KeyVal::Space).pressed()) {
-		if (ActFlame.at(3) >= 0) {
-			ActFlame.at(3) = -2;
-			g_check = m_1pTE->Game(3, 0);
-			m_2pTE->StackGarbage(m_1pTE->getGarbage());
-			//delay_cnt = m_1pTE->get_delayF();
-		}
-		else {
-			ActFlame.at(3) += -1;
-		}
-		//delay_cnt = 2;
-
-	}
-
-	if (g_check == 2) {
+	switch (g_check)
+	{
+	case 2:
 		WaitFlame1p = m_1pTE->get_delayF();
 		delay_cnt = 0;
-	}
-	else if (g_check == 1) {
+		break;
+	case 1:
 		m_1pTE->CopyFiledP();
 		reset_flag = true;
-		WaitFlame1p = 72;
-	}
-	else if (g_check == 0) {
+		WaitFlame1p = 30;
+		break;
+	case 0:
 		m_1pTE->CopyFiledP();
+		break;
+	default:
+		break;
 	}
+
+	return;
+
+	//if (m_KeyConf1p->GetKey(KeyVal::Left).pressed() && not m_KeyConf1p->GetKey(KeyVal::Right).pressed()) {
+	//	if (ActFlame.at(6) == 0) {
+	//		ActFlame.at(6) = -1 * DASFlame1p;
+	//		g_check = m_1pTE->Game(6, 0);
+	//	}
+	//	else if (ActFlame.at(6) == -1) {
+	//		ActFlame.at(6) = 1;
+	//	}
+	//	else if (ActFlame.at(6) > 0) {
+	//		g_check = m_1pTE->Game(6, 0);
+	//	}
+	//	delay_cnt = 2;
+	//}
+	//if (not m_KeyConf1p->GetKey(KeyVal::Left).pressed() && m_KeyConf1p->GetKey(KeyVal::Right).pressed()) {
+	//	if (ActFlame.at(7) == 0) {
+	//		ActFlame.at(7) = -DASFlame1p;
+	//		g_check = m_1pTE->Game(7, 0);
+	//	}
+	//	else if (ActFlame.at(7) == -1) {
+	//		ActFlame.at(7) = 1;
+	//	}
+	//	else if (ActFlame.at(7) > 0) {
+	//		g_check = m_1pTE->Game(7, 0);
+	//	}
+	//	delay_cnt = 2;
+	//}
+	//if (m_KeyConf1p->GetKey(KeyVal::Up).pressed() && not m_KeyConf1p->GetKey(KeyVal::Z).pressed()) {
+	//	if (ActFlame.at(5) >= 0) {
+	//		ActFlame.at(5) = -DASFlame1p;
+	//		g_check = m_1pTE->Game(5, 0);
+	//	}
+	//	else {
+	//		ActFlame.at(5) -= 1;
+	//	}
+	//	delay_cnt = 2;
+	//}
+	//if (not m_KeyConf1p->GetKey(KeyVal::Up).pressed() && m_KeyConf1p->GetKey(KeyVal::Z).pressed()) {
+	//	if (ActFlame.at(4) >= 0) {
+	//		ActFlame.at(4) = -DASFlame1p;
+	//		g_check = m_1pTE->Game(4, 0);
+	//	}
+	//	else {
+	//		ActFlame.at(4) -= 1;
+	//	}
+	//	delay_cnt = 2;
+	//}
+	//if (m_KeyConf1p->GetKey(KeyVal::C).pressed()) {
+	//	if (ActFlame.at(1) >= 0) {
+	//		ActFlame.at(1) = -2;
+	//		g_check = m_1pTE->Game(1, 0);
+	//	}
+	//	else {
+	//		ActFlame.at(1) += -1;
+	//	}
+	//	delay_cnt = 2;
+	//}
+	//if (m_KeyConf1p->GetKey(KeyVal::Down).pressed()) {
+	//	if (ActFlame.at(2) >= 0) {
+	//		ActFlame.at(2) = -1;
+	//		g_check = m_1pTE->Game(2, 0);
+	//	}
+	//	else {
+	//		ActFlame.at(2) = 0;
+	//	}
+	//	delay_cnt = 2;
+	//}
+	//if (m_KeyConf1p->GetKey(KeyVal::Space).pressed()) {
+	//	if (ActFlame.at(3) >= 0) {
+	//		ActFlame.at(3) = -2;
+	//		g_check = m_1pTE->Game(3, 0);
+	//		m_2pTE->StackGarbage(m_1pTE->getGarbage());
+	//		//delay_cnt = m_1pTE->get_delayF();
+	//	}
+	//	else {
+	//		ActFlame.at(3) += -1;
+	//	}
+	//	//delay_cnt = 2;
+	//}
+	//if (g_check == 2) {
+	//	WaitFlame1p = m_1pTE->get_delayF();
+	//	delay_cnt = 0;
+	//}
+	//else if (g_check == 1) {
+	//	m_1pTE->CopyFiledP();
+	//	reset_flag = true;
+	//	WaitFlame1p = 72;
+	//}
+	//else if (g_check == 0) {
+	//	m_1pTE->CopyFiledP();
+	//}
 
 	return;
 }
@@ -263,8 +317,8 @@ void Ai::TetrisManage2p()
 
 	if (suggest_flag.get()) {
 		// 非同期処理側で推奨手計算が終了している場合
-		if (!thinkAi) {
-			FieldS = m_2pAI->getSuggestionAi();
+		if (!thinkAi2) {
+			FieldS2 = m_2pAI->getSuggestionAi();
 			if (!CmdList2pAi.empty()) {
 				g_check = m_2pTE->Game(CmdList2pAi.front(), 0);
 				WaitFlame2p = 0;
@@ -278,14 +332,14 @@ void Ai::TetrisManage2p()
 				// 操作をし終わったタイミングで先に思考開始
 				if (CmdList2pAi.empty()) {
 					m_2pAI->loadTE(*m_2pTE);
-					thinkAi = true;
+					thinkAi2 = true;
 				}
 			}
 			else {
-				thinkAi = true;
+				thinkAi2 = true;
 			}
 		}
-		else if (thinkAi) {
+		else if (thinkAi2) {
 			// することがない 
 		}
 	}
@@ -312,18 +366,18 @@ void Ai::TetrisManage2p()
 
 }
 
-void Ai::actF_manage() {
+void Ai::InputFlameManage() {
 
 	for (auto&& af : ActFlame) {
 		if (af <= 0x11111110)af++;
 	}
 
-	if (not IsKeyVP(m_KeyConf1p, KeyVal::Right) && not IsKeyVP(m_KeyConf1p, KeyVal::Left)) {
+	if (not IsKeyVP(*m_KeyConf1p, KeyVal::Right) && not IsKeyVP(*m_KeyConf1p, KeyVal::Left)) {
 		ActFlame.at(6) = 0;
 		ActFlame.at(7) = 0;
 	}
 
-	if (IsKeyVP(m_KeyConf1p, KeyVal::Right) && IsKeyVP(m_KeyConf1p, KeyVal::Left)) {
+	if (IsKeyVP(*m_KeyConf1p, KeyVal::Right) && IsKeyVP(*m_KeyConf1p, KeyVal::Left)) {
 		ActFlame.at(6) = 1;
 		ActFlame.at(7) = 1;
 	}
@@ -345,13 +399,18 @@ void Ai::ResetManage() {
 	WaitFlame2p = 30;
 	reset_flag = false;
 	ActFlame = std::vector<int>(8, 0);
-	FieldS = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
-	thinkAi = false;
+	FieldS1 = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
+	thinkAi1 = false;
+	FieldS2 = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
+	thinkAi2 = false;
 
+	CmdList1pAi.clear();
+	m_1pAI->loadTE(*m_1pTE);
 	CmdList2pAi.clear();
 	m_2pAI->loadTE(*m_2pTE);
 
-	thinkAi = true;
+	thinkAi1 = true;
+	thinkAi2 = true;
 
 	return;
 }
@@ -404,7 +463,17 @@ void Ai::DrawGhost() const {
 
 	for (size_t i = 0; i < 21; i++) {
 		for (size_t j = 0; j < 10; j++) {
-			int fs = FieldS.at((size_t)20 - i).at(j);
+			int fs = FieldS1.at((size_t)20 - i).at(j);
+			if (fs == 0)continue;
+			Rect{ 791 + (j * 30), 51 + (i * 30), 29, 29 }
+			.drawFrame(2, 0, minoC.at((size_t)fs));
+		}
+
+	}
+
+	for (size_t i = 0; i < 21; i++) {
+		for (size_t j = 0; j < 10; j++) {
+			int fs = FieldS2.at((size_t)20 - i).at(j);
 			if (fs == 0)continue;
 			Rect{ 791 + (j * 30), 51 + (i * 30), 29, 29 }
 			.drawFrame(2, 0, minoC.at((size_t)fs));

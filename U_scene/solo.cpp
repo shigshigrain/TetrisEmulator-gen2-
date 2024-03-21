@@ -7,7 +7,7 @@ Solo::Solo(const InitData& init)
 	m_soloTE->Init(0);
 	m_soloAI = std::make_unique<AiShigune>(1);
 	m_soloAI->loadTE(*m_soloTE);
-	m_soloAI->load_ttrp();
+	m_soloAI->loadTTRP();
 	//m_soloAI->thinking();
 
 	m_bg = Texture{ U"tex\\background\\tetris_emulator_background02.bmp" };
