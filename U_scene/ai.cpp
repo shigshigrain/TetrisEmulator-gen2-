@@ -465,7 +465,7 @@ void Ai::DrawGhost() const {
 		for (size_t j = 0; j < 10; j++) {
 			int fs = FieldS1.at((size_t)20 - i).at(j);
 			if (fs == 0)continue;
-			Rect{ 791 + (j * 30), 51 + (i * 30), 29, 29 }
+			Rect{ 151 + (j * 30), 51 + (i * 30), 29, 29 }
 			.drawFrame(2, 0, minoC.at((size_t)fs));
 		}
 
