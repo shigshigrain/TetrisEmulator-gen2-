@@ -54,7 +54,7 @@ Ai::Ai(const InitData& init)
 void Ai::update()
 {
 
-	if (Time::GetMillisec() - sec_time >= refrashRate60) {
+	if ((Time::GetMillisec() - sec_time) >= refrashRate120) {
 		sec_time = Time::GetMillisec();
 		passed_flame++;
 		m_KeyConf1p->SetDefault(); // キー入力情報のセット

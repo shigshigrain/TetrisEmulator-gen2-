@@ -34,7 +34,7 @@ Solo::Solo(const InitData& init)
 void Solo::update()
 {
 
-	if (Time::GetMillisec() - sec_time >= refrashRate60) {
+	if ((Time::GetMillisec() - sec_time) >= refrashRate120) {
 		sec_time = Time::GetMillisec();
 		passed_flame++;
 
