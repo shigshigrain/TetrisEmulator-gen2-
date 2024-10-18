@@ -29,8 +29,8 @@ private:// メンバ変数
 	int passed_flame;
 	bool reset_flag;
 	shig::BoolSwitch suggest_flag;
-	std::vector<vector<int>> FieldS1;
-	std::vector<vector<int>> FieldS2;
+	std::vector<vector<int8_t>> FieldS1;
+	std::vector<vector<int8_t>> FieldS2;
 	std::vector<int> ActFlame;
 	std::atomic<bool> abortAi1;
 	std::atomic<bool> thinkAi1;

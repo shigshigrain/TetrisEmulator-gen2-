@@ -33,8 +33,8 @@ Ai::Ai(const InitData& init)
 	passed_flame = 0;
 	reset_flag = false;
 	//suggest_flag = shig::BoolSwitch();//false
-	FieldS1 = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
-	FieldS2 = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
+	FieldS1 = std::vector<std::vector<int8_t>>(fh, (std::vector<int8_t>(10, 0)));
+	FieldS2 = std::vector<std::vector<int8_t>>(fh, (std::vector<int8_t>(10, 0)));
 	ActFlame = std::vector<int>(8, 0);
 	abortAi1 = { false };
 	thinkAi1 = { false };
@@ -308,7 +308,6 @@ void Ai::TetrisManage1p() {
 	//	m_1pTE->CopyFiledP();
 	//}
 
-	return;
 }
 
 void Ai::TetrisManage2p()
@@ -399,9 +398,9 @@ void Ai::ResetManage() {
 	WaitFlame2p = 30;
 	reset_flag = false;
 	ActFlame = std::vector<int>(8, 0);
-	FieldS1 = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
+	FieldS1 = std::vector<std::vector<int8_t>>(fh, (std::vector<int8_t>(10, 0)));
 	thinkAi1 = false;
-	FieldS2 = std::vector<std::vector<int>>(fh, (std::vector<int>(10, 0)));
+	FieldS2 = std::vector<std::vector<int8_t>>(fh, (std::vector<int8_t>(10, 0)));
 	thinkAi2 = false;
 
 	CmdList1pAi.clear();

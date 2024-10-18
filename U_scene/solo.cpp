@@ -290,7 +290,7 @@ void Solo::draw_field() const{
 
 void Solo::draw_s_field() const{
 
-	vector<vector<int>> SF = m_soloAI->getSuggestionAi();
+	std::vector<std::vector<int8_t>> SF = m_soloAI->getSuggestionAi();
 
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
