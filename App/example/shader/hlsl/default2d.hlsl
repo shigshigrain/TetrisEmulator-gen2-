@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -18,7 +18,7 @@ SamplerState	g_sampler0 : register(s0);
 namespace s3d
 {
 	//
-	//	std::vector<std::string> Input
+	//	VS Input
 	//
 	struct VSInput
 	{
@@ -28,7 +28,7 @@ namespace s3d
 	};
 
 	//
-	//	std::vector<std::string> Output / PS Input
+	//	VS Output / PS Input
 	//
 	struct PSInput
 	{
@@ -67,7 +67,7 @@ cbuffer PSConstants2D : register(b0)
 //
 //	Functions
 //
-s3d::PSInput std::vector<std::string>(s3d::VSInput input)
+s3d::PSInput VS(s3d::VSInput input)
 {
 	s3d::PSInput result;
 	result.position	= s3d::Transform2D(input.position, g_transform);
