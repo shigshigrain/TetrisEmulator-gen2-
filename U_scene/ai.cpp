@@ -167,36 +167,35 @@ void Ai::TetrisManage1p() {
 
 	int g_check = 0;
 
-	if (suggest_flag.get()) {
-		// 非同期処理側で推奨手計算が終了している場合
-		if (!thinkAi1) {
-			FieldS1 = m_1pAI->getSuggestionAi();
-			if (!CmdList1pAi.empty()) {
-				g_check = m_1pTE->Game(CmdList1pAi.front(), 0);
-				WaitFlame1p = 0;
-				if (CmdList1pAi.front() == 3) {
-					//m_1pTE->StackGarbage((int)(m_2pTE->getGarbage() / 2));
-					m_2pTE->StackGarbage(m_1pTE->getGarbage());
-					m_1pTE->getGarbage();
-				}
+	//if (suggest_flag.get()) {
+	//	// 非同期処理側で推奨手計算が終了している場合
+	//	if (!thinkAi1) {
+	//		FieldS1 = m_1pAI->getSuggestionAi();
+	//		if (!CmdList1pAi.empty()) {
+	//			g_check = m_1pTE->Game(CmdList1pAi.front(), 0);
+	//			WaitFlame1p = 0;
+	//			if (CmdList1pAi.front() == 3) {
+	//				//m_1pTE->StackGarbage((int)(m_2pTE->getGarbage() / 2));
+	//				m_2pTE->StackGarbage(m_1pTE->getGarbage());
+	//				m_1pTE->getGarbage();
+	//			}
+	//			CmdList1pAi.pop_front();
+	//			// 操作をし終わったタイミングで先に思考開始
+	//			if (CmdList1pAi.empty()) {
+	//				m_1pAI->loadTE(*m_1pTE);
+	//				thinkAi1 = true;
+	//			}
+	//		}
+	//		else {
+	//			thinkAi1 = true;
+	//		}
+	//	}
+	//	else if (thinkAi1) {
+	//		// することがない 
+	//	}
+	//}
 
-				CmdList1pAi.pop_front();
-				// 操作をし終わったタイミングで先に思考開始
-				if (CmdList1pAi.empty()) {
-					m_1pAI->loadTE(*m_1pTE);
-					thinkAi1 = true;
-				}
-			}
-			else {
-				thinkAi1 = true;
-			}
-		}
-		else if (thinkAi1) {
-			// することがない 
-		}
-	}
-
-	switch (g_check)
+	/*switch (g_check)
 	{
 	case 2:
 		WaitFlame1p = m_1pTE->get_delayF();
@@ -212,100 +211,102 @@ void Ai::TetrisManage1p() {
 		break;
 	default:
 		break;
+	}*/
+
+	
+
+	if (m_KeyConf1p->GetKey(KeyVal::Left).pressed() && not m_KeyConf1p->GetKey(KeyVal::Right).pressed()) {
+		if (ActFlame.at(6) == 0) {
+			ActFlame.at(6) = -1 * DASFlame1p;
+			g_check = m_1pTE->Game(6, 0);
+		}
+		else if (ActFlame.at(6) == -1) {
+			ActFlame.at(6) = 1;
+		}
+		else if (ActFlame.at(6) > 0) {
+			g_check = m_1pTE->Game(6, 0);
+		}
+		delay_cnt = 2;
+	}
+	if (not m_KeyConf1p->GetKey(KeyVal::Left).pressed() && m_KeyConf1p->GetKey(KeyVal::Right).pressed()) {
+		if (ActFlame.at(7) == 0) {
+			ActFlame.at(7) = -DASFlame1p;
+			g_check = m_1pTE->Game(7, 0);
+		}
+		else if (ActFlame.at(7) == -1) {
+			ActFlame.at(7) = 1;
+		}
+		else if (ActFlame.at(7) > 0) {
+			g_check = m_1pTE->Game(7, 0);
+		}
+		delay_cnt = 2;
+	}
+	if (m_KeyConf1p->GetKey(KeyVal::Up).pressed() && not m_KeyConf1p->GetKey(KeyVal::Z).pressed()) {
+		if (ActFlame.at(5) >= 0) {
+			ActFlame.at(5) = -DASFlame1p;
+			g_check = m_1pTE->Game(5, 0);
+		}
+		else {
+			ActFlame.at(5) -= 1;
+		}
+		delay_cnt = 2;
+	}
+	if (not m_KeyConf1p->GetKey(KeyVal::Up).pressed() && m_KeyConf1p->GetKey(KeyVal::Z).pressed()) {
+		if (ActFlame.at(4) >= 0) {
+			ActFlame.at(4) = -DASFlame1p;
+			g_check = m_1pTE->Game(4, 0);
+		}
+		else {
+			ActFlame.at(4) -= 1;
+		}
+		delay_cnt = 2;
+	}
+	if (m_KeyConf1p->GetKey(KeyVal::C).pressed()) {
+		if (ActFlame.at(1) >= 0) {
+			ActFlame.at(1) = -2;
+			g_check = m_1pTE->Game(1, 0);
+		}
+		else {
+			ActFlame.at(1) += -1;
+		}
+		delay_cnt = 2;
+	}
+	if (m_KeyConf1p->GetKey(KeyVal::Down).pressed()) {
+		if (ActFlame.at(2) >= 0) {
+			ActFlame.at(2) = -1;
+			g_check = m_1pTE->Game(2, 0);
+		}
+		else {
+			ActFlame.at(2) = 0;
+		}
+		delay_cnt = 2;
+	}
+	if (m_KeyConf1p->GetKey(KeyVal::Space).pressed()) {
+		if (ActFlame.at(3) >= 0) {
+			ActFlame.at(3) = -2;
+			g_check = m_1pTE->Game(3, 0);
+			m_2pTE->StackGarbage(m_1pTE->getGarbage());
+			//delay_cnt = m_1pTE->get_delayF();
+		}
+		else {
+			ActFlame.at(3) += -1;
+		}
+		//delay_cnt = 2;
+	}
+	if (g_check == 2) {
+		WaitFlame1p = m_1pTE->get_delayF();
+		delay_cnt = 0;
+	}
+	else if (g_check == 1) {
+		m_1pTE->CopyFiledP();
+		reset_flag = true;
+		WaitFlame1p = 72;
+	}
+	else if (g_check == 0) {
+		m_1pTE->CopyFiledP();
 	}
 
 	return;
-
-	//if (m_KeyConf1p->GetKey(KeyVal::Left).pressed() && not m_KeyConf1p->GetKey(KeyVal::Right).pressed()) {
-	//	if (ActFlame.at(6) == 0) {
-	//		ActFlame.at(6) = -1 * DASFlame1p;
-	//		g_check = m_1pTE->Game(6, 0);
-	//	}
-	//	else if (ActFlame.at(6) == -1) {
-	//		ActFlame.at(6) = 1;
-	//	}
-	//	else if (ActFlame.at(6) > 0) {
-	//		g_check = m_1pTE->Game(6, 0);
-	//	}
-	//	delay_cnt = 2;
-	//}
-	//if (not m_KeyConf1p->GetKey(KeyVal::Left).pressed() && m_KeyConf1p->GetKey(KeyVal::Right).pressed()) {
-	//	if (ActFlame.at(7) == 0) {
-	//		ActFlame.at(7) = -DASFlame1p;
-	//		g_check = m_1pTE->Game(7, 0);
-	//	}
-	//	else if (ActFlame.at(7) == -1) {
-	//		ActFlame.at(7) = 1;
-	//	}
-	//	else if (ActFlame.at(7) > 0) {
-	//		g_check = m_1pTE->Game(7, 0);
-	//	}
-	//	delay_cnt = 2;
-	//}
-	//if (m_KeyConf1p->GetKey(KeyVal::Up).pressed() && not m_KeyConf1p->GetKey(KeyVal::Z).pressed()) {
-	//	if (ActFlame.at(5) >= 0) {
-	//		ActFlame.at(5) = -DASFlame1p;
-	//		g_check = m_1pTE->Game(5, 0);
-	//	}
-	//	else {
-	//		ActFlame.at(5) -= 1;
-	//	}
-	//	delay_cnt = 2;
-	//}
-	//if (not m_KeyConf1p->GetKey(KeyVal::Up).pressed() && m_KeyConf1p->GetKey(KeyVal::Z).pressed()) {
-	//	if (ActFlame.at(4) >= 0) {
-	//		ActFlame.at(4) = -DASFlame1p;
-	//		g_check = m_1pTE->Game(4, 0);
-	//	}
-	//	else {
-	//		ActFlame.at(4) -= 1;
-	//	}
-	//	delay_cnt = 2;
-	//}
-	//if (m_KeyConf1p->GetKey(KeyVal::C).pressed()) {
-	//	if (ActFlame.at(1) >= 0) {
-	//		ActFlame.at(1) = -2;
-	//		g_check = m_1pTE->Game(1, 0);
-	//	}
-	//	else {
-	//		ActFlame.at(1) += -1;
-	//	}
-	//	delay_cnt = 2;
-	//}
-	//if (m_KeyConf1p->GetKey(KeyVal::Down).pressed()) {
-	//	if (ActFlame.at(2) >= 0) {
-	//		ActFlame.at(2) = -1;
-	//		g_check = m_1pTE->Game(2, 0);
-	//	}
-	//	else {
-	//		ActFlame.at(2) = 0;
-	//	}
-	//	delay_cnt = 2;
-	//}
-	//if (m_KeyConf1p->GetKey(KeyVal::Space).pressed()) {
-	//	if (ActFlame.at(3) >= 0) {
-	//		ActFlame.at(3) = -2;
-	//		g_check = m_1pTE->Game(3, 0);
-	//		m_2pTE->StackGarbage(m_1pTE->getGarbage());
-	//		//delay_cnt = m_1pTE->get_delayF();
-	//	}
-	//	else {
-	//		ActFlame.at(3) += -1;
-	//	}
-	//	//delay_cnt = 2;
-	//}
-	//if (g_check == 2) {
-	//	WaitFlame1p = m_1pTE->get_delayF();
-	//	delay_cnt = 0;
-	//}
-	//else if (g_check == 1) {
-	//	m_1pTE->CopyFiledP();
-	//	reset_flag = true;
-	//	WaitFlame1p = 72;
-	//}
-	//else if (g_check == 0) {
-	//	m_1pTE->CopyFiledP();
-	//}
 
 }
 
@@ -319,7 +320,7 @@ void Ai::TetrisManage2p()
 			FieldS2 = m_2pAI->getSuggestionAi();
 			if (!CmdList2pAi.empty()) {
 				g_check = m_2pTE->Game(CmdList2pAi.front(), 0);
-				WaitFlame2p = 0;
+				WaitFlame2p = 5;
 				if (CmdList2pAi.front() == 3) {
 					//m_1pTE->StackGarbage((int)(m_2pTE->getGarbage() / 2));
 					m_1pTE->StackGarbage(m_2pTE->getGarbage());
@@ -370,12 +371,12 @@ void Ai::InputFlameManage() {
 		if (af <= 0x11111110)af++;
 	}
 
-	if (not IsKeyVP(*m_KeyConf1p, KeyVal::Right) && not IsKeyVP(*m_KeyConf1p, KeyVal::Left)) {
+	if (not IsKeyVP(*m_KeyConf1p, KeyVal::Right) and not IsKeyVP(*m_KeyConf1p, KeyVal::Left)) {
 		ActFlame.at(6) = 0;
 		ActFlame.at(7) = 0;
 	}
 
-	if (IsKeyVP(*m_KeyConf1p, KeyVal::Right) && IsKeyVP(*m_KeyConf1p, KeyVal::Left)) {
+	if (IsKeyVP(*m_KeyConf1p, KeyVal::Right) and IsKeyVP(*m_KeyConf1p, KeyVal::Left)) {
 		ActFlame.at(6) = 1;
 		ActFlame.at(7) = 1;
 	}
