@@ -1,15 +1,15 @@
-//	Copyright (c) 2008-2022 Ryo Suzuki.
-//	Copyright (c) 2016-2022 OpenSiv3D Project.
+//	Copyright (c) 2008-2023 Ryo Suzuki.
+//	Copyright (c) 2016-2023 OpenSiv3D Project.
 //	Licensed under the MIT License.
 
 # version 410
 
 //
-//	std::vector<std::string> Input (nothing)
+//	VS Input (nothing)
 //
 
 //
-//	std::vector<std::string> Output
+//	VS Output
 //
 layout(location = 0) out vec4 Color;
 layout(location = 1) out vec2 UV;

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -18,7 +18,7 @@ SamplerState	g_sampler0 : register(s0);
 namespace s3d
 {
 	//
-	//	std::vector<std::string> Input
+	//	VS Input
 	//
 	struct VSInput
 	{
@@ -28,7 +28,7 @@ namespace s3d
 	};
 
 	//
-	//	std::vector<std::string> Output / PS Input
+	//	VS Output / PS Input
 	//
 	struct PSInput
 	{
@@ -59,7 +59,7 @@ cbuffer VSPerMaterial : register(b3)
 
 cbuffer PSPerFrame : register(b0)
 {
-	float3 g_gloablAmbientColor;
+	float3 g_globalAmbientColor;
 	float3 g_sunColor;
 	float3 g_sunDirection;
 }
@@ -71,7 +71,7 @@ cbuffer PSPerView : register(b1)
 
 cbuffer PSPerMaterial : register(b3)
 {
-	float3 g_amibientColor;
+	float3 g_ambientColor;
 	uint   g_hasTexture;
 	float4 g_diffuseColor;
 	float3 g_specularColor;
@@ -82,7 +82,7 @@ cbuffer PSPerMaterial : register(b3)
 //
 //	Functions
 //
-s3d::PSInput std::vector<std::string>(s3d::VSInput input)
+s3d::PSInput VS(s3d::VSInput input)
 {
 	s3d::PSInput result;
 
@@ -127,7 +127,7 @@ float4 PS(s3d::PSInput input) : SV_TARGET
 	const float3 n = normalize(input.normal);
 	const float3 l = lightDirection;
 	const float4 diffuseColor = GetDiffuseColor(input.uv);
-	const float3 ambientColor = (g_amibientColor * g_gloablAmbientColor);
+	const float3 ambientColor = (g_ambientColor * g_globalAmbientColor);
 
 	// Diffuse
 	const float3 diffuseReflection = CalculateDiffuseReflection(n, l, lightColor, diffuseColor.rgb, ambientColor);

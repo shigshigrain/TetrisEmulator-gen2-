@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -12,11 +12,11 @@
 namespace s3d
 {
 	//
-	//	std::vector<std::string> Input (nothing)
+	//	VS Input (nothing)
 	//
 
 	//
-	//	std::vector<std::string> Output
+	//	VS Output
 	//
 	struct PSInput
 	{
@@ -56,7 +56,7 @@ float2 Circular(float r, float theta)
 	return float2(sin(theta), -cos(theta)) * r;
 }
 
-s3d::PSInput std::vector<std::string>(uint id: SV_VERTEXID)
+s3d::PSInput VS(uint id: SV_VERTEXID)
 {
 	s3d::PSInput result;
 	result.color = float4(0.2, 0.7, 0.4, 1);
