@@ -33,8 +33,8 @@ Ai::Ai(const InitData& init)
 	passed_flame = 0;
 	reset_flag = false;
 	//suggest_flag = shig::BoolSwitch();//false
-	FieldS1 = std::vector<std::vector<int8_t>>(fh, (std::vector<int8_t>(10, 0)));
-	FieldS2 = std::vector<std::vector<int8_t>>(fh, (std::vector<int8_t>(10, 0)));
+	FieldS1 = std::vector<std::vector<int8_t>>(shig::fH, (std::vector<int8_t>(shig::fW, 0)));
+	FieldS2 = std::vector<std::vector<int8_t>>(shig::fH, (std::vector<int8_t>(shig::fW, 0)));
 	ActFlame = std::vector<int>(8, 0);
 	abortAi1 = { false };
 	thinkAi1 = { false };
@@ -45,7 +45,7 @@ Ai::Ai(const InitData& init)
 
 	// AI起動 
 	asyncAi1 = s3d::Async(shig::ExeThinking, ref(*m_1pAI), ref(abortAi1), ref(thinkAi1), ref(CmdList1pAi));
-	asyncAi2 = s3d::Async(shig::ExeThinking, ref(*m_2pAI), ref(abortAi2), ref(thinkAi2), ref(CmdList2pAi));
+	//asyncAi2 = s3d::Async(shig::ExeThinking, ref(*m_2pAI), ref(abortAi2), ref(thinkAi2), ref(CmdList2pAi));
 
 	ResetManage();
 
@@ -398,9 +398,9 @@ void Ai::ResetManage() {
 	WaitFlame2p = 30;
 	reset_flag = false;
 	ActFlame = std::vector<int>(8, 0);
-	FieldS1 = std::vector<std::vector<int8_t>>(fh, (std::vector<int8_t>(10, 0)));
+	FieldS1 = std::vector<std::vector<int8_t>>(shig::fH, (std::vector<int8_t>(shig::fW, 0)));
 	thinkAi1 = false;
-	FieldS2 = std::vector<std::vector<int8_t>>(fh, (std::vector<int8_t>(10, 0)));
+	FieldS2 = std::vector<std::vector<int8_t>>(shig::fH, (std::vector<int8_t>(shig::fW, 0)));
 	thinkAi2 = false;
 
 	CmdList1pAi.clear();
