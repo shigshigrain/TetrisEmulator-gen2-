@@ -36,7 +36,7 @@ private:// update関数
 private:// draw関数 const
 	void draw_field() const;
 	void draw_s_field() const;
-	void draw_tex()const;
-
+	void draw_tex() const;
+	void draw_state() const;
 
 };

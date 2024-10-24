@@ -1,4 +1,4 @@
-﻿//# include <Siv3D.hpp> // OpenSiv3D v0.6.4
+﻿//# include <Siv3D.hpp> // OpenSiv3D v0.6.15
 # pragma once
 
 //#include "windows.h"
@@ -8,14 +8,13 @@
 # include "solo.hpp"
 # include "ai.hpp"
 
-
 void Main()
 {
 	// 背景の色を設定 | Set background color
 	Scene::SetBackground(ColorF{ 0.8, 0.9, 1.0 });
 
 	// タイトル変更
-	Window::SetTitle(U"TetrisEmulator2 -v2.1-");
+	Window::SetTitle(U"TetrisEmulator2 -v2.1.3-");
 
 	// サイズ変更
 	
@@ -26,6 +25,7 @@ void Main()
 	FontAsset::Register(U"TitleFont", FontMethod::MSDF, 50, U"example/font/RocknRoll/RocknRollOne-Regular.ttf");
 	FontAsset(U"TitleFont").setBufferThickness(4);
 	FontAsset::Register(U"Menu", FontMethod::MSDF, 40, Typeface::Medium);
+	FontAsset::Register(U"Debug", FontMethod::Bitmap, 15, Typeface::Medium);
 	//FontAsset::Register(U"Ranking", 40, Typeface::Heavy);
 	//FontAsset::Register(U"GameScore", 30, Typeface::Light);
 	//AudioAsset::Register(U"Brick", GMInstrument::Woodblock, PianoKey::C5, 0.2s, 0.1s);

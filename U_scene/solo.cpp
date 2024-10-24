@@ -3,19 +3,18 @@
 Solo::Solo(const InitData& init)
 	: IScene{ init }
 {
-	m_soloTE = std::make_unique<TetriEngine>(TetriEngine());
+	m_soloTE = std::make_unique<TetriEngine>(TetriEngine(1));
 	m_soloTE->Init(0);
 	m_soloAI = std::make_unique<AiShigune>(1);
 	m_soloAI->loadTE(*m_soloTE);
 	m_soloAI->loadTTRP();
-	//m_soloAI->thinking();
+	m_soloAI->thinking();
 
 	m_bg = Texture{ U"tex\\background\\tetris_emulator_background02.bmp" };
 
 	//m_KeyConfS = KeyConf();
 	m_KeyConfS.SetDefault();
 
-	//m_MinoTex = std::vector<Texture>(0);
 	for (auto&& mp : minotex_path) {
 		m_MinoTex.emplace_back(Texture{ mp });
 	}
@@ -63,7 +62,6 @@ void Solo::update()
 		changeScene(State::Title);
 	}
 
-	//m_2pTE.CopyFiledP();// 描写用セットアップ
 
 }
 
@@ -74,6 +72,7 @@ void Solo::draw() const
 	draw_field();
 	draw_s_field();
 	draw_tex();
+	draw_state();
 
 }
 
@@ -194,9 +193,9 @@ void Solo::tetris_manage(){
 		delay_cnt = 2;
 		
 		if (suggest_flag.get()) {
-			m_soloAI->loadTE(*m_soloTE);
-			m_soloAI->thinking();
-			m_soloAI->makeAiSuggestion();
+			//m_soloAI->loadTE(*m_soloTE);
+			//m_soloAI->thinking();
+			//m_soloAI->makeAiSuggestion();
 			//Print << U"thinking";
 		}
 
@@ -214,9 +213,6 @@ void Solo::tetris_manage(){
 	else if (g_check == 0) {
 		m_soloTE->CopyFiledP();
 	}
-
-
-
 
 	return;
 }
@@ -283,8 +279,6 @@ void Solo::draw_field() const{
 		Line{ 200, 50 + i * 30, 501, 50 + i * 30 }.draw(1, Palette::Black);
 	}
 
-	
-
 	return;
 }
 
@@ -319,4 +313,23 @@ void Solo::draw_tex() const{
 	}
 
 	return;
+}
+
+void Solo::draw_state() const
+{
+
+	std::deque<std::string> mino_his = m_soloTE->get_mino_his();
+
+	int i = 1;
+	for (auto&& ms : mino_his) {
+
+		s3d::String deb_his = s3d::Unicode::Widen(std::to_string(i)) + U" : " + s3d::Unicode::Widen(ms);
+
+		FontAsset(U"Debug")(deb_his).draw(s3d::Vec2{ 20, 360 + 20 * i }, Color(0, 0, 0));
+		i++;
+
+	}
+
+	return;
+
 }

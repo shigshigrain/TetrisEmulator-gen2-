@@ -46,7 +46,7 @@ void Title::draw() const
 	texture.draw(0, 0);
 
 
-	FontAsset(U"TitleFont")(U"TetrisEmulator2 -v1.1-")
+	FontAsset(U"TitleFont")(U"TetrisEmulator2 -v2.1.3-")
 		.drawAt(TextStyle::OutlineShadow(0.2, ColorF{ 0.2, 0.6, 0.2 }, Vec2{ 3, 3 }, ColorF{ 0.0, 0.5 }), 80, Vec2{ 600, 60 });
 
 	m_soloB.draw(ColorF{ 1.0, 0.5 + m_soloT.value() / 2 }).drawFrame(2);
