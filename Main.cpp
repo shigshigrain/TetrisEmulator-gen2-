@@ -1,4 +1,4 @@
-﻿//# include <Siv3D.hpp> // OpenSiv3D v0.6.4
+﻿//# include <Siv3D.hpp> // OpenSiv3D v0.6.15
 # pragma once
 
 //#include "windows.h"
@@ -7,7 +7,6 @@
 # include "title.hpp"
 # include "solo.hpp"
 # include "ai.hpp"
-
 
 void Main()
 {
