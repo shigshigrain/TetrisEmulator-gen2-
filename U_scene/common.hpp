@@ -28,6 +28,8 @@ constexpr uint64 refrashRate15 = 1000 / 15;
 constexpr uint64 refrashRate30 = 1000 / 30;
 constexpr uint64 refrashRate60 = 1000 / 60;
 constexpr uint64 refrashRate120 = 1000 / 120;
+constexpr uint64 refrashRate180 = 1000 / 180;
+constexpr uint64 refrashRate240 = 1000 / 240;
 
 static const std::vector<Color> minoC{
 	Color(255, 255, 255), // px=0
