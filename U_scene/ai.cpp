@@ -53,7 +53,7 @@ Ai::Ai(const InitData& init)
 void Ai::update()
 {
 
-	if ((Time::GetMillisec() - sec_time) >= refrashRate120) {
+	if ((Time::GetMillisec() - sec_time) >= refrashRate240) {
 		sec_time = Time::GetMillisec();
 		passed_flame++;
 		m_KeyConf1p->SetDefault(); // キー入力情報のセット
@@ -74,7 +74,6 @@ void Ai::update()
 			// ゲーム側操作入力
 			GameManage1p();
 			
-			
 		}
 		// 2p AI側 
 		if (WaitFlame2p > 0) {
@@ -89,8 +88,6 @@ void Ai::update()
 			GameManage2p();
 			
 		}
-
-
 
 	}
 
@@ -197,8 +194,8 @@ void Ai::TetrisManage1p() {
 	switch (g_check)
 	{
 	case 2:
-		//WaitFlame1p = m_1pTE->get_delayF();
-		WaitFlame1p = 0;
+		WaitFlame1p = m_1pTE->get_delayF();
+		//WaitFlame1p = 0;
 		delay_cnt = 0;
 		break;
 	case 1:
@@ -343,8 +340,8 @@ void Ai::TetrisManage2p()
 	switch (g_check)
 	{
 	case 2:
-		//WaitFlame2p = m_2pTE->get_delayF();
-		WaitFlame2p = 0;
+		WaitFlame2p = m_2pTE->get_delayF();
+		//WaitFlame2p = 0;
 		delay_cnt = 0;
 		break;
 	case 1:
