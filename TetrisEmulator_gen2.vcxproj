@@ -96,7 +96,7 @@
       </HeapCommitSize>
       <StackCommitSize>
       </StackCommitSize>
-      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libmmt.lib;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Debug\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\lib\libmmt.lib;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Debug\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
     </Link>
@@ -135,7 +135,7 @@
       <SubSystem>Windows</SubSystem>
       <DelayLoadDLLs>advapi32.dll;crypt32.dll;dwmapi.dll;gdi32.dll;imm32.dll;ole32.dll;oleaut32.dll;opengl32.dll;shell32.dll;shlwapi.dll;user32.dll;winmm.dll;ws2_32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <AdditionalLibraryDirectories>$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libmmt.lib;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Release\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\lib\libmmt.lib;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Release\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(ProjectDir)App"</Command>
