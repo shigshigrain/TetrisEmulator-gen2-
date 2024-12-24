@@ -43,7 +43,7 @@ Ai::Ai(const InitData& init)
 	CmdList2pAi = std::deque<int>(0);
 
 	// AI起動 
-	//asyncAi1 = s3d::Async(shig::ExeThinking, ref(*m_1pAI), ref(abortAi1), ref(thinkAi1), ref(CmdList1pAi));
+	asyncAi1 = s3d::Async(shig::ExeThinking, ref(*m_1pAI), ref(abortAi1), ref(thinkAi1), ref(CmdList1pAi));
 	asyncAi2 = s3d::Async(shig::ExeThinking, ref(*m_2pAI), ref(abortAi2), ref(thinkAi2), ref(CmdList2pAi));
 
 	ResetManage();
@@ -156,7 +156,6 @@ void Ai::GameManage2p()
 		m_2pTE->StackGarbage(-1);
 	}
 
-
 }
 
 void Ai::TetrisManage1p() {
@@ -194,8 +193,8 @@ void Ai::TetrisManage1p() {
 	switch (g_check)
 	{
 	case 2:
-		WaitFlame1p = m_1pTE->get_delayF();
-		//WaitFlame1p = 0;
+		//WaitFlame1p = m_1pTE->get_delayF();
+		WaitFlame1p = 0;
 		delay_cnt = 0;
 		break;
 	case 1:
