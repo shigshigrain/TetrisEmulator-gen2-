@@ -193,10 +193,10 @@ void Solo::tetris_manage(){
 		delay_cnt = 2;
 		
 		if (suggest_flag.get()) {
-			//m_soloAI->loadTE(*m_soloTE);
-			//m_soloAI->thinking();
-			//m_soloAI->makeAiSuggestion();
-			//Print << U"thinking";
+			m_soloAI->loadTE(*m_soloTE);
+			m_soloAI->thinking();
+			m_soloAI->makeAiSuggestion();
+			Print << U"thinking";
 		}
 
 	}
