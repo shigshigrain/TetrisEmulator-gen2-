@@ -193,8 +193,8 @@ void Ai::TetrisManage1p() {
 	switch (g_check)
 	{
 	case 2:
-		//WaitFlame1p = m_1pTE->get_delayF();
-		WaitFlame1p = 0;
+		WaitFlame1p = m_1pTE->get_delayF();
+		//WaitFlame1p = 0;
 		delay_cnt = 0;
 		break;
 	case 1:
@@ -339,8 +339,8 @@ void Ai::TetrisManage2p()
 	switch (g_check)
 	{
 	case 2:
-		//WaitFlame2p = m_2pTE->get_delayF();
-		WaitFlame2p = 0;
+		WaitFlame2p = m_2pTE->get_delayF();
+		//WaitFlame2p = 0;
 		delay_cnt = 0;
 		break;
 	case 1:
