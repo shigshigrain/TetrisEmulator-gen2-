@@ -24,6 +24,7 @@
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <EnableDPCppRuntimeEnvironment>true</EnableDPCppRuntimeEnvironment>
+    <UseInteloneTBB>true</UseInteloneTBB>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -31,7 +32,7 @@
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <UseInteloneTBB>false</UseInteloneTBB>
+    <UseInteloneTBB>true</UseInteloneTBB>
     <EnableDPCppRuntimeEnvironment>true</EnableDPCppRuntimeEnvironment>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
