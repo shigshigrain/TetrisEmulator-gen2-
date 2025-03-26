@@ -423,14 +423,14 @@ void Ai::DrawField() const {
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
 			Rect{ 151 + (j * 30), 51 + (i * 30), 29, 29 }
-			.draw(minoC.at((size_t)m_1pTE->get_field_state(20 - i, j, 0)));
+			.draw(minoC.at((size_t)m_1pTE->GetFieldBlock(20 - i, j, 0)));
 		}
 	}
 	// 右フィールド用 
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
 			Rect{ 791 + (j * 30), 51 + (i * 30), 29, 29 }
-			.draw(minoC.at((size_t)m_2pTE->get_field_state(20 - i, j, 0)));
+			.draw(minoC.at((size_t)m_2pTE->GetFieldBlock(20 - i, j, 0)));
 		}
 	}
 

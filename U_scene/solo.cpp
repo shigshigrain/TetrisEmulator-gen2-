@@ -267,7 +267,7 @@ void Solo::draw_field() const{
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
 			Rect{ 201 + (j * 30), 51 + (i * 30), 29, 29 }
-			.draw(minoC.at(m_soloTE->get_field_state(20 - i, j, 0)));
+			.draw(minoC.at(m_soloTE->GetFieldBlock(20 - i, j, 0)));
 		}
 
 	}
