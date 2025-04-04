@@ -196,7 +196,7 @@ void Solo::tetris_manage(){
 			m_soloAI->loadTE(*m_soloTE);
 			m_soloAI->thinking();
 			m_soloAI->makeAiSuggestion();
-			Print << U"thinking";
+			//Print << U"thinking";
 		}
 
 	}
@@ -329,6 +329,10 @@ void Solo::draw_state() const
 		i++;
 
 	}
+
+	s3d::String stateTS = s3d::Unicode::Widen(m_soloTE->GetTSstring());
+
+	FontAsset(U"Debug")(stateTS).draw(s3d::Vec2{ 20, 560 }, Color(0, 0, 0));
 
 	return;
 
