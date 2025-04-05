@@ -43,7 +43,7 @@ Ai::Ai(const InitData& init)
 	CmdList2pAi = std::deque<int>(0);
 
 	// AI起動 
-	//asyncAi1 = s3d::Async(shig::ExeThinking, ref(*m_1pAI), ref(abortAi1), ref(thinkAi1), ref(CmdList1pAi));
+	asyncAi1 = s3d::Async(shig::ExeThinking, ref(*m_1pAI), ref(abortAi1), ref(thinkAi1), ref(CmdList1pAi));
 	asyncAi2 = s3d::Async(shig::ExeThinking, ref(*m_2pAI), ref(abortAi2), ref(thinkAi2), ref(CmdList2pAi));
 
 	ResetManage();
@@ -509,4 +509,17 @@ void Ai::DrawTex2p() const {
 	}
 
 	return;
+}
+
+void Ai::DrawState() const
+{
+
+	s3d::String stateTS1 = s3d::Unicode::Widen(m_1pTE->GetTSstring());
+	s3d::String stateTS2 = s3d::Unicode::Widen(m_2pTE->GetTSstring());
+
+	FontAsset(U"Debug")(stateTS1).draw(s3d::Vec2{ 20, 560 }, Color(0, 0, 0));
+	FontAsset(U"Debug")(stateTS2).draw(s3d::Vec2{ 20, 560 }, Color(0, 0, 0));
+
+	return;
+
 }
