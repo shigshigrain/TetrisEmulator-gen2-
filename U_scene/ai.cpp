@@ -111,6 +111,7 @@ void Ai::draw() const
 	DrawGhost();
 	DrawTex1p();
 	DrawTex2p();
+	DrawState();
 }
 
 Ai::~Ai()
@@ -517,8 +518,8 @@ void Ai::DrawState() const
 	s3d::String stateTS1 = s3d::Unicode::Widen(m_1pTE->GetTSstring());
 	s3d::String stateTS2 = s3d::Unicode::Widen(m_2pTE->GetTSstring());
 
-	FontAsset(U"Debug")(stateTS1).draw(s3d::Vec2{ 20, 560 }, Color(0, 0, 0));
-	FontAsset(U"Debug")(stateTS2).draw(s3d::Vec2{ 20, 560 }, Color(0, 0, 0));
+	FontAsset(U"Debug")(stateTS1).draw(s3d::Vec2{  20, 560 }, Color(0, 0, 0));
+	FontAsset(U"Debug")(stateTS2).draw(s3d::Vec2{ 680, 560 }, Color(0, 0, 0));
 
 	return;
 
