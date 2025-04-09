@@ -172,8 +172,8 @@ void Ai::TetrisManage1p() {
 				WaitFlame1p = 0;
 				if (CmdList1pAi.front() == 3) {
 					//m_1pTE->StackGarbage((int)(m_2pTE->getGarbage() / 2));
-					m_2pTE->StackGarbage(m_1pTE->getGarbage());
-					m_1pTE->getGarbage();
+					m_2pTE->StackGarbage(m_1pTE->GetGarbage());
+					m_1pTE->GetGarbage();
 				}
 				CmdList1pAi.pop_front();
 				// 操作をし終わったタイミングで先に思考開始
@@ -317,8 +317,8 @@ void Ai::TetrisManage2p()
 				WaitFlame2p = 0;
 				if (CmdList2pAi.front() == 3) {
 					//m_1pTE->StackGarbage((int)(m_2pTE->getGarbage() / 2));
-					m_1pTE->StackGarbage(m_2pTE->getGarbage());
-					m_2pTE->getGarbage();
+					m_1pTE->StackGarbage(m_2pTE->GetGarbage());
+					m_2pTE->GetGarbage();
 				}
 
 				CmdList2pAi.pop_front();
