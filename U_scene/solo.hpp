@@ -12,20 +12,27 @@ public:
 
 	void draw() const override;
 
+	~Solo();
+
 private:// メンバ変数
-	std::unique_ptr<TetriEngine> m_soloTE;
-	std::unique_ptr<AiShigune> m_soloAI;
+	std::unique_ptr<TetriEngine> TEp1;
+	std::unique_ptr<AiShigune> AIp1;
 	Texture m_bg;
 	Array<Texture> m_MinoTex;
-	KeyConf m_KeyConfS;
+	std::unique_ptr<KeyConf> KeyConfp1;
 	uint64 sec_time;
 	int delay_cnt;
-	int DAS_flame;
-	int Wait_flame;
-	int passed_flame;
-	bool reset_flag;
+	int DASFlame;
+	int WaitFlame;
+	int PassedFlame;
+	bool ResetFlag;
 	shig::BoolSwitch suggest_flag;
-	std::vector<int> act_flame;
+	std::vector<int> ActFlame;
+	std::vector<std::vector<int8_t>> FieldS1;
+	std::atomic<bool> abortAIp1;
+	std::atomic<bool> thinkAIp1;
+	std::deque<int> CmdListAIp1;
+	s3d::AsyncTask<bool> asyncAIp1;
 
 private:// update関数
 	void game_manage();

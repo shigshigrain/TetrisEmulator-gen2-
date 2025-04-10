@@ -14,32 +14,32 @@ public:
 	~Ai();
 
 private:// メンバ変数
-	std::unique_ptr<TetriEngine> m_1pTE;
-	std::unique_ptr<AiShigune> m_1pAI;
-	std::unique_ptr<TetriEngine> m_2pTE;
-	std::unique_ptr<AiShigune> m_2pAI;
+	std::unique_ptr<TetriEngine> TEp1;
+	std::unique_ptr<AiShigune> AIp1;
+	std::unique_ptr<TetriEngine> TEp2;
+	std::unique_ptr<AiShigune> AIp2;
 	Texture m_bg;
 	Array<Texture> m_MinoTex;
-	std::unique_ptr<KeyConf> m_KeyConf1p;
+	std::unique_ptr<KeyConf> KeyConfp1;
 	uint64 sec_time;
 	int delay_cnt;
 	int DASFlame1p;
 	int WaitFlame1p;
 	int WaitFlame2p;
-	int passed_flame;
-	bool reset_flag;
+	int PassedFlame;
+	bool ResetFlag;
 	shig::BoolSwitch suggest_flag;
 	std::vector<vector<int8_t>> FieldS1;
 	std::vector<vector<int8_t>> FieldS2;
 	std::vector<int> ActFlame;
-	std::atomic<bool> abortAi1;
-	std::atomic<bool> thinkAi1;
-	std::atomic<bool> abortAi2;
-	std::atomic<bool> thinkAi2;
-	std::deque<int> CmdList1pAi;
-	std::deque<int> CmdList2pAi;
-	AsyncTask<bool> asyncAi1;
-	AsyncTask<bool> asyncAi2;
+	std::atomic<bool> abortAIp1;
+	std::atomic<bool> thinkAIp1;
+	std::atomic<bool> abortAIp2;
+	std::atomic<bool> thinkAIp2;
+	std::deque<int> CmdListAIp1;
+	std::deque<int> CmdListAIp2;
+	AsyncTask<bool> asyncAIp1;
+	AsyncTask<bool> asyncAIp2;
 
 private:// update関数
 	void GameManage1p();
