@@ -42,7 +42,7 @@ Ai::Ai(const InitData& init)
 	CmdListAIp2 = std::deque<int>(0);
 
 	// AI起動 
-	//asyncAIp1 = s3d::Async(shig::ExeThinking, ref(*AIp1), ref(abortAIp1), ref(thinkAIp1), ref(CmdListAIp1));
+	asyncAIp1 = s3d::Async(shig::ExeThinking, ref(*AIp1), ref(abortAIp1), ref(thinkAIp1), ref(CmdListAIp1));
 	asyncAIp2 = s3d::Async(shig::ExeThinking, ref(*AIp2), ref(abortAIp2), ref(thinkAIp2), ref(CmdListAIp2));
 
 	ResetManage();
