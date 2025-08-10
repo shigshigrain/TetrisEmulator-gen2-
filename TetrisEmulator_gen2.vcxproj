@@ -126,7 +126,7 @@
       <BuildStlModules>false</BuildStlModules>
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <UseProcessorExtensions>ALDERLAKE</UseProcessorExtensions>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
       <EnableModules>false</EnableModules>
       <UseMSVC>true</UseMSVC>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
