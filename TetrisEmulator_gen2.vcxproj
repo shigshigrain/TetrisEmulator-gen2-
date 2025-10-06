@@ -152,6 +152,7 @@
       <AdditionalLibraryDirectories>$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Release</AdditionalLibraryDirectories>
       <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\libmmt.lib;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Release\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UseDynamicDebugging>true</UseDynamicDebugging>
+      <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(ProjectDir)App"</Command>
