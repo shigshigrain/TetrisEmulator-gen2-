@@ -34,7 +34,7 @@
     <CharacterSet>Unicode</CharacterSet>
     <UseInteloneTBB>true</UseInteloneTBB>
     <EnableDPCppRuntimeEnvironment>false</EnableDPCppRuntimeEnvironment>
-    <InstrumentInteloneTBB>true</InstrumentInteloneTBB>
+    <InstrumentInteloneTBB>false</InstrumentInteloneTBB>
     <UseDynamicDebugging>false</UseDynamicDebugging>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -59,7 +59,6 @@
     <LibraryPath>$(SIV3D_0_6_16)\lib\Windows;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\Intermediate\</IntDir>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
@@ -142,17 +141,20 @@
       <IntelJCCErratum />
       <EnableVectorLength>
       </EnableVectorLength>
+      <UseDynamicDebugging>false</UseDynamicDebugging>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
-      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <DelayLoadDLLs>advapi32.dll;crypt32.dll;dwmapi.dll;gdi32.dll;imm32.dll;ole32.dll;oleaut32.dll;opengl32.dll;shell32.dll;shlwapi.dll;user32.dll;winmm.dll;ws2_32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <AdditionalLibraryDirectories>$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Release</AdditionalLibraryDirectories>
       <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\libmmt.lib;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Release\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <UseDynamicDebugging>true</UseDynamicDebugging>
-      <Profile>true</Profile>
+      <UseDynamicDebugging>false</UseDynamicDebugging>
+      <Profile>false</Profile>
+      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(ProjectDir)App"</Command>
