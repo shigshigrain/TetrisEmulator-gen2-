@@ -151,7 +151,7 @@
       <SubSystem>Windows</SubSystem>
       <DelayLoadDLLs>advapi32.dll;crypt32.dll;dwmapi.dll;gdi32.dll;imm32.dll;ole32.dll;oleaut32.dll;opengl32.dll;shell32.dll;shlwapi.dll;user32.dll;winmm.dll;ws2_32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <AdditionalLibraryDirectories>$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.2\lib\libmmt.lib;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Release\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2025.3\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.3\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.3\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.3\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2025.3\lib\libmmt.lib;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\Release\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UseDynamicDebugging>false</UseDynamicDebugging>
       <Profile>false</Profile>
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -276,6 +276,10 @@
     <Text Include="template\ミノステータスについて.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\Program Files (x86)\Intel\oneAPI\tbb\2022.3\bin\tbb12.dll" />
+    <None Include="..\..\..\..\..\Program Files (x86)\Intel\oneAPI\tbb\2022.3\bin\tbb12.pdb" />
+    <None Include="..\..\..\..\..\Program Files (x86)\Intel\oneAPI\tbb\2022.3\bin\tbb12_debug.dll" />
+    <None Include="..\..\..\..\..\Program Files (x86)\Intel\oneAPI\tbb\2022.3\bin\tbb12_debug.pdb" />
     <None Include="App\dll\soundtouch\SoundTouch_x64.dll" />
     <None Include="App\engine\font\fontawesome\fontawesome-brands.otf.zstdcmp" />
     <None Include="App\engine\font\fontawesome\fontawesome-solid.otf.zstdcmp" />
