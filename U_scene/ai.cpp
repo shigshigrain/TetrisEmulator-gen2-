@@ -172,7 +172,7 @@ void Ai::TetrisManage1p() {
 				if (CmdListAIp1.front() == 3) {
 					//TEp1->StackGarbage((int)(TEp2->getGarbage() / 2));
 					TEp2->StackGarbage(TEp1->GetGarbage());
-					TEp1->GetGarbage();
+					//TEp1->GetGarbage();
 				}
 				CmdListAIp1.pop_front();
 				// 操作をし終わったタイミングで先に思考開始
@@ -317,7 +317,7 @@ void Ai::TetrisManage2p()
 				if (CmdListAIp2.front() == 3) {
 					//TEp1->StackGarbage((int)(TEp2->getGarbage() / 2));
 					TEp1->StackGarbage(TEp2->GetGarbage());
-					TEp2->GetGarbage();
+					//TEp2->GetGarbage();
 				}
 
 				CmdListAIp2.pop_front();
