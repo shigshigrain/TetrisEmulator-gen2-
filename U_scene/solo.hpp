@@ -1,5 +1,5 @@
 ﻿# pragma once
-# include "common.hpp"
+# include "U_scene/common.hpp"
 
 // ゲームシーン
 class Solo : public App::Scene

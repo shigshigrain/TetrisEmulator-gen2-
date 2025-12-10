@@ -1,4 +1,4 @@
-﻿#include "ai.hpp"
+﻿#include "U_scene/ai.hpp"
 
 Ai::Ai(const InitData& init)
 	: IScene{ init }

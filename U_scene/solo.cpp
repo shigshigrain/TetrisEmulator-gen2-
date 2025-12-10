@@ -1,4 +1,4 @@
-﻿# include "solo.hpp"
+﻿# include "U_scene/solo.hpp"
 
 Solo::Solo(const InitData& init)
 	: IScene{ init }

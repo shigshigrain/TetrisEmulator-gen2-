@@ -3,7 +3,7 @@
 # include <Siv3D.hpp>
 # include "shigune_AI.h"
 //# include "ShigUtility.h"
-# include "KeyConf.hpp"
+# include "U_KeyConf/KeyConf.hpp"
 
 using namespace shig;
 

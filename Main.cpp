@@ -1,14 +1,10 @@
-﻿//# include <Siv3D.hpp> // OpenSiv3D v0.6.15
-# pragma once
+﻿# pragma once
 
-//#include "windows.h"
+# include "U_scene/title.hpp"
+# include "U_scene/solo.hpp"
+# include "U_scene/ai.hpp"
 
-//# include "common.hpp"
-# include "title.hpp"
-# include "solo.hpp"
-# include "ai.hpp"
-
-void Main()
+static void Main()
 {
 	// 背景の色を設定 | Set background color
 	Scene::SetBackground(ColorF{ 0.8, 0.9, 1.0 });
