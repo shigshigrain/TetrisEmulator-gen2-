@@ -402,8 +402,15 @@ void Solo::draw_state() const
 	}
 
 	s3d::String stateTS = s3d::Unicode::Widen(TEp1->GetTSstring());
-
 	FontAsset(U"Debug")(stateTS).draw(s3d::Vec2{ 20, 560 }, Color(0, 0, 0));
+
+	const auto&& [combo, btb] = TEp1->GetComboBtb();
+
+	s3d::String stCombo = s3d::Unicode::Widen(std::string("Combo : ") + std::to_string(combo));
+	FontAsset(U"Debug")(stCombo).draw(s3d::Vec2{ 20, 580 }, Color(0, 0, 0));
+	s3d::String stBTB = s3d::Unicode::Widen(std::string("B-2-B : ") + std::to_string(btb));
+	FontAsset(U"Debug")(stBTB).draw(s3d::Vec2{ 20, 600 }, Color(0, 0, 0));
+
 
 	return;
 
