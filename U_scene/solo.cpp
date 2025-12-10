@@ -38,7 +38,7 @@ Solo::Solo(const InitData& init)
 void Solo::update()
 {
 
-	if ((Time::GetMillisec() - sec_time) >= refrashRate240) {
+	if ((Time::GetMillisec() - sec_time) >= refrashRate60) {
 		sec_time = Time::GetMillisec();
 		PassedFlame++;
 		KeyConfp1->SetDefault();
