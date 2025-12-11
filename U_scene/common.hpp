@@ -24,12 +24,13 @@ struct GameData
 
 using App = SceneManager<State, GameData>;
 
-constexpr uint64 refrashRate15 = 1000 / 15;
-constexpr uint64 refrashRate30 = 1000 / 30;
-constexpr uint64 refrashRate60 = 1000 / 60;
-constexpr uint64 refrashRate120 = 1000 / 120;
-constexpr uint64 refrashRate180 = 1000 / 180;
-constexpr uint64 refrashRate240 = 1000 / 240;
+constexpr uint64 refrashRateU15 = 1000000 / 15;
+constexpr uint64 refrashRateU30 = 1000000 / 30;
+constexpr uint64 refrashRateU60 = 1000000 / 60;
+constexpr uint64 refrashRateU120 = 1000000 / 120;
+constexpr uint64 refrashRateU180 = 1000000 / 180;
+constexpr uint64 refrashRateU240 = 1000000 / 240;
+constexpr uint64 refrashRateU300 = 1000000 / 300;
 
 static const std::vector<Color> minoC{
 	Color(255, 255, 255), // px=0

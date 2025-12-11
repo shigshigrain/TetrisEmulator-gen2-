@@ -24,7 +24,7 @@ Ai::Ai(const InitData& init)
 		m_MinoTex.emplace_back(Texture{mp});
 	}
 
-	sec_time = Time::GetMillisec();
+	sec_time = Time::GetMicrosec();
 	delay_cnt = 0;
 	DASFlame1p = 6;
 	WaitFlame1p = 0;
@@ -52,8 +52,8 @@ Ai::Ai(const InitData& init)
 void Ai::update()
 {
 
-	if ((Time::GetMillisec() - sec_time) >= refrashRate60) {
-		sec_time = Time::GetMillisec();
+	if ((Time::GetMicrosec() - sec_time) >= refrashRateU60) {
+		sec_time = Time::GetMicrosec();
 		PassedFlame++;
 		KeyConfp1->SetDefault(); // キー入力情報のセット
 

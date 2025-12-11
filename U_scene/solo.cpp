@@ -18,7 +18,7 @@ Solo::Solo(const InitData& init)
 		m_MinoTex.emplace_back(Texture{ mp });
 	}
 
-	sec_time = Time::GetMillisec();
+	sec_time = Time::GetMicrosec();
 	delay_cnt = 0;
 	DASFlame = 6;
 	WaitFlame = 0;
@@ -38,8 +38,8 @@ Solo::Solo(const InitData& init)
 void Solo::update()
 {
 
-	if ((Time::GetMillisec() - sec_time) >= refrashRate60) {
-		sec_time = Time::GetMillisec();
+	if ((s3d::Time::GetMicrosec() - sec_time) >= refrashRateU300) {
+		sec_time = s3d::Time::GetMicrosec();
 		PassedFlame++;
 		KeyConfp1->SetDefault();
 
