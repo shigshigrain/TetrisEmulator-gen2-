@@ -52,7 +52,7 @@ Ai::Ai(const InitData& init)
 void Ai::update()
 {
 
-	if ((Time::GetMicrosec() - sec_time) >= refrashRateU60) {
+	if ((Time::GetMicrosec() - sec_time) >= refrashRateU120) {
 		sec_time = Time::GetMicrosec();
 		PassedFlame++;
 		KeyConfp1->SetDefault(); // キー入力情報のセット
