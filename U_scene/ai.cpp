@@ -111,6 +111,7 @@ void Ai::draw() const
 	DrawTex1p();
 	DrawTex2p();
 	DrawState1p();
+	DrawState2p();
 }
 
 Ai::~Ai()
