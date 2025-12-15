@@ -54,6 +54,7 @@ private:// draw関数 const
 	void DrawGhost() const;
 	void DrawTex1p()const;
 	void DrawTex2p() const;
-	void DrawState() const;
+	void DrawState1p() const;
+	void DrawState2p() const;
 
 };
