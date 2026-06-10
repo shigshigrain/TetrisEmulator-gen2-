@@ -38,7 +38,7 @@ Solo::Solo(const InitData& init)
 void Solo::update()
 {
 
-	if ((s3d::Time::GetMicrosec() - sec_time) >= refrashRateU300) {
+	if ((s3d::Time::GetMicrosec() - sec_time) >= refrashRateU60) {
 		sec_time = s3d::Time::GetMicrosec();
 		PassedFlame++;
 		KeyConfp1->SetDefault();
