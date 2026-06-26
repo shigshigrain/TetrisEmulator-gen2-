@@ -332,22 +332,25 @@ void Solo::reset_manage(){
 void Solo::draw_field() const{
 
 	Rect{ 200, 50, 300, 630 }
-		.draw(Palette::White)
-		.drawFrame(0, 1, Palette::Black);
+		.draw(Palette::Darkgray)
+		.drawFrame(0, 1, Palette::White);
 
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
+			const auto _mino = TEp1->GetFieldBlock(20 - i, j, 0);
+			if (_mino == 0i8) {
+				continue;
+			}
 			Rect{ 201 + (j * 30), 51 + (i * 30), 29, 29 }
-			.draw(minoC.at(TEp1->GetFieldBlock(20 - i, j, 0)));
+			.draw(minoC.at(_mino));
 		}
-
 	}
 
 	for (int i = 0; i < 11; i++) {
-		Line{ 200 + i * 30, 50, 200 + i * 30, 681 }.draw(1, Palette::Black);
+		Line{ 200 + i * 30, 50, 200 + i * 30, 681 }.draw(1, Palette::Ghostwhite);
 	}
 	for (int i = 0; i < 22; i++) {
-		Line{ 200, 50 + i * 30, 501, 50 + i * 30 }.draw(1, Palette::Black);
+		Line{ 200, 50 + i * 30, 501, 50 + i * 30 }.draw(1, Palette::Ghostwhite);
 	}
 
 	return;
@@ -355,15 +358,15 @@ void Solo::draw_field() const{
 
 void Solo::draw_s_field() const{
 
-	
-
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
-			if (FieldS1.at((size_t)20 - i).at(j) == 0)continue;
+			const auto _mino = FieldS1.at((size_t)20 - i).at(j);
+			if (_mino == 0i8) {
+				continue;
+			}
 			Rect{ 201 + (j * 30), 51 + (i * 30), 29, 29 }
-			.drawFrame(2, 0, minoC.at(FieldS1.at((size_t)20 - i).at(j)));
+				.drawFrame(2, 0, minoC.at(_mino));
 		}
-
 	}
 
 	return;
