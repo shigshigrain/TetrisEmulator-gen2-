@@ -19,6 +19,7 @@ Solo::Solo(const InitData& init)
 	}
 
 	sec_time = Time::GetMicrosec();
+	sync_rate = refrashRateU60;
 	delay_cnt = 0;
 	DASFlame = 6;
 	WaitFlame = 0;
@@ -37,8 +38,17 @@ Solo::Solo(const InitData& init)
 
 void Solo::update()
 {
+	if (suggest_flag.get())
+	{
+		sync_rate = refrashRateU300;
+	}
+	else
+	{
+		sync_rate = refrashRateU120;
+	}
 
-	if ((s3d::Time::GetMicrosec() - sec_time) >= refrashRateU60) {
+
+	if ((s3d::Time::GetMicrosec() - sec_time) >= sync_rate) {
 		sec_time = s3d::Time::GetMicrosec();
 		PassedFlame++;
 		KeyConfp1->SetDefault();
@@ -287,7 +297,6 @@ void Solo::tetris_manage(){
 	return;
 }
 
-
 void Solo::actF_manage() {
 
 	for (auto&& i : ActFlame) {
@@ -307,7 +316,6 @@ void Solo::actF_manage() {
 
 	return;
 }
-
 
 void Solo::reset_manage(){
 

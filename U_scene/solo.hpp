@@ -21,6 +21,7 @@ private:// メンバ変数
 	Array<Texture> m_MinoTex;
 	std::unique_ptr<KeyConf> KeyConfp1;
 	uint64 sec_time;
+	uint64 sync_rate;
 	int delay_cnt;
 	int DASFlame;
 	int WaitFlame;
