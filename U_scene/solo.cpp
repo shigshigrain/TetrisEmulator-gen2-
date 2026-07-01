@@ -9,7 +9,7 @@ Solo::Solo(const InitData& init)
 	AIp1->loadTE(*TEp1);
 	AIp1->loadTTRP();
 
-	m_bg = Texture{ U"tex\\background\\tetris_emulator_background02.bmp" };
+	m_bg = Texture{ U"tex\\background\\background04D.png" };
 
 	KeyConfp1 = make_unique<KeyConf>();
 	KeyConfp1->SetDefault();
@@ -44,7 +44,7 @@ void Solo::update()
 	}
 	else
 	{
-		sync_rate = refrashRateU120;
+		sync_rate = refrashRateU60;
 	}
 
 
@@ -340,7 +340,7 @@ void Solo::reset_manage(){
 void Solo::draw_field() const{
 
 	Rect{ 200, 50, 300, 630 }
-		.draw(Palette::Darkgray)
+		.draw(Color(60, 60, 60, 255))
 		.drawFrame(0, 1, Palette::White);
 
 	for (int i = 0; i < 21; i++) {
@@ -384,9 +384,11 @@ void Solo::draw_tex() const{
 
 	auto&& [bhold, n_data] = TEp1->get_mino_state();
 
-	if (bhold < 0 || bhold > 7)bhold = 0;
-
-	m_MinoTex.at(bhold).draw(50, 80);
+	if (bhold < 0 || bhold > 7) {
+		bhold = 0;
+	}
+	bhold += 8;
+	m_MinoTex.at(bhold).draw(60, 80);
 
 	int n_size = std::min(5, (int)n_data.size());
 	for (int i = 0; i < n_size; i++) {
