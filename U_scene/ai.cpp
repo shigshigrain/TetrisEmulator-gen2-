@@ -15,7 +15,7 @@ Ai::Ai(const InitData& init)
 	AIp2->loadTE(*TEp2);
 	AIp2->loadTTRP();
 	
-	m_bg = Texture{ U"tex\\background\\tetris_emulator_background02.bmp" };
+	m_bg = Texture{ U"tex\\background\\background04D.png" };
 
 	KeyConfp1 = make_unique<KeyConf>();
 	KeyConfp1->SetDefault();
@@ -413,41 +413,51 @@ void Ai::DrawField() const {
 
 	// 左フィールド用 
 	Rect{ 150, 50, 300, 630 }
-		.draw(Palette::White)
-		.drawFrame(0, 1, Palette::Black);
+		.draw(Color(60, 60, 60, 255))
+		.drawFrame(0, 1, Palette::White);
 	// 右フィールド用 
 	Rect{ 790, 50, 300, 630 }
-		.draw(Palette::White)
-		.drawFrame(0, 1, Palette::Black);
+		.draw(Color(60, 60, 60, 255))
+		.drawFrame(0, 1, Palette::White);
 
-	// 左フィールド用 
+	
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
+			/// 左フィールド用 
+			const auto m_p1 = TEp1->GetFieldBlock(20 - i, j, 0);
+			if (m_p1 == 0i8) {
+				continue;
+			}
 			Rect{ 151 + (j * 30), 51 + (i * 30), 29, 29 }
-			.draw(minoC.at((size_t)TEp1->GetFieldBlock(20 - i, j, 0)));
+			.draw(minoC.at(m_p1));
 		}
 	}
-	// 右フィールド用 
+
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
+			/// 右フィールド用 
+			const auto m_p2 = TEp2->GetFieldBlock(20 - i, j, 0);
+			if (m_p2 == 0i8) {
+				continue;
+			}
 			Rect{ 791 + (j * 30), 51 + (i * 30), 29, 29 }
-			.draw(minoC.at((size_t)TEp2->GetFieldBlock(20 - i, j, 0)));
+			.draw(minoC.at(m_p2));
 		}
 	}
 
 	// 左フィールド用 
 	for (size_t i = 0; i <= 10; i++) {
-		Line{ 150 + i * 30, 50, 150 + i * 30, 681 }.draw(1, Palette::Black);
+		Line{ 150 + i * 30, 50, 150 + i * 30, 681 }.draw(1, Palette::Ghostwhite);
 	}
 	for (size_t i = 0; i <= 21; i++) {
-		Line{ 150, 50 + i * 30, 451, 50 + i * 30 }.draw(1, Palette::Black);
+		Line{ 150, 50 + i * 30, 451, 50 + i * 30 }.draw(1, Palette::Ghostwhite);
 	}
 	// 右フィールド用 
 	for (size_t i = 0; i <= 10; i++) {
-		Line{ 790 + i * 30, 50, 790 + i * 30, 681 }.draw(1, Palette::Black);
+		Line{ 790 + i * 30, 50, 790 + i * 30, 681 }.draw(1, Palette::Ghostwhite);
 	}
 	for (size_t i = 0; i <= 21; i++) {
-		Line{ 790, 50 + i * 30, 1091, 50 + i * 30 }.draw(1, Palette::Black);
+		Line{ 790, 50 + i * 30, 1091, 50 + i * 30 }.draw(1, Palette::Ghostwhite);
 	}
 
 	return;
@@ -488,7 +498,7 @@ void Ai::DrawTex1p() const {
 
 	size_t n_size = std::min(5Ui64, n_data.size());
 	for (size_t i = 0; i < n_size; i++) {
-		size_t nq = (size_t)n_data.at(i) + 8;
+		size_t nq = (size_t)n_data.at(i);
 		m_MinoTex.at(nq).draw(490, 80 + (double)i * 100);
 	}
 
@@ -505,7 +515,7 @@ void Ai::DrawTex2p() const {
 
 	size_t n_size = std::min(5Ui64, n_data.size());
 	for (size_t i = 0; i < n_size; i++) {
-		size_t nq = (size_t)n_data.at(i) + 8;
+		size_t nq = (size_t)n_data.at(i);
 		m_MinoTex.at(nq).draw(1130, 80 + (double)i * 100);
 	}
 

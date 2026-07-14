@@ -54,14 +54,14 @@ static const std::vector<Color> minoC{
 constexpr int minotex_path_size = 16;
 
 const vector<StringView> minotex_path = {
-	U"tex\\mino\\flame_L.bmp",
-	U"tex\\mino\\I-mino_100.bmp",
-	U"tex\\mino\\J-mino_100.bmp",
-	U"tex\\mino\\L-mino_100.bmp",
-	U"tex\\mino\\O-mino_100.bmp",
-	U"tex\\mino\\S-mino_100.bmp",
-	U"tex\\mino\\T-mino_100.bmp",
-	U"tex\\mino\\Z-mino_100.bmp",
+	U"tex\\mino\\flameS_D.bmp",
+	U"tex\\mino\\I-mino_D.bmp",
+	U"tex\\mino\\J-mino_D.bmp",
+	U"tex\\mino\\L-mino_D.bmp",
+	U"tex\\mino\\O-mino_D.bmp",
+	U"tex\\mino\\S-mino_D.bmp",
+	U"tex\\mino\\T-mino_D.bmp",
+	U"tex\\mino\\Z-mino_D.bmp",
 	U"tex\\mino\\flameS_D.bmp",
 	U"tex\\mino\\I-mino_D.bmp",
 	U"tex\\mino\\J-mino_D.bmp",

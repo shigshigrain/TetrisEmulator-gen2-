@@ -387,12 +387,11 @@ void Solo::draw_tex() const{
 	if (bhold < 0 || bhold > 7) {
 		bhold = 0;
 	}
-	bhold += 8;
 	m_MinoTex.at(bhold).draw(60, 80);
 
 	int n_size = std::min(5, (int)n_data.size());
 	for (int i = 0; i < n_size; i++) {
-		int nq = n_data.at(i) + 8;
+		int nq = n_data.at(i);
 		m_MinoTex.at(nq).draw(525, 80 + i * 100);
 	}
 
