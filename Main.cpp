@@ -10,7 +10,7 @@ void Main()
 	Scene::SetBackground(ColorF{ 0.8, 0.9, 1.0 });
 
 	// タイトル変更
-	Window::SetTitle(U"TetrisEmulator2 -v2.1.6-");
+	Window::SetTitle(U"TetrisEmulator2 -v2.1.7-");
 
 	// サイズ変更
 	
