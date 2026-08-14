@@ -3,17 +3,19 @@
 Ai::Ai(const InitData& init)
 	: IScene{ init }
 {
+	// 1p AI側
 	TEp1 = std::make_unique<TetriEngine>(1);
 	TEp1->Init(1);
 	AIp1 = std::make_unique<AiShigune>(1);
 	AIp1->loadTE(*TEp1);
-	AIp1->loadTTRP();
+	//AIp1->loadTTRP();
+	
 	//
 	TEp2 = std::make_unique<TetriEngine>(2);
 	TEp2->Init(2);
 	AIp2 = std::make_unique<AiShigune>(2);
 	AIp2->loadTE(*TEp2);
-	AIp2->loadTTRP();
+	//AIp2->loadTTRP();
 	
 	m_bg = Texture{ U"tex\\background\\background04D.png" };
 
@@ -490,7 +492,7 @@ void Ai::DrawGhost() const {
 
 void Ai::DrawTex1p() const {
 
-	auto&& [bhold, n_data] = TEp1->get_mino_state();
+	/*auto&& [bhold, n_data] = TEp1->get_mino_state();
 
 	if (bhold < 0 || bhold > 7)bhold = 0;
 
@@ -500,14 +502,35 @@ void Ai::DrawTex1p() const {
 	for (size_t i = 0; i < n_size; i++) {
 		size_t nq = (size_t)n_data.at(i);
 		m_MinoTex.at(nq).draw(490, 80 + (double)i * 100);
-	}
+	}*/
+
+	const auto& [_current, _hold, _n1, _n2, _n3, _n4, _n5] = TEp1->get_mino_state();
+
+	m_MinoTex.at(static_cast<size_t>(_hold)).draw(20.0, 80.0);
+
+	/*int n_size = std::min(5, (int)n_data.size());
+	for (int i = 0; i < n_size; i++) {
+		int nq = n_data.at(i);
+		m_MinoTex.at(nq).draw(525, 80 + i * 100);
+	}*/
+
+	double y_pos = 80.0;
+	m_MinoTex.at(static_cast<size_t>(_n1)).draw(490.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n2)).draw(490.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n3)).draw(490.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n4)).draw(490.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n5)).draw(490.0, y_pos);
 
 	return;
 }
 
 void Ai::DrawTex2p() const {
 
-	auto&& [bhold, n_data] = TEp2->get_mino_state();
+	/*auto&& [bhold, n_data] = TEp2->get_mino_state();
 
 	if (bhold < 0 || bhold > 7)bhold = 0;
 
@@ -517,7 +540,28 @@ void Ai::DrawTex2p() const {
 	for (size_t i = 0; i < n_size; i++) {
 		size_t nq = (size_t)n_data.at(i);
 		m_MinoTex.at(nq).draw(1130, 80 + (double)i * 100);
-	}
+	}*/
+
+	const auto& [_current, _hold, _n1, _n2, _n3, _n4, _n5] = TEp2->get_mino_state();
+
+	m_MinoTex.at(static_cast<size_t>(_hold)).draw(660.0, 80.0);
+
+	/*int n_size = std::min(5, (int)n_data.size());
+	for (int i = 0; i < n_size; i++) {
+		int nq = n_data.at(i);
+		m_MinoTex.at(nq).draw(525, 80 + i * 100);
+	}*/
+
+	double y_pos = 80.0;
+	m_MinoTex.at(static_cast<size_t>(_n1)).draw(1130.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n2)).draw(1130.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n3)).draw(1130.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n4)).draw(1130.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n5)).draw(1130.0, y_pos);
 
 	return;
 }

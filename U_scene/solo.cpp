@@ -7,7 +7,7 @@ Solo::Solo(const InitData& init)
 	TEp1->Init(0);
 	AIp1 = std::make_unique<AiShigune>(1);
 	AIp1->loadTE(*TEp1);
-	AIp1->loadTTRP();
+	//AIp1->loadTTRP();
 
 	m_bg = Texture{ U"tex\\background\\background04D.png" };
 
@@ -382,18 +382,26 @@ void Solo::draw_s_field() const{
 
 void Solo::draw_tex() const{
 
-	auto&& [bhold, n_data] = TEp1->get_mino_state();
+	const auto& [_current, _hold, _n1, _n2, _n3, _n4, _n5] = TEp1->get_mino_state();
 
-	if (bhold < 0 || bhold > 7) {
-		bhold = 0;
-	}
-	m_MinoTex.at(bhold).draw(60, 80);
+	m_MinoTex.at(static_cast<size_t>(_hold)).draw(60.0, 80.0);
 
-	int n_size = std::min(5, (int)n_data.size());
+	/*int n_size = std::min(5, (int)n_data.size());
 	for (int i = 0; i < n_size; i++) {
 		int nq = n_data.at(i);
 		m_MinoTex.at(nq).draw(525, 80 + i * 100);
-	}
+	}*/
+
+	double y_pos = 80.0;
+	m_MinoTex.at(static_cast<size_t>(_n1)).draw(525.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n2)).draw(525.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n3)).draw(525.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n4)).draw(525.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n5)).draw(525.0, y_pos);
 
 	return;
 }
