@@ -1,5 +1,4 @@
-﻿# pragma once
-
+﻿
 # include "U_scene/title.hpp"
 # include "U_scene/solo.hpp"
 # include "U_scene/ai.hpp"

@@ -124,7 +124,7 @@
       <DisableSpecificWarnings>26451;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>$(vs_repos)\TetrisEmulator_gen2;$(vs_repos)\TetrisEmulator_gen2\U_scene;$(vs_repos)\TetrisEmulator_gen2\U_KeyConf;$(vs_repos)\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(vs_repos)\TetrisEmulator_gen2;$(vs_repos)\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <BuildStlModules>false</BuildStlModules>
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
@@ -154,7 +154,7 @@
       <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libmmt.lib;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\ReleaseLib\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UseDynamicDebugging>false</UseDynamicDebugging>
       <Profile>false</Profile>
-      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <PostBuildEvent>
