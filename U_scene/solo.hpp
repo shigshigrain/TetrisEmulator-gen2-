@@ -1,5 +1,7 @@
-﻿# pragma once
+﻿
 # include "U_scene/common.hpp"
+# include "Aishigune/AiShigune.hpp"
+# include "U_KeyConf/KeyConf.hpp"
 
 // ゲームシーン
 class Solo : public App::Scene
@@ -15,10 +17,10 @@ public:
 	~Solo();
 
 private:// メンバ変数
-	std::unique_ptr<TetriEngine> TEp1;
-	std::unique_ptr<AiShigune> AIp1;
-	Texture m_bg;
-	Array<Texture> m_MinoTex;
+	std::unique_ptr<shig::TetriEngine> TEp1;
+	std::unique_ptr<shig::AiShigune> AIp1;
+	s3d::Texture m_bg;
+	s3d::Array<s3d::Texture> m_MinoTex;
 	std::unique_ptr<KeyConf> KeyConfp1;
 	uint64 sec_time;
 	uint64 sync_rate;

@@ -1,5 +1,8 @@
-﻿# pragma once
-# include "common.hpp"
+﻿
+# include "U_scene/common.hpp"
+# include "Aishigune/AiShigune.hpp"
+# include "U_KeyConf/KeyConf.hpp"
+
 // ゲームシーン
 class Ai : public App::Scene
 {
@@ -14,12 +17,12 @@ public:
 	~Ai();
 
 private:// メンバ変数
-	std::unique_ptr<TetriEngine> TEp1;
-	std::unique_ptr<AiShigune> AIp1;
-	std::unique_ptr<TetriEngine> TEp2;
-	std::unique_ptr<AiShigune> AIp2;
+	std::unique_ptr<shig::TetriEngine> TEp1;
+	std::unique_ptr<shig::AiShigune> AIp1;
+	std::unique_ptr<shig::TetriEngine> TEp2;
+	std::unique_ptr<shig::AiShigune> AIp2;
 	Texture m_bg;
-	Array<Texture> m_MinoTex;
+	s3d::Array<Texture> m_MinoTex;
 	std::unique_ptr<KeyConf> KeyConfp1;
 	uint64 sec_time;
 	int delay_cnt;
@@ -38,8 +41,8 @@ private:// メンバ変数
 	std::atomic<bool> thinkAIp2;
 	std::deque<int> CmdListAIp1;
 	std::deque<int> CmdListAIp2;
-	AsyncTask<bool> asyncAIp1;
-	AsyncTask<bool> asyncAIp2;
+	s3d::AsyncTask<bool> asyncAIp1;
+	s3d::AsyncTask<bool> asyncAIp2;
 
 private:// update関数
 	void GameManage1p();

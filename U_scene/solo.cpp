@@ -3,19 +3,19 @@
 Solo::Solo(const InitData& init)
 	: IScene{ init }
 {
-	TEp1 = std::make_unique<TetriEngine>(TetriEngine(1));
+	TEp1 = std::make_unique<shig::TetriEngine>(1);
 	TEp1->Init(0);
-	AIp1 = std::make_unique<AiShigune>(1);
+	AIp1 = std::make_unique<shig::AiShigune>(1);
 	AIp1->loadTE(*TEp1);
 	//AIp1->loadTTRP();
 
-	m_bg = Texture{ U"tex\\background\\background04D.png" };
+	m_bg = s3d::Texture{ U"tex\\background\\background04D.png" };
 
 	KeyConfp1 = make_unique<KeyConf>();
 	KeyConfp1->SetDefault();
 
 	for (auto&& mp : minotex_path) {
-		m_MinoTex.emplace_back(Texture{ mp });
+		m_MinoTex.emplace_back(s3d::Texture{ mp });
 	}
 
 	sec_time = Time::GetMicrosec();
@@ -26,7 +26,7 @@ Solo::Solo(const InitData& init)
 	PassedFlame = 0;
 	ResetFlag = false;
 	suggest_flag = shig::BoolSwitch();//false
-	ActFlame = vector<int>(8, 0);
+	ActFlame = std::vector<int>(8, 0);
 	FieldS1 = std::vector<std::vector<int8_t>>(shig::fH, (std::vector<int8_t>(shig::fW, 0)));
 	abortAIp1 = { false };
 	thinkAIp1 = { false };

@@ -1,19 +1,20 @@
-﻿#include "U_scene/ai.hpp"
+﻿
+#include "U_scene/ai.hpp"
 
 Ai::Ai(const InitData& init)
 	: IScene{ init }
 {
 	// 1p AI側
-	TEp1 = std::make_unique<TetriEngine>(1);
+	TEp1 = std::make_unique<shig::TetriEngine>(1);
 	TEp1->Init(1);
-	AIp1 = std::make_unique<AiShigune>(1);
+	AIp1 = std::make_unique<shig::AiShigune>(1);
 	AIp1->loadTE(*TEp1);
 	//AIp1->loadTTRP();
 	
 	//
-	TEp2 = std::make_unique<TetriEngine>(2);
+	TEp2 = std::make_unique<shig::TetriEngine>(2);
 	TEp2->Init(2);
-	AIp2 = std::make_unique<AiShigune>(2);
+	AIp2 = std::make_unique<shig::AiShigune>(2);
 	AIp2->loadTE(*TEp2);
 	//AIp2->loadTTRP();
 	
@@ -22,7 +23,8 @@ Ai::Ai(const InitData& init)
 	KeyConfp1 = make_unique<KeyConf>();
 	KeyConfp1->SetDefault();
 
-	for (auto&& mp : minotex_path) {
+	for (auto&& mp : minotex_path)
+	{
 		m_MinoTex.emplace_back(Texture{mp});
 	}
 
