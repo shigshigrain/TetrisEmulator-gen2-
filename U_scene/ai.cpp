@@ -42,8 +42,8 @@ Ai::Ai(const InitData& init)
 	thinkAIp1 = { false };
 	abortAIp2 = { false };
 	thinkAIp2 = { false };
-	CmdListAIp1 = std::deque<int>(0);
-	CmdListAIp2 = std::deque<int>(0);
+	CmdListAIp1.clear();
+	CmdListAIp2.clear();
 
 	// AI起動 
 	asyncAIp1 = s3d::Async(shig::ExeThinking, ref(*AIp1), ref(abortAIp1), ref(thinkAIp1), ref(CmdListAIp1));
@@ -174,7 +174,7 @@ void Ai::TetrisManage1p() {
 			if (!CmdListAIp1.empty()) {
 				g_check = TEp1->Game(CmdListAIp1.front(), 0);
 				WaitFlame1p = 0;
-				if (CmdListAIp1.front() == 3) {
+				if (CmdListAIp1.front() == shig::TetriAction::Hard) {
 					//TEp1->StackGarbage((int)(TEp2->getGarbage() / 2));
 					TEp2->StackGarbage(TEp1->GetGarbage());
 					//TEp1->GetGarbage();
@@ -319,7 +319,7 @@ void Ai::TetrisManage2p()
 			if (!CmdListAIp2.empty()) {
 				g_check = TEp2->Game(CmdListAIp2.front(), 0);
 				WaitFlame2p = 0;
-				if (CmdListAIp2.front() == 3) {
+				if (CmdListAIp2.front() == shig::TetriAction::Hard) {
 					//TEp1->StackGarbage((int)(TEp2->getGarbage() / 2));
 					TEp1->StackGarbage(TEp2->GetGarbage());
 					//TEp2->GetGarbage();

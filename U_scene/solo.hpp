@@ -34,7 +34,7 @@ private:// メンバ変数
 	std::vector<std::vector<int8_t>> FieldS1;
 	std::atomic<bool> abortAIp1;
 	std::atomic<bool> thinkAIp1;
-	std::deque<int> CmdListAIp1;
+	std::deque<shig::TetriAction> CmdListAIp1;
 	s3d::AsyncTask<bool> asyncAIp1;
 
 private:// update関数

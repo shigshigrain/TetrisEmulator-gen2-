@@ -30,7 +30,7 @@ Solo::Solo(const InitData& init)
 	FieldS1 = std::vector<std::vector<int8_t>>(shig::fH, (std::vector<int8_t>(shig::fW, 0)));
 	abortAIp1 = { false };
 	thinkAIp1 = { false };
-	CmdListAIp1 = std::deque<int>(0);
+	CmdListAIp1.clear();
 	// AI起動 
 	asyncAIp1 = s3d::Async(shig::ExeThinking, ref(*AIp1), ref(abortAIp1), ref(thinkAIp1), ref(CmdListAIp1));
 
@@ -136,31 +136,35 @@ void Solo::game_manage(){
 		}
 		
 	}
-
-
 }
 
 void Solo::tetris_manage(){
 	int g_check = 0;
 
-	if (suggest_flag.get()) {
+	if (suggest_flag.get())
+	{
 		// 非同期処理側で推奨手計算が終了している場合
-		if (!thinkAIp1) {
+		if (!thinkAIp1)
+		{
 			FieldS1 = AIp1->getSuggestionAi();
-			if (!CmdListAIp1.empty()) {
+			if (!CmdListAIp1.empty())
+			{
 				g_check = TEp1->Game(CmdListAIp1.front(), 0);
 				WaitFlame = 0;
-				if (CmdListAIp1.front() == 3) {
+				if (CmdListAIp1.front() == shig::TetriAction::Hard)
+				{
 					TEp1->GetGarbage();
 				}
 				CmdListAIp1.pop_front();
 				// 操作をし終わったタイミングで先に思考開始
-				if (CmdListAIp1.empty()) {
+				if (CmdListAIp1.empty())
+				{
 					AIp1->loadTE(*TEp1);
 					thinkAIp1 = true;
 				}
 			}
-			else {
+			else
+			{
 				thinkAIp1 = true;
 			}
 		}
@@ -168,71 +172,90 @@ void Solo::tetris_manage(){
 			// することがない 
 		}
 	}
-	else {
-		if (KeyConfp1->GetKey(KeyVal::Left).pressed() && not KeyConfp1->GetKey(KeyVal::Right).pressed()) {
-			if (ActFlame.at(6) == 0) {
+	else
+	{
+		if (KeyConfp1->GetKey(KeyVal::Left).pressed() && not KeyConfp1->GetKey(KeyVal::Right).pressed())
+		{
+			if (ActFlame.at(6) == 0)
+			{
 				ActFlame.at(6) = -1 * DASFlame;
 				g_check = TEp1->Game(6, 0);
 			}
-			else if (ActFlame.at(6) == -1) {
+			else if (ActFlame.at(6) == -1)
+			{
 				ActFlame.at(6) = 1;
 			}
-			else if (ActFlame.at(6) > 0) {
+			else if (ActFlame.at(6) > 0)
+			{
 				g_check = TEp1->Game(6, 0);
 			}
 			delay_cnt = 2;
 		}
 
-		if (not KeyConfp1->GetKey(KeyVal::Left).pressed() && KeyConfp1->GetKey(KeyVal::Right).pressed()) {
-			if (ActFlame.at(7) == 0) {
+		if (not KeyConfp1->GetKey(KeyVal::Left).pressed() && KeyConfp1->GetKey(KeyVal::Right).pressed())
+		{
+			if (ActFlame.at(7) == 0)
+			{
 				ActFlame.at(7) = -DASFlame;
 				g_check = TEp1->Game(7, 0);
 			}
-			else if (ActFlame.at(7) == -1) {
+			else if (ActFlame.at(7) == -1)
+			{
 				ActFlame.at(7) = 1;
 			}
-			else if (ActFlame.at(7) > 0) {
+			else if (ActFlame.at(7) > 0)
+			{
 				g_check = TEp1->Game(7, 0);
 			}
 			delay_cnt = 2;
 		}
 
-		if (KeyConfp1->GetKey(KeyVal::Up).pressed() && not KeyConfp1->GetKey(KeyVal::Z).pressed()) {
-			if (ActFlame.at(5) >= 0) {
+		if (KeyConfp1->GetKey(KeyVal::Up).pressed() && not KeyConfp1->GetKey(KeyVal::Z).pressed())
+		{
+			if (ActFlame.at(5) >= 0)
+			{
 				ActFlame.at(5) = -DASFlame;
 				g_check = TEp1->Game(5, 0);
 			}
-			else {
+			else
+			{
 				ActFlame.at(5) -= 1;
 			}
 			delay_cnt = 2;
 		}
 
-		if (not KeyConfp1->GetKey(KeyVal::Up).pressed() && KeyConfp1->GetKey(KeyVal::Z).pressed()) {
-			if (ActFlame.at(4) >= 0) {
+		if (not KeyConfp1->GetKey(KeyVal::Up).pressed() && KeyConfp1->GetKey(KeyVal::Z).pressed())
+		{
+			if (ActFlame.at(4) >= 0)
+			{
 				ActFlame.at(4) = -DASFlame;
 				g_check = TEp1->Game(4, 0);
 			}
-			else {
+			else
+			{
 				ActFlame.at(4) -= 1;
 			}
 			delay_cnt = 2;
 		}
 
-		if (KeyConfp1->GetKey(KeyVal::C).pressed()) {
-			if (ActFlame.at(1) >= 0) {
+		if (KeyConfp1->GetKey(KeyVal::C).pressed())
+		{
+			if (ActFlame.at(1) >= 0)
+			{
 				ActFlame.at(1) = -2;
 				g_check = TEp1->Game(1, 0);
 			}
-			else {
+			else
+			{
 				ActFlame.at(1) += -1;
 			}
 			delay_cnt = 2;
-
 		}
 
-		if (KeyConfp1->GetKey(KeyVal::Down).pressed()) {
-			if (ActFlame.at(2) >= 0) {
+		if (KeyConfp1->GetKey(KeyVal::Down).pressed())
+		{
+			if (ActFlame.at(2) >= 0)
+			{
 				ActFlame.at(2) = -1;
 				g_check = TEp1->Game(2, 0);
 			}
@@ -242,18 +265,22 @@ void Solo::tetris_manage(){
 			delay_cnt = 2;
 		}
 
-		if (KeyConfp1->GetKey(KeyVal::Space).pressed()) {
-			if (ActFlame.at(3) >= 0) {
+		if (KeyConfp1->GetKey(KeyVal::Space).pressed())
+		{
+			if (ActFlame.at(3) >= 0)
+			{
 				ActFlame.at(3) = -2;
 				g_check = TEp1->Game(3, 0);
 				delay_cnt = TEp1->get_delayF();
 			}
-			else {
+			else
+			{
 				ActFlame.at(3) += -1;
 			}
 			delay_cnt = 2;
 
-			if (suggest_flag.get()) {
+			if (suggest_flag.get())
+			{
 				AIp1->loadTE(*TEp1);
 				AIp1->thinking();
 				AIp1->makeAiSuggestion();

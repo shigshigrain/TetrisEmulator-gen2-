@@ -39,8 +39,8 @@ private:// メンバ変数
 	std::atomic<bool> thinkAIp1;
 	std::atomic<bool> abortAIp2;
 	std::atomic<bool> thinkAIp2;
-	std::deque<int> CmdListAIp1;
-	std::deque<int> CmdListAIp2;
+	std::deque<shig::TetriAction> CmdListAIp1;
+	std::deque<shig::TetriAction> CmdListAIp2;
 	s3d::AsyncTask<bool> asyncAIp1;
 	s3d::AsyncTask<bool> asyncAIp2;
 
