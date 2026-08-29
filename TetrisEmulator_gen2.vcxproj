@@ -62,7 +62,7 @@
     <OutDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\Intermediate\</IntDir>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
-    <IncludePath>$(SIV3D_0_6_16)\include;$(SIV3D_0_6_16)\include\ThirdParty;$(vs_repos)\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP;$(IncludePath)</IncludePath>
+    <IncludePath>$(SIV3D_0_6_16)\include;$(SIV3D_0_6_16)\include\ThirdParty;$(vs_repos)\GraySeaAI\GraySeaAI;$(IncludePath)</IncludePath>
     <LibraryPath>$(SIV3D_0_6_16)\lib\Windows;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\ReleaseLib;$(LibraryPath)</LibraryPath>
     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
@@ -124,7 +124,7 @@
       <DisableSpecificWarnings>26451;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>$(vs_repos)\TetrisEmulator_gen2;$(vs_repos)\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(vs_repos)\TetrisEmulator_gen2;$(vs_repos)\GraySeaAI\GraySeaAI</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <BuildStlModules>false</BuildStlModules>
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
@@ -150,8 +150,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <DelayLoadDLLs>advapi32.dll;crypt32.dll;dwmapi.dll;gdi32.dll;imm32.dll;ole32.dll;oleaut32.dll;opengl32.dll;shell32.dll;shlwapi.dll;user32.dll;winmm.dll;ws2_32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <AdditionalLibraryDirectories>$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\ReleaseLib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libmmt.lib;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\ReleaseLib\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(vs_repos)\GraySeaAI\x64\ReleaseLib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libmmt.lib;$(vs_repos)\GraySeaAI\x64\ReleaseLib\GraySeaAI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UseDynamicDebugging>false</UseDynamicDebugging>
       <Profile>false</Profile>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
