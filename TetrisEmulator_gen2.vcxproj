@@ -63,7 +63,7 @@
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\Intermediate\</IntDir>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
     <IncludePath>$(SIV3D_0_6_16)\include;$(SIV3D_0_6_16)\include\ThirdParty;$(vs_repos)\GraySeaAI\GraySeaAI;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SIV3D_0_6_16)\lib\Windows;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\ReleaseLib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SIV3D_0_6_16)\lib\Windows;$(vs_repos)\GraySeaAI\x64\ReleaseLib;$(LibraryPath)</LibraryPath>
     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
