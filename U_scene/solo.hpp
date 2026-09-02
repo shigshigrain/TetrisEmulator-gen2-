@@ -1,5 +1,7 @@
-﻿# pragma once
-# include "common.hpp"
+﻿
+# include "U_scene/common.hpp"
+# include "Aishigune/AiShigune.hpp"
+# include "U_KeyConf/KeyConf.hpp"
 
 // ゲームシーン
 class Solo : public App::Scene
@@ -12,20 +14,28 @@ public:
 
 	void draw() const override;
 
+	~Solo();
+
 private:// メンバ変数
-	std::unique_ptr<TetriEngine> m_soloTE;
-	std::unique_ptr<AiShigune> m_soloAI;
-	Texture m_bg;
-	Array<Texture> m_MinoTex;
-	KeyConf m_KeyConfS;
+	std::unique_ptr<shig::TetriEngine> TEp1;
+	std::unique_ptr<shig::AiShigune> AIp1;
+	s3d::Texture m_bg;
+	s3d::Array<s3d::Texture> m_MinoTex;
+	std::unique_ptr<KeyConf> KeyConfp1;
 	uint64 sec_time;
+	uint64 sync_rate;
 	int delay_cnt;
-	int DAS_flame;
-	int Wait_flame;
-	int passed_flame;
-	bool reset_flag;
+	int DASFlame;
+	int WaitFlame;
+	int PassedFlame;
+	bool ResetFlag;
 	shig::BoolSwitch suggest_flag;
-	std::vector<int> act_flame;
+	std::vector<int> ActFlame;
+	std::vector<std::vector<int8_t>> FieldS1;
+	std::atomic<bool> abortAIp1;
+	std::atomic<bool> thinkAIp1;
+	std::deque<shig::TetriAction> CmdListAIp1;
+	s3d::AsyncTask<bool> asyncAIp1;
 
 private:// update関数
 	void game_manage();
@@ -36,7 +46,7 @@ private:// update関数
 private:// draw関数 const
 	void draw_field() const;
 	void draw_s_field() const;
-	void draw_tex()const;
-
+	void draw_tex() const;
+	void draw_state() const;
 
 };

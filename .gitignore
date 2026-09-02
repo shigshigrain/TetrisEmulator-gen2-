@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.exe
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -366,3 +367,4 @@ FodyWeavers.xsd
 /DawnCache
 /App/e000
 /App/RCa26460
+/App/RCa59968

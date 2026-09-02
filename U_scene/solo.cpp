@@ -1,50 +1,65 @@
-﻿# include "solo.hpp"
+﻿# include "U_scene/solo.hpp"
 
 Solo::Solo(const InitData& init)
 	: IScene{ init }
 {
-	m_soloTE = std::make_unique<TetriEngine>(TetriEngine());
-	m_soloTE->Init(0);
-	m_soloAI = std::make_unique<AiShigune>(1);
-	m_soloAI->loadTE(*m_soloTE);
-	m_soloAI->loadTTRP();
-	//m_soloAI->thinking();
+	TEp1 = std::make_unique<shig::TetriEngine>(1);
+	TEp1->Init(0);
+	AIp1 = std::make_unique<shig::AiShigune>(1);
+	AIp1->loadTE(*TEp1);
+	//AIp1->loadTTRP();
 
-	m_bg = Texture{ U"tex\\background\\tetris_emulator_background02.bmp" };
+	m_bg = s3d::Texture{ U"tex\\background\\background04D.png" };
 
-	//m_KeyConfS = KeyConf();
-	m_KeyConfS.SetDefault();
+	KeyConfp1 = make_unique<KeyConf>();
+	KeyConfp1->SetDefault();
 
-	//m_MinoTex = std::vector<Texture>(0);
 	for (auto&& mp : minotex_path) {
-		m_MinoTex.emplace_back(Texture{ mp });
+		m_MinoTex.emplace_back(s3d::Texture{ mp });
 	}
 
-	sec_time = Time::GetMillisec();
+	sec_time = Time::GetMicrosec();
+	sync_rate = refrashRateU60;
 	delay_cnt = 0;
-	DAS_flame = 6;
-	Wait_flame = 0;
-	passed_flame = 0;
-	reset_flag = false;
+	DASFlame = 6;
+	WaitFlame = 0;
+	PassedFlame = 0;
+	ResetFlag = false;
 	suggest_flag = shig::BoolSwitch();//false
-	act_flame = vector<int>(8, 0);
+	ActFlame = std::vector<int>(8, 0);
+	FieldS1 = std::vector<std::vector<int8_t>>(shig::fH, (std::vector<int8_t>(shig::fW, 0)));
+	abortAIp1 = { false };
+	thinkAIp1 = { false };
+	CmdListAIp1.clear();
+	// AI起動 
+	asyncAIp1 = s3d::Async(shig::ExeThinking, ref(*AIp1), ref(abortAIp1), ref(thinkAIp1), ref(CmdListAIp1));
 
 }
 
 void Solo::update()
 {
+	if (suggest_flag.get())
+	{
+		sync_rate = refrashRateU300;
+	}
+	else
+	{
+		sync_rate = refrashRateU60;
+	}
 
-	if (Time::GetMillisec() - sec_time >= refrashRate60) {
-		sec_time = Time::GetMillisec();
-		passed_flame++;
 
-		if (Wait_flame > 0) {
-			Wait_flame += -1;
+	if ((s3d::Time::GetMicrosec() - sec_time) >= sync_rate) {
+		sec_time = s3d::Time::GetMicrosec();
+		PassedFlame++;
+		KeyConfp1->SetDefault();
+
+		if (WaitFlame > 0) {
+			WaitFlame--;
 		}
 		else {
-			m_soloTE->ResetFieldP();
-			if (reset_flag) reset_manage();
-			m_KeyConfS.SetDefault();
+			TEp1->ResetFieldP();
+			if (ResetFlag) reset_manage();
+			
 
 			// テトリス側操作入力
 			tetris_manage();
@@ -56,14 +71,17 @@ void Solo::update()
 
 	}
 
-	//m_KeyConf1p.SetDefault(); // キー入力情報のセット
+	//KeyConfp1.SetDefault(); // キー入力情報のセット
 
-	if (KeyQ.pressed())
+	if (KeyQ.pressed() or KeyEscape.pressed())
 	{
+		thinkAIp1 = false;
+		abortAIp1 = true;
+		// 非同期処理の終了を待機 
+		if (asyncAIp1.isValid())asyncAIp1.wait();
 		changeScene(State::Title);
 	}
 
-	//m_2pTE.CopyFiledP();// 描写用セットアップ
 
 }
 
@@ -74,190 +92,274 @@ void Solo::draw() const
 	draw_field();
 	draw_s_field();
 	draw_tex();
+	draw_state();
 
+}
+
+Solo::~Solo()
+{
+	thinkAIp1 = false;
+	abortAIp1 = true;
+	// 非同期処理の終了を待機 
+	if (asyncAIp1.isValid())asyncAIp1.wait();
 }
 
 void Solo::game_manage(){
 
-	if (IsKeyVP(m_KeyConfS, KeyVal::R)) {
-		m_soloTE->CopyFiledP();
-		m_soloAI->loadTE(*m_soloTE);
-		Wait_flame = 40;
-		reset_flag = true;
+	if (IsKeyVP(*KeyConfp1, KeyVal::R)) {
+		TEp1->CopyFiledP();
+		AIp1->loadTE(*TEp1);
+		WaitFlame = 40;
+		ResetFlag = true;
 	}
 
-	if (IsKeyVP(m_KeyConfS, KeyVal::G)) {
-		m_soloTE->CopyFiledP();
-		m_soloTE->StackGarbage(-1);
+	if (IsKeyVP(*KeyConfp1, KeyVal::G)) {
+		TEp1->CopyFiledP();
+		TEp1->StackGarbage(-1);
 	}
 
-	if (IsKeyVP(m_KeyConfS, KeyVal::I)) {
+	if (IsKeyVP(*KeyConfp1, KeyVal::M)) {
+		if (ActFlame.at(0) >= 0) {
+			ActFlame.at(0) = -30;
+			suggest_flag.sw();
+		}
+	}
+
+	if (IsKeyVP(*KeyConfp1, KeyVal::I)) {
 		/*if (suggest_flag)suggest_flag = false;
 		else suggest_flag = true;*/
 		if (suggest_flag.sw()) {
-			m_soloTE->CopyFiledP();
-			m_soloAI->loadTE(*m_soloTE);
-			m_soloAI->thinking();
-			m_soloAI->makeAiSuggestion();
+			TEp1->CopyFiledP();
+			AIp1->loadTE(*TEp1);
+			AIp1->thinking();
+			AIp1->makeAiSuggestion();
 		}
 		
 	}
-
-
 }
 
 void Solo::tetris_manage(){
 	int g_check = 0;
 
-	if (m_KeyConfS.GetKey(KeyVal::Left).pressed() && not m_KeyConfS.GetKey(KeyVal::Right).pressed()) {
-		if (act_flame.at(6) == 0) {
-			act_flame.at(6) = -1 * DAS_flame;
-			g_check = m_soloTE->Game(6, 0);
+	if (suggest_flag.get())
+	{
+		// 非同期処理側で推奨手計算が終了している場合
+		if (!thinkAIp1)
+		{
+			FieldS1 = AIp1->getSuggestionAi();
+			if (!CmdListAIp1.empty())
+			{
+				g_check = TEp1->Game(CmdListAIp1.front(), 0);
+				WaitFlame = 0;
+				if (CmdListAIp1.front() == shig::TetriAction::Hard)
+				{
+					TEp1->GetGarbage();
+				}
+				CmdListAIp1.pop_front();
+				// 操作をし終わったタイミングで先に思考開始
+				if (CmdListAIp1.empty())
+				{
+					AIp1->loadTE(*TEp1);
+					thinkAIp1 = true;
+				}
+			}
+			else
+			{
+				thinkAIp1 = true;
+			}
 		}
-		else if (act_flame.at(6) == -1) {
-			act_flame.at(6) = 1;
+		else if (thinkAIp1) {
+			// することがない 
 		}
-		else if (act_flame.at(6) > 0) {
-			g_check = m_soloTE->Game(6, 0);
+	}
+	else
+	{
+		if (KeyConfp1->GetKey(KeyVal::Left).pressed() && not KeyConfp1->GetKey(KeyVal::Right).pressed())
+		{
+			if (ActFlame.at(6) == 0)
+			{
+				ActFlame.at(6) = -1 * DASFlame;
+				g_check = TEp1->Game(6, 0);
+			}
+			else if (ActFlame.at(6) == -1)
+			{
+				ActFlame.at(6) = 1;
+			}
+			else if (ActFlame.at(6) > 0)
+			{
+				g_check = TEp1->Game(6, 0);
+			}
+			delay_cnt = 2;
 		}
-		delay_cnt = 2;
+
+		if (not KeyConfp1->GetKey(KeyVal::Left).pressed() && KeyConfp1->GetKey(KeyVal::Right).pressed())
+		{
+			if (ActFlame.at(7) == 0)
+			{
+				ActFlame.at(7) = -DASFlame;
+				g_check = TEp1->Game(7, 0);
+			}
+			else if (ActFlame.at(7) == -1)
+			{
+				ActFlame.at(7) = 1;
+			}
+			else if (ActFlame.at(7) > 0)
+			{
+				g_check = TEp1->Game(7, 0);
+			}
+			delay_cnt = 2;
+		}
+
+		if (KeyConfp1->GetKey(KeyVal::Up).pressed() && not KeyConfp1->GetKey(KeyVal::Z).pressed())
+		{
+			if (ActFlame.at(5) >= 0)
+			{
+				ActFlame.at(5) = -DASFlame;
+				g_check = TEp1->Game(5, 0);
+			}
+			else
+			{
+				ActFlame.at(5) -= 1;
+			}
+			delay_cnt = 2;
+		}
+
+		if (not KeyConfp1->GetKey(KeyVal::Up).pressed() && KeyConfp1->GetKey(KeyVal::Z).pressed())
+		{
+			if (ActFlame.at(4) >= 0)
+			{
+				ActFlame.at(4) = -DASFlame;
+				g_check = TEp1->Game(4, 0);
+			}
+			else
+			{
+				ActFlame.at(4) -= 1;
+			}
+			delay_cnt = 2;
+		}
+
+		if (KeyConfp1->GetKey(KeyVal::C).pressed())
+		{
+			if (ActFlame.at(1) >= 0)
+			{
+				ActFlame.at(1) = -2;
+				g_check = TEp1->Game(1, 0);
+			}
+			else
+			{
+				ActFlame.at(1) += -1;
+			}
+			delay_cnt = 2;
+		}
+
+		if (KeyConfp1->GetKey(KeyVal::Down).pressed())
+		{
+			if (ActFlame.at(2) >= 0)
+			{
+				ActFlame.at(2) = -1;
+				g_check = TEp1->Game(2, 0);
+			}
+			else {
+				ActFlame.at(2) = 0;
+			}
+			delay_cnt = 2;
+		}
+
+		if (KeyConfp1->GetKey(KeyVal::Space).pressed())
+		{
+			if (ActFlame.at(3) >= 0)
+			{
+				ActFlame.at(3) = -2;
+				g_check = TEp1->Game(3, 0);
+				delay_cnt = TEp1->get_delayF();
+			}
+			else
+			{
+				ActFlame.at(3) += -1;
+			}
+			delay_cnt = 2;
+
+			if (suggest_flag.get())
+			{
+				AIp1->loadTE(*TEp1);
+				AIp1->thinking();
+				AIp1->makeAiSuggestion();
+			}
+
+		}
 	}
 
-	if (not m_KeyConfS.GetKey(KeyVal::Left).pressed() && m_KeyConfS.GetKey(KeyVal::Right).pressed()) {
-		if (act_flame.at(7) == 0) {
-			act_flame.at(7) = -DAS_flame;
-			g_check = m_soloTE->Game(7, 0);
-		}
-		else if (act_flame.at(7) == -1) {
-			act_flame.at(7) = 1;
-		}
-		else if (act_flame.at(7) > 0) {
-			g_check = m_soloTE->Game(7, 0);
-		}
-		delay_cnt = 2;
+	switch (g_check)
+	{
+	case 2:
+		WaitFlame = TEp1->get_delayF();
+		//WaitFlame = 0;
+		delay_cnt = 0;
+		break;
+	case 1:
+		TEp1->CopyFiledP();
+		ResetFlag = true;
+		WaitFlame = 30;
+		break;
+	case 0:
+		TEp1->CopyFiledP();
+		break;
+	default:
+		break;
 	}
 
-	if (m_KeyConfS.GetKey(KeyVal::Up).pressed() && not m_KeyConfS.GetKey(KeyVal::Z).pressed()) {
-		if (act_flame.at(5) >= 0) {
-			act_flame.at(5) = -DAS_flame;
-			g_check = m_soloTE->Game(5, 0);
-		}
-		else{
-			act_flame.at(5) -= 1;
-		}
-		delay_cnt = 2;
-	}
-
-	if (not m_KeyConfS.GetKey(KeyVal::Up).pressed() && m_KeyConfS.GetKey(KeyVal::Z).pressed()) {
-		if (act_flame.at(4) >= 0) {
-			act_flame.at(4) = -DAS_flame;
-			g_check = m_soloTE->Game(4, 0);
-		}
-		else {
-			act_flame.at(4) -= 1;
-		}
-		delay_cnt = 2;
-	}
-
-	if (m_KeyConfS.GetKey(KeyVal::C).pressed()) {
-		if (act_flame.at(1) >= 0) {
-			act_flame.at(1) = -2;
-			g_check = m_soloTE->Game(1, 0);
-		}
-		else {
-			act_flame.at(1) += -1;
-		}
-		delay_cnt = 2;
-
-	}
-
-	if (m_KeyConfS.GetKey(KeyVal::Down).pressed()) {
-		if (act_flame.at(2) >= 0) {
-			act_flame.at(2) = -1;
-			g_check = m_soloTE->Game(2, 0);
- 		}
-		else {
-			act_flame.at(2) = 0;
-		}
-		delay_cnt = 2;
-	}
-
-	if (m_KeyConfS.GetKey(KeyVal::Space).pressed()) {
-		if (act_flame.at(3) >= 0) {
-			act_flame.at(3) = -2;
-			g_check = m_soloTE->Game(3, 0);
-			delay_cnt = m_soloTE->get_delayF();
-		}
-		else {
-			act_flame.at(3) += -1;
-		}
-		delay_cnt = 2;
-		
-		if (suggest_flag.get()) {
-			m_soloAI->loadTE(*m_soloTE);
-			m_soloAI->thinking();
-			m_soloAI->makeAiSuggestion();
-			//Print << U"thinking";
-		}
-
-	}
-
-	if (g_check == 2) {
-		Wait_flame = m_soloTE->get_delayF();
+	/*if (g_check == 2) {
+		WaitFlame = TEp1->get_delayF();
 		delay_cnt = 0;
 	}
 	else if(g_check == 1) {
-		m_soloTE->CopyFiledP();
-		reset_flag = true;
-		Wait_flame = 72;
+		TEp1->CopyFiledP();
+		ResetFlag = true;
+		WaitFlame = 72;
 	}
 	else if (g_check == 0) {
-		m_soloTE->CopyFiledP();
-	}
-
-
-
+		TEp1->CopyFiledP();
+	}*/
 
 	return;
 }
 
-
 void Solo::actF_manage() {
 
-	for (auto&& i : act_flame) {
+	for (auto&& i : ActFlame) {
 		i++;
 		if (i > 0x11111110)i = 1;
 	}
 
-	if (not IsKeyVP(m_KeyConfS, KeyVal::Right) && not IsKeyVP(m_KeyConfS, KeyVal::Left)) {
-		act_flame.at(6) = 0;
-		act_flame.at(7) = 0;
+	if (not IsKeyVP(*KeyConfp1, KeyVal::Right) && not IsKeyVP(*KeyConfp1, KeyVal::Left)) {
+		ActFlame.at(6) = 0;
+		ActFlame.at(7) = 0;
 	}
 
-	if (IsKeyVP(m_KeyConfS, KeyVal::Right) && IsKeyVP(m_KeyConfS, KeyVal::Left)) {
-		act_flame.at(6) = 1;
-		act_flame.at(7) = 1;
+	if (IsKeyVP(*KeyConfp1, KeyVal::Right) && IsKeyVP(*KeyConfp1, KeyVal::Left)) {
+		ActFlame.at(6) = 1;
+		ActFlame.at(7) = 1;
 	}
 
 	return;
 }
 
-
 void Solo::reset_manage(){
 
-	m_soloTE->SetField();
-	m_soloTE->CopyFiledP();
+	TEp1->SetField();
+	TEp1->CopyFiledP();
 	delay_cnt = 0;
-	DAS_flame = 6;
-	Wait_flame = 0;
-	reset_flag = false;
-	act_flame = vector<int>(8, 0);
-	m_soloAI->loadTE(*m_soloTE);
-	if (suggest_flag.get()) {
-		m_soloAI->thinking();
-		m_soloAI->makeAiSuggestion();
-	}
-	//suggest_flag.Setup(false);
+	DASFlame = 6;
+	WaitFlame = 0;
+	ResetFlag = false;
+	ActFlame = vector<int>(8, 0);
+	FieldS1 = std::vector<std::vector<int8_t>>(shig::fH, (std::vector<int8_t>(10, 0)));
+	thinkAIp1 = false;
+
+	CmdListAIp1.clear();
+	AIp1->loadTE(*TEp1);
+
+	thinkAIp1 = true;
 
 	return;
 }
@@ -265,40 +367,41 @@ void Solo::reset_manage(){
 void Solo::draw_field() const{
 
 	Rect{ 200, 50, 300, 630 }
-		.draw(Palette::White)
-		.drawFrame(0, 1, Palette::Black);
+		.draw(Color(60, 60, 60, 255))
+		.drawFrame(0, 1, Palette::White);
 
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
+			const auto _mino = TEp1->GetFieldBlock(20 - i, j, 0);
+			if (_mino == 0i8) {
+				continue;
+			}
 			Rect{ 201 + (j * 30), 51 + (i * 30), 29, 29 }
-			.draw(minoC.at(m_soloTE->get_field_state(20 - i, j, 0)));
+			.draw(minoC.at(_mino));
 		}
-
 	}
 
 	for (int i = 0; i < 11; i++) {
-		Line{ 200 + i * 30, 50, 200 + i * 30, 681 }.draw(1, Palette::Black);
+		Line{ 200 + i * 30, 50, 200 + i * 30, 681 }.draw(1, Palette::Ghostwhite);
 	}
 	for (int i = 0; i < 22; i++) {
-		Line{ 200, 50 + i * 30, 501, 50 + i * 30 }.draw(1, Palette::Black);
+		Line{ 200, 50 + i * 30, 501, 50 + i * 30 }.draw(1, Palette::Ghostwhite);
 	}
-
-	
 
 	return;
 }
 
 void Solo::draw_s_field() const{
 
-	vector<vector<int>> SF = m_soloAI->getSuggestionAi();
-
 	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < 10; j++) {
-			if (SF.at((size_t)20 - i).at(j) == 0)continue;
+			const auto _mino = FieldS1.at((size_t)20 - i).at(j);
+			if (_mino == 0i8) {
+				continue;
+			}
 			Rect{ 201 + (j * 30), 51 + (i * 30), 29, 29 }
-			.drawFrame(2, 0, minoC.at(SF.at((size_t)20 - i).at(j)));
+				.drawFrame(2, 0, minoC.at(_mino));
 		}
-
 	}
 
 	return;
@@ -306,17 +409,56 @@ void Solo::draw_s_field() const{
 
 void Solo::draw_tex() const{
 
-	auto&& [bhold, n_data] = m_soloTE->get_mino_state();
+	const auto& [_current, _hold, _n1, _n2, _n3, _n4, _n5] = TEp1->get_mino_state();
 
-	if (bhold < 0 || bhold > 7)bhold = 0;
+	m_MinoTex.at(static_cast<size_t>(_hold)).draw(60.0, 80.0);
 
-	m_MinoTex.at(bhold).draw(50, 80);
-
-	int n_size = std::min(5, (int)n_data.size());
+	/*int n_size = std::min(5, (int)n_data.size());
 	for (int i = 0; i < n_size; i++) {
-		int nq = n_data.at(i) + 8;
+		int nq = n_data.at(i);
 		m_MinoTex.at(nq).draw(525, 80 + i * 100);
-	}
+	}*/
+
+	double y_pos = 80.0;
+	m_MinoTex.at(static_cast<size_t>(_n1)).draw(525.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n2)).draw(525.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n3)).draw(525.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n4)).draw(525.0, y_pos);
+	y_pos += 100.0;
+	m_MinoTex.at(static_cast<size_t>(_n5)).draw(525.0, y_pos);
 
 	return;
+}
+
+void Solo::draw_state() const
+{
+
+	std::deque<std::string> mino_his = TEp1->get_mino_his();
+
+	int i = 1;
+	for (auto&& ms : mino_his) {
+
+		s3d::String deb_his = s3d::Unicode::Widen(std::to_string(i)) + U" : " + s3d::Unicode::Widen(ms);
+
+		FontAsset(U"Debug")(deb_his).draw(s3d::Vec2{ 20, 360 + 20 * i }, Color(0, 0, 0));
+		i++;
+
+	}
+
+	s3d::String stateTS = s3d::Unicode::Widen(TEp1->GetTSstring());
+	FontAsset(U"Debug")(stateTS).draw(s3d::Vec2{ 20, 560 }, Color(0, 0, 0));
+
+	const auto&& [combo, btb] = TEp1->GetComboBtb();
+
+	s3d::String stCombo = s3d::Unicode::Widen(std::string("Combo : ") + std::to_string(combo));
+	FontAsset(U"Debug")(stCombo).draw(s3d::Vec2{ 20, 580 }, Color(0, 0, 0));
+	s3d::String stBTB = s3d::Unicode::Widen(std::string("B-2-B : ") + std::to_string(btb));
+	FontAsset(U"Debug")(stBTB).draw(s3d::Vec2{ 20, 600 }, Color(0, 0, 0));
+
+
+	return;
+
 }

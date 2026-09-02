@@ -953,6 +953,10 @@
     <None Include="App\template\data\newDT_LS_4-1.ttrp" />
     <None Include="App\template\data\newDT_LS_4-2.ttrp" />
     <None Include="App\template\data\newDT_LS_5-1.ttrp" />
+    <None Include="..\..\..\..\..\Program Files (x86)\Intel\oneAPI\tbb\2022.3\bin\tbb12.dll" />
+    <None Include="..\..\..\..\..\Program Files (x86)\Intel\oneAPI\tbb\2022.3\bin\tbb12.pdb" />
+    <None Include="..\..\..\..\..\Program Files (x86)\Intel\oneAPI\tbb\2022.3\bin\tbb12_debug.dll" />
+    <None Include="..\..\..\..\..\Program Files (x86)\Intel\oneAPI\tbb\2022.3\bin\tbb12_debug.pdb" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="App\example\test.mp3">

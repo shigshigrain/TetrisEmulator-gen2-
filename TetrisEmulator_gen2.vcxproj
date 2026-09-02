@@ -21,18 +21,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <EnableDPCppRuntimeEnvironment>true</EnableDPCppRuntimeEnvironment>
+    <UseInteloneTBB>true</UseInteloneTBB>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <UseInteloneTBB>false</UseInteloneTBB>
-    <EnableDPCppRuntimeEnvironment>true</EnableDPCppRuntimeEnvironment>
+    <UseInteloneTBB>true</UseInteloneTBB>
+    <EnableDPCppRuntimeEnvironment>false</EnableDPCppRuntimeEnvironment>
+    <InstrumentInteloneTBB>false</InstrumentInteloneTBB>
+    <UseDynamicDebugging>false</UseDynamicDebugging>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -52,16 +55,16 @@
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Debug\Intermediate\</IntDir>
     <TargetName>$(ProjectName)(debug)</TargetName>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
-    <IncludePath>$(SIV3D_0_6_15)\include;$(SIV3D_0_6_15)\include\ThirdParty;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SIV3D_0_6_15)\lib\Windows;C:\Users\sykws\source\repos\AiShigune_StaticLib_DPCPP\x64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SIV3D_0_6_16)\include;$(SIV3D_0_6_16)\include\ThirdParty;$(vs_repos)\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SIV3D_0_6_16)\lib\Windows;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\DebugLib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\Intermediate\</IntDir>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
-    <IncludePath>$(SIV3D_0_6_15)\include;$(SIV3D_0_6_15)\include\ThirdParty;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SIV3D_0_6_15)\lib\Windows;C:\Users\sykws\source\repos\AiShigune_StaticLib_DPCPP\x64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SIV3D_0_6_16)\include;$(SIV3D_0_6_16)\include\ThirdParty;$(vs_repos)\GraySeaAI\GraySeaAI;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SIV3D_0_6_16)\lib\Windows;$(vs_repos)\GraySeaAI\x64\ReleaseLib;$(LibraryPath)</LibraryPath>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -74,20 +77,23 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableSpecificWarnings>26451;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>C:\Users\sykws\source\repos\TetrisEmulator_gen2;C:\Users\sykws\source\repos\TetrisEmulator_gen2\U_scene;C:\Users\sykws\source\repos\TetrisEmulator_gen2\U_KeyConf;C:\Users\sykws\source\repos\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_utility;C:\Users\sykws\source\repos\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_TetriCore;C:\Users\sykws\source\repos\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_AI_Shigune</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(vs_repos)\TetrisEmulator_gen2;$(vs_repos)\TetrisEmulator_gen2\U_scene;$(vs_repos)\TetrisEmulator_gen2\U_KeyConf;$(vs_repos)\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_utility;$(vs_repos)\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_TetriCore;$(vs_repos)\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_AI_Shigune</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <BuildStlModules>false</BuildStlModules>
       <EnableModules>false</EnableModules>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableVectorLength>NotSet</EnableVectorLength>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointExceptions>
+      </FloatingPointExceptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <DelayLoadDLLs>advapi32.dll;crypt32.dll;dwmapi.dll;gdi32.dll;imm32.dll;ole32.dll;oleaut32.dll;opengl32.dll;shell32.dll;shlwapi.dll;user32.dll;winmm.dll;ws2_32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <AdditionalLibraryDirectories>C:\Users\sykws\source\repos\AiShigune_StaticLib_DPCPP\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\DebugLib</AdditionalLibraryDirectories>
       <HeapReserveSize>
       </HeapReserveSize>
       <StackReserveSize>
@@ -96,7 +102,7 @@
       </HeapCommitSize>
       <StackCommitSize>
       </StackCommitSize>
-      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libmmt.lib;C:\Users\sykws\source\repos\AiShigune_StaticLib_DPCPP\x64\Debug\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libmmt.lib;$(vs_repos)\AiShigune_StaticLib_DPCPP\x64\DebugLib\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
     </Link>
@@ -106,7 +112,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -116,10 +122,9 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableSpecificWarnings>26451;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>C:\Users\sykws\source\repos\TetrisEmulator_gen2;C:\Users\sykws\source\repos\TetrisEmulator_gen2\U_scene;C:\Users\sykws\source\repos\TetrisEmulator_gen2\U_KeyConf;C:\Users\sykws\source\repos\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_utility;C:\Users\sykws\source\repos\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_TetriCore;C:\Users\sykws\source\repos\AiShigune_StaticLib_DPCPP\AiShigune_StaticLib_DPCPP\U_AI_Shigune</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(vs_repos)\TetrisEmulator_gen2;$(vs_repos)\GraySeaAI\GraySeaAI</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <BuildStlModules>false</BuildStlModules>
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
@@ -127,6 +132,17 @@
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <EnableModules>false</EnableModules>
       <UseMSVC>true</UseMSVC>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>
+      </FavorSizeOrSpeed>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>
+      </ForceConformanceInForLoopScope>
+      <IntelJCCErratum />
+      <EnableVectorLength>
+      </EnableVectorLength>
+      <UseDynamicDebugging>false</UseDynamicDebugging>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -134,8 +150,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <DelayLoadDLLs>advapi32.dll;crypt32.dll;dwmapi.dll;gdi32.dll;imm32.dll;ole32.dll;oleaut32.dll;opengl32.dll;shell32.dll;shlwapi.dll;user32.dll;winmm.dll;ws2_32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <AdditionalLibraryDirectories>C:\Users\sykws\source\repos\AiShigune_StaticLib_DPCPP\x64\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2024.2\lib\libmmt.lib;C:\Users\sykws\source\repos\AiShigune_StaticLib_DPCPP\x64\Release\AiShigune_StaticLib_DPCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(vs_repos)\GraySeaAI\x64\ReleaseLib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libircmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libirc.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\svml_dispmt.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libdecimal.lib;C:\Program Files (x86)\Intel\oneAPI\compiler\2026.1\lib\libmmt.lib;$(vs_repos)\GraySeaAI\x64\ReleaseLib\GraySeaAI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <UseDynamicDebugging>false</UseDynamicDebugging>
+      <Profile>false</Profile>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(ProjectDir)App"</Command>
@@ -257,6 +277,10 @@
     <Text Include="template\ミノステータスについて.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\Program Files (x86)\Intel\oneAPI\tbb\2022.3\bin\tbb12.dll" />
+    <None Include="..\..\..\..\..\Program Files (x86)\Intel\oneAPI\tbb\2022.3\bin\tbb12.pdb" />
+    <None Include="..\..\..\..\..\Program Files (x86)\Intel\oneAPI\tbb\2022.3\bin\tbb12_debug.dll" />
+    <None Include="..\..\..\..\..\Program Files (x86)\Intel\oneAPI\tbb\2022.3\bin\tbb12_debug.pdb" />
     <None Include="App\dll\soundtouch\SoundTouch_x64.dll" />
     <None Include="App\engine\font\fontawesome\fontawesome-brands.otf.zstdcmp" />
     <None Include="App\engine\font\fontawesome\fontawesome-solid.otf.zstdcmp" />
