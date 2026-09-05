@@ -1,4 +1,5 @@
-﻿# include <Siv3D.hpp>
+﻿# pragma once
+# include <Siv3D.hpp>
 
 // シーンの名前
 enum class State
