@@ -48,15 +48,18 @@ void Solo::update()
 	}
 
 
-	if ((s3d::Time::GetMicrosec() - sec_time) >= sync_rate) {
+	if ((s3d::Time::GetMicrosec() - sec_time) >= sync_rate)
+	{
 		sec_time = s3d::Time::GetMicrosec();
 		PassedFlame++;
 		KeyConfp1->SetDefault();
 
-		if (WaitFlame > 0) {
+		if (WaitFlame > 0)
+		{
 			WaitFlame--;
 		}
-		else {
+		else
+		{
 			TEp1->ResetFieldP();
 			if (ResetFlag) reset_manage();
 			
@@ -106,26 +109,30 @@ Solo::~Solo()
 
 void Solo::game_manage(){
 
-	if (IsKeyVP(*KeyConfp1, KeyVal::R)) {
+	if (IsKeyVP(*KeyConfp1, KeyVal::R))
+	{
 		TEp1->CopyFiledP();
 		AIp1->loadTE(*TEp1);
 		WaitFlame = 40;
 		ResetFlag = true;
 	}
 
-	if (IsKeyVP(*KeyConfp1, KeyVal::G)) {
+	if (IsKeyVP(*KeyConfp1, KeyVal::G))
+	{
 		TEp1->CopyFiledP();
 		TEp1->StackGarbage(-1);
 	}
 
-	if (IsKeyVP(*KeyConfp1, KeyVal::M)) {
+	if (IsKeyVP(*KeyConfp1, KeyVal::M))
+	{
 		if (ActFlame.at(0) >= 0) {
 			ActFlame.at(0) = -30;
 			suggest_flag.sw();
 		}
 	}
 
-	if (IsKeyVP(*KeyConfp1, KeyVal::I)) {
+	if (IsKeyVP(*KeyConfp1, KeyVal::I))
+	{
 		/*if (suggest_flag)suggest_flag = false;
 		else suggest_flag = true;*/
 		if (suggest_flag.sw()) {
@@ -138,7 +145,8 @@ void Solo::game_manage(){
 	}
 }
 
-void Solo::tetris_manage(){
+void Solo::tetris_manage()
+{
 	int g_check = 0;
 
 	if (suggest_flag.get())
@@ -168,17 +176,19 @@ void Solo::tetris_manage(){
 				thinkAIp1 = true;
 			}
 		}
-		else if (thinkAIp1) {
+		else if (thinkAIp1)
+		{
 			// することがない 
 		}
 	}
 	else
 	{
+		// プレイヤー操作入力
 		if (KeyConfp1->GetKey(KeyVal::Left).pressed() && not KeyConfp1->GetKey(KeyVal::Right).pressed())
 		{
 			if (ActFlame.at(6) == 0)
 			{
-				ActFlame.at(6) = -1 * DASFlame;
+				ActFlame.at(6) = -DASFlame;
 				g_check = TEp1->Game(6, 0);
 			}
 			else if (ActFlame.at(6) == -1)
@@ -214,7 +224,7 @@ void Solo::tetris_manage(){
 		{
 			if (ActFlame.at(5) >= 0)
 			{
-				ActFlame.at(5) = -DASFlame;
+				ActFlame.at(5) = -2;
 				g_check = TEp1->Game(5, 0);
 			}
 			else
@@ -228,7 +238,7 @@ void Solo::tetris_manage(){
 		{
 			if (ActFlame.at(4) >= 0)
 			{
-				ActFlame.at(4) = -DASFlame;
+				ActFlame.at(4) = -2;
 				g_check = TEp1->Game(4, 0);
 			}
 			else
@@ -326,17 +336,20 @@ void Solo::tetris_manage(){
 
 void Solo::actF_manage() {
 
-	for (auto&& i : ActFlame) {
+	for (auto&& i : ActFlame)
+	{
 		i++;
 		if (i > 0x11111110)i = 1;
 	}
 
-	if (not IsKeyVP(*KeyConfp1, KeyVal::Right) && not IsKeyVP(*KeyConfp1, KeyVal::Left)) {
+	if (not IsKeyVP(*KeyConfp1, KeyVal::Right) && not IsKeyVP(*KeyConfp1, KeyVal::Left))
+	{
 		ActFlame.at(6) = 0;
 		ActFlame.at(7) = 0;
 	}
 
-	if (IsKeyVP(*KeyConfp1, KeyVal::Right) && IsKeyVP(*KeyConfp1, KeyVal::Left)) {
+	if (IsKeyVP(*KeyConfp1, KeyVal::Right) && IsKeyVP(*KeyConfp1, KeyVal::Left))
+	{
 		ActFlame.at(6) = 1;
 		ActFlame.at(7) = 1;
 	}
