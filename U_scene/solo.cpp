@@ -21,7 +21,7 @@ Solo::Solo(const InitData& init)
 	sec_time = Time::GetMicrosec();
 	sync_rate = refrashRateU60;
 	delay_cnt = 0;
-	DASFlame = 6;
+	DASFlame = 11;
 	WaitFlame = 0;
 	PassedFlame = 0;
 	ResetFlag = false;
@@ -184,7 +184,59 @@ void Solo::tetris_manage()
 	else
 	{
 		// プレイヤー操作入力
-		if (KeyConfp1->GetKey(KeyVal::Left).pressed() && not KeyConfp1->GetKey(KeyVal::Right).pressed())
+
+		// 左右入力
+		if (KeyConfp1->GetKey(KeyVal::Left).pressed() and KeyConfp1->GetKey(KeyVal::Right).pressed())
+		{
+			ActFlame.at(6) = 0;
+			ActFlame.at(7) = 0;
+		}
+		else
+		{
+			if (KeyConfp1->GetKey(KeyVal::Left).pressed())
+			{
+				if (ActFlame.at(6) == 0)
+				{
+					ActFlame.at(6) = -DASFlame;
+					g_check = TEp1->Game(6, 0);
+				}
+				else if (ActFlame.at(6) == -1)
+				{
+					ActFlame.at(6) = 1;
+				}
+				else if (ActFlame.at(6) > 0)
+				{
+					g_check = TEp1->Game(6, 0);
+				}
+				ActFlame.at(7) = 0;
+
+				delay_cnt = 2;
+			}
+
+			if (KeyConfp1->GetKey(KeyVal::Right).pressed())
+			{
+				if (ActFlame.at(7) == 0)
+				{
+					ActFlame.at(7) = -DASFlame;
+					g_check = TEp1->Game(7, 0);
+				}
+				else if (ActFlame.at(7) == -1)
+				{
+					ActFlame.at(7) = 1;
+				}
+				else if (ActFlame.at(7) > 0)
+				{
+					g_check = TEp1->Game(7, 0);
+				}
+
+				ActFlame.at(6) = 0;
+				delay_cnt = 2;
+			}
+
+
+		}
+
+		/*if (KeyConfp1->GetKey(KeyVal::Left).pressed() && not KeyConfp1->GetKey(KeyVal::Right).pressed())
 		{
 			if (ActFlame.at(6) == 0)
 			{
@@ -200,9 +252,9 @@ void Solo::tetris_manage()
 				g_check = TEp1->Game(6, 0);
 			}
 			delay_cnt = 2;
-		}
+		}*/
 
-		if (not KeyConfp1->GetKey(KeyVal::Left).pressed() && KeyConfp1->GetKey(KeyVal::Right).pressed())
+		/*if (not KeyConfp1->GetKey(KeyVal::Left).pressed() && KeyConfp1->GetKey(KeyVal::Right).pressed())
 		{
 			if (ActFlame.at(7) == 0)
 			{
@@ -218,7 +270,7 @@ void Solo::tetris_manage()
 				g_check = TEp1->Game(7, 0);
 			}
 			delay_cnt = 2;
-		}
+		}*/
 
 		if (KeyConfp1->GetKey(KeyVal::Up).pressed() && not KeyConfp1->GetKey(KeyVal::Z).pressed())
 		{
@@ -338,20 +390,17 @@ void Solo::actF_manage() {
 
 	for (auto&& i : ActFlame)
 	{
-		i++;
-		if (i > 0x11111110)i = 1;
+		++i;
+		if (i > 17)
+		{
+			i = 16;
+		}
 	}
 
 	if (not IsKeyVP(*KeyConfp1, KeyVal::Right) && not IsKeyVP(*KeyConfp1, KeyVal::Left))
 	{
 		ActFlame.at(6) = 0;
 		ActFlame.at(7) = 0;
-	}
-
-	if (IsKeyVP(*KeyConfp1, KeyVal::Right) && IsKeyVP(*KeyConfp1, KeyVal::Left))
-	{
-		ActFlame.at(6) = 1;
-		ActFlame.at(7) = 1;
 	}
 
 	return;
