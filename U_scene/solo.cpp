@@ -67,7 +67,7 @@ void Solo::update()
 			// テトリス側操作入力
 			tetris_manage();
 			// DASフレームの更新
-			actF_manage();
+			//actF_manage();
 			// ゲーム側操作入力
 			game_manage();
 		}
@@ -107,7 +107,8 @@ Solo::~Solo()
 	if (asyncAIp1.isValid())asyncAIp1.wait();
 }
 
-void Solo::game_manage(){
+void Solo::game_manage()
+{
 
 	if (IsKeyVP(*KeyConfp1, KeyVal::R))
 	{
@@ -188,8 +189,8 @@ void Solo::tetris_manage()
 		// 左右入力
 		if (KeyConfp1->GetKey(KeyVal::Left).pressed() and KeyConfp1->GetKey(KeyVal::Right).pressed())
 		{
-			ActFlame.at(6) = -DASFlame;
-			ActFlame.at(7) = -DASFlame;
+			ActFlame.at(6) = 0;
+			ActFlame.at(7) = 0;
 		}
 		else
 		{
@@ -197,35 +198,35 @@ void Solo::tetris_manage()
 			{
 				if (ActFlame.at(6) == 0)
 				{
-					ActFlame.at(6) = -DASFlame;
-					g_check = TEp1->Game(6, 0);
-				}
-				else if (ActFlame.at(6) == -1)
-				{
 					ActFlame.at(6) = 1;
+					g_check = TEp1->Game(6, 0);
 				}
-				else if (ActFlame.at(6) > 0)
+				else if (ActFlame.at(6) > DASFlame)
 				{
 					g_check = TEp1->Game(6, 0);
 				}
-				ActFlame.at(7) = 0;
+				else
+				{
+					ActFlame.at(6)++;
+				}
 
+				ActFlame.at(7) = 0;
 				delay_cnt = 2;
 			}
 			else if (KeyConfp1->GetKey(KeyVal::Right).pressed())
 			{
 				if (ActFlame.at(7) == 0)
 				{
-					ActFlame.at(7) = -DASFlame;
-					g_check = TEp1->Game(7, 0);
-				}
-				else if (ActFlame.at(7) == -1)
-				{
 					ActFlame.at(7) = 1;
+					g_check = TEp1->Game(7, 0);
 				}
-				else if (ActFlame.at(7) > 0)
+				else if (ActFlame.at(7) > DASFlame)
 				{
 					g_check = TEp1->Game(7, 0);
+				}
+				else
+				{
+					ActFlame.at(7)++;
 				}
 
 				ActFlame.at(6) = 0;
@@ -274,21 +275,77 @@ void Solo::tetris_manage()
 			delay_cnt = 2;
 		}*/
 
-		if (KeyConfp1->GetKey(KeyVal::Up).pressed() && not KeyConfp1->GetKey(KeyVal::Z).pressed())
+		if (KeyConfp1->GetKey(KeyVal::Up).pressed() and KeyConfp1->GetKey(KeyVal::Z).pressed())
 		{
-			if (ActFlame.at(5) >= 0)
+			ActFlame.at(5) = 0;
+			ActFlame.at(4) = 0;
+		}
+		else
+		{
+			if (KeyConfp1->GetKey(KeyVal::Up).pressed())
 			{
-				ActFlame.at(5) = -2;
-				g_check = TEp1->Game(5, 0);
+				if (ActFlame.at(5) == 0)
+				{
+					ActFlame.at(5) = 1;
+					g_check = TEp1->Game(5, 0);
+				}
+				else if (ActFlame.at(5) > 2)
+				{
+					ActFlame.at(5) = 2;
+				}
+				else
+				{
+					ActFlame.at(5)++;
+				}
+				ActFlame.at(4) = 0;
+				delay_cnt = 2;
+			}
+			else if (KeyConfp1->GetKey(KeyVal::Z).pressed())
+			{
+				if (ActFlame.at(4) == 0)
+				{
+					ActFlame.at(4) = 1;
+					g_check = TEp1->Game(4, 0);
+				}
+				else if (ActFlame.at(4) > 2)
+				{
+					ActFlame.at(4) = 2;
+				}
+				else
+				{
+					ActFlame.at(4)++;
+				}
+
+				ActFlame.at(5) = 0;
+				delay_cnt = 2;
 			}
 			else
 			{
-				ActFlame.at(5) -= 1;
+				ActFlame.at(4) = 0;
+				ActFlame.at(5) = 0;
 			}
-			delay_cnt = 2;
 		}
 
-		if (not KeyConfp1->GetKey(KeyVal::Up).pressed() && KeyConfp1->GetKey(KeyVal::Z).pressed())
+		/*if (KeyConfp1->GetKey(KeyVal::Up).pressed() && not KeyConfp1->GetKey(KeyVal::Z).pressed())
+		{
+			if (ActFlame.at(5) == 0)
+			{
+				ActFlame.at(5) = 1;
+				g_check = TEp1->Game(5, 0);
+			}
+			else if (ActFlame.at(5) > 2)
+			{
+				g_check = TEp1->Game(5, 0);
+				ActFlame.at(5) = 0;
+			}
+			else
+			{
+				ActFlame.at(5)++;
+			}
+			delay_cnt = 2;
+		}*/
+
+		/*if (not KeyConfp1->GetKey(KeyVal::Up).pressed() && KeyConfp1->GetKey(KeyVal::Z).pressed())
 		{
 			if (ActFlame.at(4) >= 0)
 			{
@@ -300,46 +357,69 @@ void Solo::tetris_manage()
 				ActFlame.at(4) -= 1;
 			}
 			delay_cnt = 2;
-		}
+		}*/
 
 		if (KeyConfp1->GetKey(KeyVal::C).pressed())
 		{
-			if (ActFlame.at(1) >= 0)
+			if (ActFlame.at(1) == 0)
 			{
-				ActFlame.at(1) = -2;
+				ActFlame.at(1) = 1;
 				g_check = TEp1->Game(1, 0);
+			}
+			else if (ActFlame.at(1) > 2)
+			{
+				ActFlame.at(1) = 2;
 			}
 			else
 			{
-				ActFlame.at(1) += -1;
+				ActFlame.at(1)++;
 			}
 			delay_cnt = 2;
+		}
+		else
+		{
+			ActFlame.at(1) = 0;
 		}
 
 		if (KeyConfp1->GetKey(KeyVal::Down).pressed())
 		{
-			if (ActFlame.at(2) >= 0)
+			if (ActFlame.at(2) == 0)
 			{
-				ActFlame.at(2) = -1;
+				ActFlame.at(2) = 1;
 				g_check = TEp1->Game(2, 0);
 			}
-			else {
-				ActFlame.at(2) = 0;
+			else if (ActFlame.at(2) > 2)
+			{
+				g_check = TEp1->Game(2, 0);
+				//ActFlame.at(2) = 2;
+			}
+			else
+			{
+				ActFlame.at(2)++;
 			}
 			delay_cnt = 2;
+		}
+		else
+		{
+			ActFlame.at(2) = 0;
 		}
 
 		if (KeyConfp1->GetKey(KeyVal::Space).pressed())
 		{
-			if (ActFlame.at(3) >= 0)
+			if (ActFlame.at(3) == 0)
 			{
-				ActFlame.at(3) = -2;
+				ActFlame.at(3) = 1;
 				g_check = TEp1->Game(3, 0);
 				delay_cnt = TEp1->get_delayF();
 			}
+			else if (ActFlame.at(3) > 2)
+			{
+				//g_check = TEp1->Game(3, 0);
+				ActFlame.at(3) = 2;
+			}
 			else
 			{
-				ActFlame.at(3) += -1;
+				ActFlame.at(3)++;
 			}
 			delay_cnt = 2;
 
@@ -349,7 +429,10 @@ void Solo::tetris_manage()
 				AIp1->thinking();
 				AIp1->makeAiSuggestion();
 			}
-
+		}
+		else
+		{
+			ActFlame.at(3) = 0;
 		}
 	}
 
@@ -393,11 +476,21 @@ void Solo::actF_manage()
 
 	for (auto&& act : ActFlame)
 	{
-		++act;
-		if (act > 16)
+		act++;
+		if (act > 256)
 		{
-			act = 16;
+			act = 256;
 		}
+	}
+
+	if (ActFlame.at(6) > DASFlame)
+	{
+		ActFlame.at(6) = DASFlame;
+	}
+
+	if (ActFlame.at(7) > DASFlame)
+	{
+		ActFlame.at(7) = DASFlame;
 	}
 
 	return;
