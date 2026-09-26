@@ -188,8 +188,8 @@ void Solo::tetris_manage()
 		// 左右入力
 		if (KeyConfp1->GetKey(KeyVal::Left).pressed() and KeyConfp1->GetKey(KeyVal::Right).pressed())
 		{
-			ActFlame.at(6) = 0;
-			ActFlame.at(7) = 0;
+			ActFlame.at(6) = -DASFlame;
+			ActFlame.at(7) = -DASFlame;
 		}
 		else
 		{
@@ -212,8 +212,7 @@ void Solo::tetris_manage()
 
 				delay_cnt = 2;
 			}
-
-			if (KeyConfp1->GetKey(KeyVal::Right).pressed())
+			else if (KeyConfp1->GetKey(KeyVal::Right).pressed())
 			{
 				if (ActFlame.at(7) == 0)
 				{
@@ -232,8 +231,11 @@ void Solo::tetris_manage()
 				ActFlame.at(6) = 0;
 				delay_cnt = 2;
 			}
-
-
+			else
+			{
+				ActFlame.at(6) = 0;
+				ActFlame.at(7) = 0;
+			}
 		}
 
 		/*if (KeyConfp1->GetKey(KeyVal::Left).pressed() && not KeyConfp1->GetKey(KeyVal::Right).pressed())
@@ -386,21 +388,16 @@ void Solo::tetris_manage()
 	return;
 }
 
-void Solo::actF_manage() {
+void Solo::actF_manage()
+{
 
-	for (auto&& i : ActFlame)
+	for (auto&& act : ActFlame)
 	{
-		++i;
-		if (i > 17)
+		++act;
+		if (act > 16)
 		{
-			i = 16;
+			act = 16;
 		}
-	}
-
-	if (not IsKeyVP(*KeyConfp1, KeyVal::Right) && not IsKeyVP(*KeyConfp1, KeyVal::Left))
-	{
-		ActFlame.at(6) = 0;
-		ActFlame.at(7) = 0;
 	}
 
 	return;
