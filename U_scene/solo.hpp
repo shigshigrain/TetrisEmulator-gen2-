@@ -16,21 +16,33 @@ public:
 
 	~Solo();
 
-private:// メンバ変数
+private:
+	/// @brief テトリス本体
 	std::unique_ptr<shig::TetriEngine> TEp1;
+	/// @brief AI本体
 	std::unique_ptr<shig::AiShigune> AIp1;
+	/// @brief 背景テクスチャ
 	s3d::Texture m_bg;
+	/// @brief ミノテクスチャ
 	s3d::Array<s3d::Texture> m_MinoTex;
+	/// @brief キーコンフィグ
 	std::unique_ptr<KeyConf> KeyConfp1;
+	/// @brief ゲーム進行管理用変数
 	uint64 sec_time;
 	uint64 sync_rate;
 	int delay_cnt;
 	int DASFlame;
 	int WaitFlame;
-	int PassedFlame;
-	bool ResetFlag;
-	shig::BoolSwitch suggest_flag;
+	float PassedFlame;
+	/// @brief ゲームリセットフラグ
+	bool f_reset;
+	/// @brief AI思考/操作フラグ
+	bool f_bot;
+	/// @brief AI思考/表示フラグ
+	bool f_suggest;
+	/// @brief 横ためフレーム管理用変数
 	std::vector<int> ActFlame;
+	/// @brief AI推奨手の表示フィールド
 	std::vector<std::vector<int8_t>> FieldS1;
 	std::atomic<bool> abortAIp1;
 	std::atomic<bool> thinkAIp1;

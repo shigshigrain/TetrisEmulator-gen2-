@@ -144,7 +144,12 @@ bool IsPressedKeyAnd(KeyConf& kc, const KeyVal& a, const KeyVal& b){
 	return kc.GetKey(a).pressed() && kc.GetKey(b).pressed();
 }
 
-bool IsKeyVP(KeyConf& kc, const KeyVal& kv)
+bool IsKeyPressed(KeyConf& kc, const KeyVal& kv)
 {
 	return kc.GetKey(kv).pressed();
+}
+
+bool IsKeyDown(KeyConf& kc, const KeyVal& kv)
+{
+	return kc.GetKey(kv).down();
 }

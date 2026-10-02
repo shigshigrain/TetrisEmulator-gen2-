@@ -131,7 +131,7 @@ Ai::~Ai()
 
 void Ai::GameManage1p() {
 
-	if (IsKeyVP(*KeyConfp1, KeyVal::R)) {
+	if (IsKeyPressed(*KeyConfp1, KeyVal::R)) {
 		TEp1->CopyFiledP();
 		TEp2->CopyFiledP();
 		WaitFlame1p = 40;
@@ -139,7 +139,7 @@ void Ai::GameManage1p() {
 		ResetFlag = true;
 	}
 
-	if (IsKeyVP(*KeyConfp1, KeyVal::G)) {
+	if (IsKeyPressed(*KeyConfp1, KeyVal::G)) {
 		TEp1->CopyFiledP();
 		TEp1->StackGarbage(-1);
 
@@ -149,14 +149,14 @@ void Ai::GameManage1p() {
 
 void Ai::GameManage2p()
 {
-	if (IsKeyVP(*KeyConfp1, KeyVal::M)) {
+	if (IsKeyPressed(*KeyConfp1, KeyVal::M)) {
 		if (ActFlame.at(0) >= 0) {
 			ActFlame.at(0) = -30;
 			suggest_flag.sw();
 		}
 	}
 
-	if (IsKeyVP(*KeyConfp1, KeyVal::O)) {
+	if (IsKeyPressed(*KeyConfp1, KeyVal::O)) {
 		TEp2->CopyFiledP();
 		TEp2->StackGarbage(-1);
 	}
@@ -370,12 +370,12 @@ void Ai::InputFlameManage() {
 		if (af <= 0x11111110)af++;
 	}
 
-	if (not IsKeyVP(*KeyConfp1, KeyVal::Right) and not IsKeyVP(*KeyConfp1, KeyVal::Left)) {
+	if (not IsKeyPressed(*KeyConfp1, KeyVal::Right) and not IsKeyPressed(*KeyConfp1, KeyVal::Left)) {
 		ActFlame.at(6) = 0;
 		ActFlame.at(7) = 0;
 	}
 
-	if (IsKeyVP(*KeyConfp1, KeyVal::Right) and IsKeyVP(*KeyConfp1, KeyVal::Left)) {
+	if (IsKeyPressed(*KeyConfp1, KeyVal::Right) and IsKeyPressed(*KeyConfp1, KeyVal::Left)) {
 		ActFlame.at(6) = 1;
 		ActFlame.at(7) = 1;
 	}

@@ -69,4 +69,7 @@ public:
 bool IsPressedKeyAnd(KeyConf& kc, const KeyVal& a, const KeyVal& b);
 
 // KeyConf と KeyValを指定して.pressed()の返り値を取得する
-bool IsKeyVP(KeyConf& kc, const KeyVal& kv);
+bool IsKeyPressed(KeyConf& kc, const KeyVal& kv);
+
+// KeyConf と KeyValを指定して.????()の返り値を取得する
+bool IsKeyDown(KeyConf& kc, const KeyVal& kv);
