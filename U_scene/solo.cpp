@@ -131,13 +131,12 @@ void Solo::game_manage()
 	{
 		TEp1->CopyFiledP();
 		AIp1->loadTE(*TEp1);
-		WaitFlame = 40;
+		WaitFlame = 20;
 		f_reset = true;
 	}
 
 	if (IsKeyDown(*KeyConfp1, KeyVal::G))
 	{
-		ActFlame.at(0) = 1;
 		TEp1->CopyFiledP();
 		TEp1->StackGarbage(-1);
 	}
@@ -146,7 +145,10 @@ void Solo::game_manage()
 	{
 		if (f_bot)
 		{
+			f_suggest = false;
 			f_bot = false;
+			thinkAIp1 = false;
+			CmdListAIp1.clear();
 		}
 		else
 		{
@@ -165,6 +167,7 @@ void Solo::game_manage()
 		if (f_suggest)
 		{
 			f_suggest = false;
+			thinkAIp1 = false;
 		}
 		else
 		{
@@ -183,7 +186,7 @@ void Solo::tetris_manage()
 	if (f_bot)
 	{
 		// 非同期処理側で推奨手計算が終了している場合
-		if (!thinkAIp1)
+		if (not thinkAIp1)
 		{
 			FieldS1 = AIp1->getSuggestionAi();
 			if (!CmdListAIp1.empty())
@@ -207,9 +210,9 @@ void Solo::tetris_manage()
 				thinkAIp1 = true;
 			}
 		}
-		else if (thinkAIp1)
+		else
 		{
-			// することがない 
+			// することはない 
 		}
 	}
 	else
@@ -220,11 +223,6 @@ void Solo::tetris_manage()
 			if (not thinkAIp1)
 			{
 				FieldS1 = AIp1->getSuggestionAi();
-				thinkAIp1 = true;
-			}
-			else if (thinkAIp1)
-			{
-				// することがない 
 			}
 		}
 
