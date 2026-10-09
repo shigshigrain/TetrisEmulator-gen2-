@@ -32,6 +32,7 @@ Solo::Solo(const InitData& init)
 	abortAIp1 = { false };
 	thinkAIp1 = { false };
 	CmdListAIp1.clear();
+	AIp1->SetExploreWidth({ 64, 256, 256, 256, 256, 256});
 	// AI起動 
 	asyncAIp1 = s3d::Async(shig::ExeThinking, ref(*AIp1), ref(abortAIp1), ref(thinkAIp1), ref(CmdListAIp1));
 
